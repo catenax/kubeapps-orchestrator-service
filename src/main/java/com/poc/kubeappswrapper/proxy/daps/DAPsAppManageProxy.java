@@ -3,6 +3,7 @@ package com.poc.kubeappswrapper.proxy.daps;
 import java.util.Map;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,10 @@ public interface DAPsAppManageProxy {
 	@PostMapping(path = "/api/v1/config/clients/{clientId}/keys")
 	String uploadClientCertificate(@PathVariable("clientId") String clientId,
 			@RequestBody DAPsClientCertificateRequest dapsClientCertificate,
+			@RequestHeader Map<String, String> requestHeader);
+	
+	@DeleteMapping(path = "/api/v1/config/clients/{clientId}")
+	String deleteClient(@PathVariable("clientId") String clientId,
 			@RequestHeader Map<String, String> requestHeader);
 
 }

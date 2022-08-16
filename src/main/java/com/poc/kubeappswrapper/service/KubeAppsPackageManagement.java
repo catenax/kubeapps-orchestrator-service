@@ -45,8 +45,10 @@ public class KubeAppsPackageManagement {
 		Plugin plugin = updateControlPlane.getAvailablePackageRef().getPlugin();
 		Context context = updateControlPlane.getAvailablePackageRef().getContext();
 
+		String appName =app.getAppName().replaceAll("_", "");
+		
 		return kubeAppManageProxy.updatePackage(plugin.getName(), plugin.getVersion(), context.getCluster(),
-				context.getNamespace(), tenantName + "-" + app.getAppName().toLowerCase(), updateControlPlane);
+				context.getNamespace(), tenantName+appName.toLowerCase(), updateControlPlane);
 
 	}
 
@@ -59,9 +61,9 @@ public class KubeAppsPackageManagement {
 				.getUpdatePackageRequest(appWithStandardInfo, app.getAppName(), tenantName);
 		Plugin plugin = updateControlPlane.getAvailablePackageRef().getPlugin();
 		Context context = updateControlPlane.getAvailablePackageRef().getContext();
-
+		String appName =app.getAppName().replaceAll("_", "");
 		return kubeAppManageProxy.deletePackage(plugin.getName(), plugin.getVersion(), context.getCluster(),
-				context.getNamespace(), tenantName + "-" + app.getAppName().toLowerCase(), updateControlPlane);
+				context.getNamespace(), tenantName+appName.toLowerCase(), updateControlPlane);
 
 	}
 

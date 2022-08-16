@@ -70,9 +70,29 @@ public class KubeAppsOrchitestratorService {
 
 	public String updatePackage(String tenantName, String bpnNumber, String role) {
 
-		appManagement.updatePackage(POSTGRES_DB, tenantName, null);
-		appManagement.updatePackage(EDC_CONTROLPLANE, tenantName, null);
-		appManagement.updatePackage(EDC_DATAPLANE, tenantName, null);
+		Map<String, String> inputConfiguration = new HashMap<>();
+		String clientId = certificateManager.createCertificate(tenantName);
+		inputConfiguration.put("dapsclientid", clientId);
+
+
+		Map<String, String> dapsConfiguration = dapsManager.registerClientInDAPs(clientId, tenantName, bpnNumber, role);
+		inputConfiguration.putAll(dapsConfiguration);
+		
+		
+		Map<String, String> tenantKeyinVault = vaultManager.uploadKeyandValues(clientId, tenantName);
+		inputConfiguration.putAll(tenantKeyinVault);
+		
+		inputConfiguration.put("postgresPassword", "admin@123");
+		inputConfiguration.put("username", "admin");
+		inputConfiguration.put("password", "admin@123");
+		inputConfiguration.put("database", "edc_provider");
+
+		
+		appManagement.updatePackage(POSTGRES_DB, tenantName, inputConfiguration);
+		
+		appManagement.updatePackage(EDC_CONTROLPLANE, tenantName, inputConfiguration);
+		
+		appManagement.updatePackage(EDC_DATAPLANE, tenantName, inputConfiguration);
 
 		return "AppUpdate";
 	}

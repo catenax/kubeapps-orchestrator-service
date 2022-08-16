@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DAPsManager {
 
 	private final DAPsAppManageProxy dapsAppManageProxy;
-	private final CertificateManager certificateManager; 
+	private final CertificateManager certificateManager;
 
 	@Value("${daps.clientid}")
 	private String clientId;
@@ -34,11 +34,23 @@ public class DAPsManager {
 	@Value("${daps.url}")
 	private String dapsurl;
 
-	
 	@Value("${daps.jskurl}")
 	private String dapsjsksurl;
-	
-	public Map<String, String> registerClientInDAPs(String connectorclientId, String tenantName, String bpnNumber, String role) {
+
+	public void deleteClientfromDAPs(String connectorclientId) {
+
+		DAPsTokenResponse reponse = dapsAppManageProxy.readAuthToken("client_credentials", clientId, clientSecret,
+				"omejdn:admin");
+
+		Map<String, String> requestHeader = new HashMap<>();
+		requestHeader.put("Authorization", "Bearer " + reponse.getAccess_token());
+
+		dapsAppManageProxy.deleteClient(connectorclientId, requestHeader);
+
+	}
+
+	public Map<String, String> registerClientInDAPs(String connectorclientId, String tenantName, String bpnNumber,
+			String role) {
 
 		DAPsTokenResponse reponse = dapsAppManageProxy.readAuthToken("client_credentials", clientId, clientSecret,
 				"omejdn:admin");
@@ -57,31 +69,24 @@ public class DAPsManager {
 		attributes.add(new AttributeObj("referringConnector", "http://www." + tenantName + ".com/" + bpnNumber));
 		attributes.add(new AttributeObj("role", role));
 
-		DAPsClientRequest dapsClientRequest = DAPsClientRequest.builder()
-				.client_id(connectorclientId)
-				.name(tenantName)
-				.token_endpoint_auth_method("private_key_jwt")
-				.scope(scope)
-				.grant_types(grant_types)
+		DAPsClientRequest dapsClientRequest = DAPsClientRequest.builder().client_id(connectorclientId).name(tenantName)
+				.token_endpoint_auth_method("private_key_jwt").scope(scope).grant_types(grant_types)
 				.attributes(attributes).build();
 
 		Map<String, String> requestHeader = new HashMap<>();
-		requestHeader.put("Authorization", "Bearer "+reponse.getAccess_token());
-		
+		requestHeader.put("Authorization", "Bearer " + reponse.getAccess_token());
+
 		dapsAppManageProxy.createClient(dapsClientRequest, requestHeader);
-		
-		
-		DAPsClientCertificateRequest dapsClientCertificate=DAPsClientCertificateRequest
-				.builder()
-				.certificate(certificateManager.readCertificate(tenantName))
-				.build();
-		
+
+		DAPsClientCertificateRequest dapsClientCertificate = DAPsClientCertificateRequest.builder()
+				.certificate(certificateManager.readCertificate(tenantName)).build();
+
 		dapsAppManageProxy.uploadClientCertificate(connectorclientId, dapsClientCertificate, requestHeader);
-		
+
 		Map<String, String> inputConfiguration = new HashMap<>();
 		inputConfiguration.put("dapsurl", dapsurl);
 		inputConfiguration.put("dapsjsksurl", dapsjsksurl);
-		
+
 		return inputConfiguration;
 	}
 
