@@ -51,9 +51,14 @@ public class AppFactory {
 	}
 
 	private CreatePackageRequest prepareRequestPojo(AppConstant app) {
-		return CreatePackageRequest.builder().contextCluster("default").contextNamespace("kubeapps")
-				.targetCluster("default").targetNamespace("kubeapps").pluginName("helm.packages")
-				.pluginVersion("v1alpha1").availablePackageIdentifier(app.getPackageIdentifier())
+		return CreatePackageRequest.builder()
+				.contextCluster("default")
+				.contextNamespace("kubeapps")
+				.targetCluster("default")
+				.targetNamespace("kubeapps")
+				.pluginName("helm.packages")
+				.pluginVersion("v1alpha1")
+				.availablePackageIdentifier(app.getPackageIdentifier())
 				.availablePackageVersion(app.getPackageVersion()).build();
 	}
 

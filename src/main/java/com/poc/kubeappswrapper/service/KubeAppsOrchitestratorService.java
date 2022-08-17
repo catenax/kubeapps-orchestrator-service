@@ -59,7 +59,7 @@ public class KubeAppsOrchitestratorService {
 		inputConfiguration.put("database", "edc_provider");
 
 		appManagement.createPackage(POSTGRES_DB, tenantName, inputConfiguration);
-
+		
 		appManagement.createPackage(EDC_CONTROLPLANE, tenantName, inputConfiguration);
 
 		appManagement.createPackage(EDC_DATAPLANE, tenantName, inputConfiguration);

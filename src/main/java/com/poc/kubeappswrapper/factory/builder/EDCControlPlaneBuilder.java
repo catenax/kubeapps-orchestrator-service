@@ -88,7 +88,7 @@ public class EDCControlPlaneBuilder {
 
 	public String buildConfiguration(String appName, String tenantName, Map<String, String> inputProperties) {
 
-		String dbName= inputProperties.get("database");
+		String dbName= inputProperties.get("edcdatabase");
 		// Update Database configuration
 		expectedPgDBConfiguration.forEach((key, value) -> {
 			String stringValue = inputProperties.get(value);

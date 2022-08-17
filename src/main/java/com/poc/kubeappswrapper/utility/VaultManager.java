@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.poc.kubeappswrapper.model.VaultSecreteRequest;
 import com.poc.kubeappswrapper.proxy.vault.VaultAppManageProxy;
@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-@Component
+@Service
 @Slf4j
 @RequiredArgsConstructor
 public class VaultManager {
@@ -47,14 +47,14 @@ public class VaultManager {
 		URI url = new URI(valutURLwithpath);
 		vaultManagerProxy.uploadKeyandValue(url, vaultSecreteRequest);
 		
-		tenantVaultSecret = new HashMap<>();
-		tenantVaultSecret.put("daps-cert", tenantName+"/daps-cert");
-		tenantVaultSecret.put("certificate-private-key", tenantName+"/certificate-private-key");
-		tenantVaultSecret.put("vaulturl", valutURL);
-		tenantVaultSecret.put("vaulttoken", vaulttoken);
-		tenantVaultSecret.put("vaulttimeout", vaulttimeout);
+		Map<String, String> outputVaultSecret = new HashMap<>();
+		outputVaultSecret.put("daps-cert", tenantName+"/daps-cert");
+		outputVaultSecret.put("certificate-private-key", tenantName+"/certificate-private-key");
+		outputVaultSecret.put("vaulturl", valutURL);
+		outputVaultSecret.put("vaulttoken", vaulttoken);
+		outputVaultSecret.put("vaulttimeout", vaulttimeout);
 		
-		return tenantVaultSecret;
+		return outputVaultSecret;
 	}
 
 }

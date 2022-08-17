@@ -5,12 +5,15 @@ import lombok.Getter;
 @Getter
 public enum AppConstant {
 
-	// IDS default use policy start
 	EDC_CONTROLPLANE("EDC_CONTROLPLANE", "edcrepo/edc-controlplane", "0.0.6"),
 
 	EDC_DATAPLANE("EDC_DATAPLANE", "edcrepo/edc-dataplane", "0.0.6"),
 
-	POSTGRES_DB("POSTGRES_DB", "bitnami/postgresql", "11.7.1");
+	POSTGRES_DB("POSTGRES_DB", "bitnami/postgresql", "11.7.1"),
+	
+	DFT_FRONTEND("DFT_FRONTEND", "dft/frontend", "0.0.1"),
+	
+	DFT_BACKEND("DFT_BACKEND", "dft/backend", "0.0.1");
 
 	private String appName;
 	private String packageIdentifier;

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.poc.kubeappswrapper.model.AttributeObj;
 import com.poc.kubeappswrapper.model.DAPsClientCertificateRequest;
@@ -17,7 +17,7 @@ import com.poc.kubeappswrapper.proxy.daps.DAPsAppManageProxy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Component
+@Service
 @Slf4j
 @RequiredArgsConstructor
 public class DAPsManager {
