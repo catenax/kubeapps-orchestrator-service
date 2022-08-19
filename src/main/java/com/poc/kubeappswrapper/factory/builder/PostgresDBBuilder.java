@@ -7,32 +7,32 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PostgresDBBuilder {
+public class PostgresDBBuilder  implements AppServiceBuilder {
 
 	private Map<String, String> expectedConfiguration = new TreeMap<>();
-	private Map<String, String> expectedDBConfiguration = new TreeMap<>();
+	private Map<String, String> expectedInputConfiguration = new TreeMap<>();
 
 	public PostgresDBBuilder() {
 
-		expectedDBConfiguration.put("postgresPassword", "postgresPassword");
-		expectedDBConfiguration.put("username", "username");
-		expectedDBConfiguration.put("password", "password");
-		expectedDBConfiguration.put("database", "database");
+		expectedInputConfiguration.put("postgresPassword", "postgresPassword");
+		expectedInputConfiguration.put("username", "username");
+		expectedInputConfiguration.put("password", "password");
+		expectedInputConfiguration.put("database", "database");
 
 	}
 
 	public String buildConfiguration(String appName, String tenantName, Map<String, String> inputProperties) {
 
 		// Update Database configuration
-		expectedDBConfiguration.forEach((key, value) -> {
+		expectedInputConfiguration.forEach((key, value) -> {
 			String stringValue = inputProperties.get(value);
 			expectedConfiguration.put(key, stringValue);
 		});
 
 		JSONObject json = new JSONObject(expectedConfiguration);
 		String properties = json.toString();
-		String configuration = "{\"global\":{\"postgresql\":{\"auth\":" + properties + "}}}";
-		return configuration;
+		String dynamicValues = "{\"global\":{\"postgresql\":{\"auth\":" + properties + "}}}";
+		return dynamicValues;
 	}
 
 }

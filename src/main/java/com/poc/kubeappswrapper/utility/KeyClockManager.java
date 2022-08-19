@@ -1,10 +1,9 @@
 package com.poc.kubeappswrapper.utility;
 
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.poc.kubeappswrapper.proxy.keyclock.KeyClockManagerProxy;
+import com.poc.kubeappswrapper.proxy.keyclock.KeyClockProxy;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,9 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class KeyClockServiceManager {
+public class KeyClockManager {
 
-	private final  KeyClockManagerProxy keyClockProxy;
+	private final  KeyClockProxy keyClockProxy;
 
 	public String createNewRealm() {
 		String inputJson = "{\n" + "		    'id': 'newrealm',\n" + "		    'realm': 'newrealm',\n"

@@ -3,21 +3,18 @@ package com.poc.kubeappswrapper.factory.builder;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.springframework.stereotype.Component;
-
-@Component
-public class EDCDataPlaneBuilder {
+public class EDCDataPlaneBuilder  implements AppServiceBuilder {
 
 	Map<String, String> expectedConfiguration = new TreeMap<>();
-	Map<String, String> expectedVaultConfiguration = new TreeMap<>();
+	Map<String, String> expectedInputConfiguration = new TreeMap<>();
 
 	public EDCDataPlaneBuilder() {
 
 		expectedConfiguration.put("edc.hostname", "localhost");
 
-		expectedVaultConfiguration.put("edc.vault.hashicorp.url", "vaulturl");
-		expectedVaultConfiguration.put("edc.vault.hashicorp.token", "vaulttoken");
-		expectedVaultConfiguration.put("edc.vault.hashicorp.timeout.seconds", "vaulttimeout");
+		expectedInputConfiguration.put("edc.vault.hashicorp.url", "vaulturl");
+		expectedInputConfiguration.put("edc.vault.hashicorp.token", "vaulttoken");
+		expectedInputConfiguration.put("edc.vault.hashicorp.timeout.seconds", "vaulttimeout");
 
 		expectedConfiguration.put("edc.controlplane.validation-endpoint", "");
 
@@ -26,7 +23,7 @@ public class EDCDataPlaneBuilder {
 	public String buildConfiguration(String appName, String tenantName, Map<String, String> inputProperties) {
 
 		// Vault configuration
-		expectedVaultConfiguration.forEach((key, value) -> {
+		expectedInputConfiguration.forEach((key, value) -> {
 			String stringValue = inputProperties.get(value);
 			expectedConfiguration.put(key, stringValue);
 		});
@@ -40,8 +37,8 @@ public class EDCDataPlaneBuilder {
 			sb.append(key+"="+value+"\\n");
 		});
 		
-		String edcDataplane = "{\"configuration\": " + "{\"properties\":\"" + sb.toString() + "\"}}";
-		return edcDataplane;
+		String dynamicValues = "{\"configuration\": " + "{\"properties\":\"" + sb.toString() + "\"}}";
+		return dynamicValues;
 	}
 
 }

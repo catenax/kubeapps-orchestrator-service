@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.poc.kubeappswrapper.kubeapp.model.CreateInstalledPackageRequest;
 
@@ -16,6 +17,10 @@ public interface KubeAppManageProxy {
 	@GetMapping(path = "/apis/core/packages/v1alpha1/installedpackages")
 	String getAllInstallPackages();
 
+	@PostMapping(path = "/apis/plugins/resources/v1alpha1/c/{clusterName}/ns")
+	String createNamespace(@PathVariable("clusterName") String clusterName,@RequestParam("context.namespace") String namespace);
+	
+	
 	@PostMapping(path = "/apis/core/packages/v1alpha1/installedpackages")
 	String createPackage(@RequestBody CreateInstalledPackageRequest createInstalledPackageRequest);
 

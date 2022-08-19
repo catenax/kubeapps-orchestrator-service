@@ -11,9 +11,9 @@ public enum AppConstant {
 
 	POSTGRES_DB("POSTGRES_DB", "bitnami/postgresql", "11.7.1"),
 	
-	DFT_FRONTEND("DFT_FRONTEND", "dft/frontend", "0.0.1"),
+	DFT_FRONTEND("DFT_FRONTEND", "dftfrontend/dftfrontend", "1.0.0"),
 	
-	DFT_BACKEND("DFT_BACKEND", "dft/backend", "0.0.1");
+	DFT_BACKEND("DFT_BACKEND", "dftbackend/dftbackend", "0.1.0");
 
 	private String appName;
 	private String packageIdentifier;

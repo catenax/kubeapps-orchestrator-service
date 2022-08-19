@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "KeyClockManagerProxy", url = "${keyclock.url}", configuration = KeyClockManagerConfiguration.class)
-public interface  KeyClockManagerProxy {
+public interface  KeyClockProxy {
 	
 	@GetMapping(path = "/auth/token")
 	String readtoken(@RequestParam String input);

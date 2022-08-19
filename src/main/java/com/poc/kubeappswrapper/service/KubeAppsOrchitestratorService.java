@@ -1,5 +1,7 @@
 package com.poc.kubeappswrapper.service;
 
+import static com.poc.kubeappswrapper.constant.AppConstant.DFT_BACKEND;
+import static com.poc.kubeappswrapper.constant.AppConstant.DFT_FRONTEND;
 import static com.poc.kubeappswrapper.constant.AppConstant.EDC_CONTROLPLANE;
 import static com.poc.kubeappswrapper.constant.AppConstant.EDC_DATAPLANE;
 import static com.poc.kubeappswrapper.constant.AppConstant.POSTGRES_DB;
@@ -13,14 +15,13 @@ import org.springframework.stereotype.Service;
 import com.poc.kubeappswrapper.proxy.kubeapps.KubeAppManageProxy;
 import com.poc.kubeappswrapper.utility.CertificateManager;
 import com.poc.kubeappswrapper.utility.DAPsManager;
+import com.poc.kubeappswrapper.utility.KeyClockManager;
 import com.poc.kubeappswrapper.utility.VaultManager;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class KubeAppsOrchitestratorService {
 
 	private final KubeAppManageProxy kubeAppManageProxy;
@@ -34,6 +35,10 @@ public class KubeAppsOrchitestratorService {
 
 	@Autowired
 	private VaultManager vaultManager;
+	
+	@Autowired
+	private KeyClockManager keyClockServiceManager;
+	
 
 	public String getAllInstallPackages() {
 		return kubeAppManageProxy.getAllInstallPackages();
@@ -60,9 +65,36 @@ public class KubeAppsOrchitestratorService {
 
 		appManagement.createPackage(POSTGRES_DB, tenantName, inputConfiguration);
 		
+		String edcDb = "jdbc:postgresql://" + tenantName + "postgresdb-postgresql:5432/edc_provider";
+		inputConfiguration.put("edcdatabaseurl", edcDb);
 		appManagement.createPackage(EDC_CONTROLPLANE, tenantName, inputConfiguration);
 
 		appManagement.createPackage(EDC_DATAPLANE, tenantName, inputConfiguration);
+		
+		
+		inputConfiguration.put("dftdatabase", "edc_provider");
+		
+		String dftDb = "jdbc:postgresql://" + tenantName + "postgresdb-postgresql:5432/edc_provider";
+		inputConfiguration.put("dftdatabaseurl", dftDb);
+		
+//		Map<String, String> keclock = vaultManager.uploadKeyandValues(clientId, tenantName);
+//		inputConfiguration.putAll(keclock);
+//		
+//		Map<String, String> digitalDetails = vaultManager.uploadKeyandValues(clientId, tenantName);
+//		inputConfiguration.putAll(digitalDetails);
+//		
+//		Map<String, String> edcDetails = vaultManager.uploadKeyandValues(clientId, tenantName);
+//		inputConfiguration.putAll(edcDetails);
+		
+		appManagement.createPackage(DFT_BACKEND, tenantName, inputConfiguration);
+
+		inputConfiguration.put("dftbackendurl","");
+		inputConfiguration.put("dftbackendapikey","");
+		inputConfiguration.put("dftkeyclockurl","");
+		inputConfiguration.put("dftkeyclockrealm","");
+		inputConfiguration.put("dftkeyclockclientid","");
+		
+		appManagement.createPackage(DFT_FRONTEND, tenantName, inputConfiguration);
 		
 
 		return "AppInstall";
@@ -102,7 +134,8 @@ public class KubeAppsOrchitestratorService {
 		appManagement.deletePackage(POSTGRES_DB, tenantName, inputConfiguration);
 		appManagement.deletePackage(EDC_CONTROLPLANE, tenantName, inputConfiguration);
 		appManagement.deletePackage(EDC_DATAPLANE, tenantName, inputConfiguration);
-
+		appManagement.deletePackage(DFT_BACKEND, tenantName, inputConfiguration);
+		appManagement.deletePackage(DFT_FRONTEND, tenantName, inputConfiguration);
 		return "Appdeleted";
 
 	}
