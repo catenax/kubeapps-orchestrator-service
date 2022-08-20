@@ -1,14 +1,12 @@
 package com.poc.kubeappswrapper.utility;
 
 import org.bouncycastle.asn1.DEROctetString;
-import org.bouncycastle.asn1.x509.Certificate;
 import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.bc.BcX509ExtensionUtils;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMWriter;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
@@ -22,7 +20,6 @@ import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.AbstractMap;
 import java.util.Date;
 import java.util.HexFormat;
 import java.util.Optional;
@@ -70,7 +67,8 @@ public class Certutil {
         return sw.toString();
     }
 
-    public static AbstractMap.SimpleImmutableEntry<X509Certificate, KeyPair> generateSelfSignedCertificateSecret(String name, Integer days, Integer bits) throws GeneralSecurityException, OperatorCreationException, CertIOException {
+    public record CertKeyPair(X509Certificate certificate, KeyPair keyPair){}
+    public static CertKeyPair generateSelfSignedCertificateSecret(String name, Integer days, Integer bits) throws GeneralSecurityException, OperatorCreationException, CertIOException {
         var subject = new X500Principal(name);
         var keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(Optional.ofNullable(bits).orElse(2048), new SecureRandom());
@@ -94,6 +92,6 @@ public class Certutil {
         certBuilder.addExtension(Extension.authorityKeyIdentifier, false, aki);
         var signer = new JcaContentSignerBuilder(("SHA256withRSA")).build(keyPair.getPrivate());
         var certHolder = certBuilder.build(signer);
-        return new AbstractMap.SimpleImmutableEntry<>(new JcaX509CertificateConverter().setProvider("BC").getCertificate(certHolder), keyPair);
+        return new CertKeyPair(new JcaX509CertificateConverter().setProvider("BC").getCertificate(certHolder), keyPair);
     }
 }

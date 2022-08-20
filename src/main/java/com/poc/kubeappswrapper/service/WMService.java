@@ -1,15 +1,13 @@
 package com.poc.kubeappswrapper.service;
 
-import com.poc.kubeappswrapper.workflow.steps.CertificateStep;
-import com.poc.kubeappswrapper.workflow.steps.InputDataStep;
 import com.poc.kubeappswrapper.workflow.steps.dapsregisration.DapsRegServiceClient;
-import com.poc.kubeappswrapper.workflow.steps.dapsregisration.DapsRegistrationStep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
+import simplewfms.SimpleTask;
 import simplewfms.Workflow;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,11 +25,14 @@ public class WMService {
 
     public Workflow runWorkflow(String tenantName, String bpnNumber, String role) {
         final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String token = header.split(" ")[1].trim();
-        var workflow = new Workflow(executor);
-        new CertificateStep(workflow);
-        new DapsRegistrationStep(workflow, dapsRegServiceClient);
-        new InputDataStep(workflow, tenantName, bpnNumber, role, token);
+
+        var workflow = new Workflow(executor).loadTasks("com.poc.kubeappswrapper.workflow.steps");
+        workflow.registerTask(new SimpleTask(), "InputData")
+                .setOutput("TENANT_NAME", tenantName)
+                .setOutput("BPN_NUMBER", bpnNumber)
+                .setOutput("ROLE", role)
+                .setOutput("TOKEN", header.split(" ")[1].trim())
+                .setOutput("DAPS_REG_CLIENT", dapsRegServiceClient);
         return workflow;
     }
 

@@ -1,4 +1,4 @@
-package simplewfms;
+package com.poc.kubeappswrapper.utility;
 
 public class LombokTool {
     public static RuntimeException sneakyThrow(Throwable t) {

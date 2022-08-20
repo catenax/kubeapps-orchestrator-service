@@ -1,4 +1,4 @@
-package simplewfms;
+package com.poc.kubeappswrapper.utility;
 
 @FunctionalInterface
 public interface ThrowingRunnable extends Runnable{

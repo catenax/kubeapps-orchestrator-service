@@ -1,4 +1,4 @@
-package simplewfms;
+package com.poc.kubeappswrapper.utility;
 
 import java.util.function.Consumer;
 
