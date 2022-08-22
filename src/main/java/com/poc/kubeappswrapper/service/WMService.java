@@ -1,5 +1,6 @@
 package com.poc.kubeappswrapper.service;
 
+import com.poc.kubeappswrapper.model.CustomerDetails;
 import com.poc.kubeappswrapper.workflow.steps.dapsregisration.DapsRegServiceClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -23,14 +24,12 @@ public class WMService {
     @Autowired
     private ThreadPoolTaskExecutor executor;
 
-    public Workflow runWorkflow(String tenantName, String bpnNumber, String role) {
+    public Workflow runWorkflow(CustomerDetails customerDetails) {
         final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         var workflow = new Workflow(executor).loadTasks("com.poc.kubeappswrapper.workflow.steps");
         workflow.registerTask(new SimpleTask(), "InputData")
-                .setOutput("TENANT_NAME", tenantName)
-                .setOutput("BPN_NUMBER", bpnNumber)
-                .setOutput("ROLE", role)
+                .setOutput("CustomerDetails", customerDetails)
                 .setOutput("TOKEN", header.split(" ")[1].trim())
                 .setOutput("DAPS_REG_CLIENT", dapsRegServiceClient);
         return workflow;
