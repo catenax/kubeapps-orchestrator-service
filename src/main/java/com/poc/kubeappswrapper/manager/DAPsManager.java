@@ -1,4 +1,4 @@
-package com.poc.kubeappswrapper.utility;
+package com.poc.kubeappswrapper.manager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,16 +9,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.poc.kubeappswrapper.model.AttributeObj;
+import com.poc.kubeappswrapper.model.CustomerDetails;
 import com.poc.kubeappswrapper.model.DAPsClientCertificateRequest;
 import com.poc.kubeappswrapper.model.DAPsClientRequest;
 import com.poc.kubeappswrapper.model.DAPsTokenResponse;
 import com.poc.kubeappswrapper.proxy.daps.DAPsAppManageProxy;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class DAPsManager {
 
@@ -49,8 +48,12 @@ public class DAPsManager {
 
 	}
 
-	public Map<String, String> registerClientInDAPs(String connectorclientId, String tenantName, String bpnNumber,
-			String role) {
+	public Map<String, String> registerClientInDAPs(CustomerDetails customerDetails, Map<String, String> inputData) {
+
+		String tenantName = customerDetails.getOrganizationName();
+		String bpnNumber = customerDetails.getBpnNumber();
+		String role = customerDetails.getRole();
+		String connectorclientId = inputData.get("dapsclientid");
 
 		DAPsTokenResponse reponse = dapsAppManageProxy.readAuthToken("client_credentials", clientId, clientSecret,
 				"omejdn:admin");

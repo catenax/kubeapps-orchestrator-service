@@ -1,12 +1,17 @@
-package com.poc.kubeappswrapper.utility;
+package com.poc.kubeappswrapper.manager;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.poc.kubeappswrapper.model.CustomerDetails;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,20 +21,24 @@ public class CertificateManager {
 
 	@Value("${opensslconfile}")
 	private String opensslconfile;
-	
 
 	public String readCertificate(String tenantName) {
-		return executeCommand("openssl x509 -in "+tenantName+"_cert.cert");
+		return executeCommand("openssl x509 -in " + tenantName + "_cert.cert");
 	}
-	
+
 	public String readPublicCertificate(String tenantName) {
-		return executeCommand("cat "+tenantName+".key");
+		return executeCommand("cat " + tenantName + ".key");
 	}
-	
-	public String createCertificate(String tenantName) {
-		String params = "/C=DE/ST=BE/L=Berline/CN=www." + tenantName + ".com";
-		
-		//executeCommand("sh /Users/A118448265/Desktop/runpath/register.sh "+tenantName);
+
+	public Map<String, String> createCertificate(CustomerDetails customerDetails, Map<String, String> inputData) {
+
+		String tenantName = customerDetails.getTenantName();
+		String C = Optional.ofNullable(customerDetails.getCountry()).map(r -> r).orElse("DE");
+		String ST = Optional.ofNullable(customerDetails.getState()).map(r -> r).orElse("BE");
+		String L = Optional.ofNullable(customerDetails.getCity()).map(r -> r).orElse("Berline");
+
+		String params = "/C=" + C + "/ST=" + ST + "/L=" + L + "/CN=www." + tenantName + ".com";
+
 		executeCommand("openssl genpkey -out " + tenantName + ".key -algorithm RSA -pkeyopt rsa_keygen_bits:2048");
 		executeCommand("openssl req -new -x509 -key " + tenantName + ".key -nodes -days 365 -out " + tenantName
 				+ "_cert.cert -config " + opensslconfile + " -subj '" + params + "'");
@@ -43,17 +52,19 @@ public class CertificateManager {
 		File f = new File(tenantName + "_cert.cert");
 		if (f.exists())
 			log.info("certificate exist after creation");
-		
-		return subId.trim() +":"+ authId.trim();
+
+		Map<String, String> outputData = new HashMap<>();
+		outputData.put("dapsclientid", subId.trim() + ":" + authId.trim());
+
+		return outputData;
 	}
 
-	
 	private String executeCommand(String command) {
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		StringBuilder output = new StringBuilder();
 		// Run a command
 		processBuilder.command("bash", "-c", command);
-		
+
 		try {
 			Process process = processBuilder.start();
 
@@ -64,7 +75,7 @@ public class CertificateManager {
 			}
 			int exitVal = process.waitFor();
 			if (exitVal == 0) {
-				//log.info(output.toString());
+				// log.info(output.toString());
 			} else {
 				// abnormal...
 			}

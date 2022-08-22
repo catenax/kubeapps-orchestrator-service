@@ -5,9 +5,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.poc.kubeappswrapper.model.CustomerDetails;
 import com.poc.kubeappswrapper.service.KubeAppsOrchitestratorService;
 
 @RestController
@@ -23,19 +24,17 @@ public class AppHandlerController {
 	}
 
 	@PostMapping("/create-package")
-	public String createPackage(String tenantName,  String bpnNumber,
-			String role) {
-		return appHandlerService.createPackage(tenantName, bpnNumber, role);
+	public String createPackage(@RequestBody CustomerDetails customerDetails) {
+		return appHandlerService.createPackage(customerDetails);
 	}
 
 	@PutMapping("/update-package")
-	public String updatePackage(@RequestParam String tenantName, @RequestParam String bpnNumber,
-			@RequestParam String role) {
-		return appHandlerService.updatePackage(tenantName, bpnNumber, role);
+	public String updatePackage(@RequestBody CustomerDetails customerDetails) {
+		return appHandlerService.updatePackage(customerDetails);
 	}
 
 	@DeleteMapping("/delete-package")
-	public String deletePackage(@RequestParam String tenantName) {
-		return appHandlerService.deletePackage(tenantName);
+	public String deletePackage(@RequestBody CustomerDetails customerDetails) {
+		return appHandlerService.deletePackage(customerDetails);
 	}
 }

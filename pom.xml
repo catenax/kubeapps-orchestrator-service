@@ -29,35 +29,36 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.apache.httpcomponents</groupId> -->
-<!-- 			<artifactId>httpclient</artifactId> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.json</groupId> -->
-<!-- 			<artifactId>json</artifactId> -->
-<!-- 			<version>20200518</version> -->
-<!-- 		</dependency> -->
 
-<!-- 		<dependency> -->
-<!-- 			<groupId>io.github.openfeign</groupId> -->
-<!-- 			<artifactId>feign-core</artifactId> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>io.github.openfeign</groupId> -->
-<!-- 			<artifactId>feign-okhttp</artifactId> -->
-<!-- 		</dependency> -->
 		<dependency>
-		    <groupId>org.json</groupId>
-		    <artifactId>json</artifactId>
-		    <version>20140107</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+		<dependency>
+		    <groupId>mysql</groupId>
+		    <artifactId>mysql-connector-java</artifactId>
+		</dependency>
+			
+		<dependency>
+		    <groupId>com.github.json-template</groupId>
+		    <artifactId>jsontemplate</artifactId>
+		    <version>0.2.1</version>
+		</dependency>
+			
+			
+				
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20140107</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>

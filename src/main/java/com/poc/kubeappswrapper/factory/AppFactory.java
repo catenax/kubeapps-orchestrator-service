@@ -4,74 +4,48 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.poc.kubeappswrapper.constant.AppConstant;
-import com.poc.kubeappswrapper.factory.builder.AppServiceBuilder;
-import com.poc.kubeappswrapper.factory.builder.DFTBackendBuilder;
-import com.poc.kubeappswrapper.factory.builder.DFTFrontendBuilder;
-import com.poc.kubeappswrapper.factory.builder.EDCControlPlaneBuilder;
-import com.poc.kubeappswrapper.factory.builder.EDCDataPlaneBuilder;
-import com.poc.kubeappswrapper.factory.builder.PostgresDBBuilder;
+import com.poc.kubeappswrapper.constant.AppNameConstant;
+import com.poc.kubeappswrapper.entity.AppDetails;
+import com.poc.kubeappswrapper.factory.builder.AppConfigurationBuilder;
+import com.poc.kubeappswrapper.repository.AppRepository;
 import com.poc.kubeappswrapper.wrapper.model.CreatePackageRequest;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @Component
+@RequiredArgsConstructor
 public class AppFactory {
 
-	private AppServiceBuilder appServiceBuilder;
+	private final AppRepository appRepository;
+	private final AppConfigurationBuilder appConfigurationBuilder;
 
 	@SneakyThrows
-	public CreatePackageRequest getAppInputRequestwithrequireDetails(AppConstant app, String tenantName,
+	public CreatePackageRequest getAppInputRequestwithrequireDetails(AppNameConstant app,
 			Map<String, String> inputProperties) {
 
-		CreatePackageRequest createPackageRequest = prepareRequestPojo(app);
-		appServiceBuilder = getServiceInstance(app);
-		
-		createPackageRequest
-				.setValues(appServiceBuilder.buildConfiguration(app.getAppName(), tenantName, inputProperties));
+		AppDetails appDetails = appRepository.findById(app.name()).orElseThrow(() -> new RuntimeException(
+				String.format("The app %s is not supported for auto set up", app.name())));
 
+		String targetCluster = inputProperties.get("targetCluster");
+		String targetNamespace = inputProperties.get("targetNamespace");
+
+		CreatePackageRequest createPackageRequest = prepareRequestPojo(appDetails, targetCluster, targetNamespace);
+		createPackageRequest.setValues(appConfigurationBuilder.buildConfiguration(appDetails, inputProperties));
 		return createPackageRequest;
 	}
 
-	private CreatePackageRequest prepareRequestPojo(AppConstant app) {
+	private CreatePackageRequest prepareRequestPojo(AppDetails appDetails, String targetCluster,
+			String targetNamespace) {
 		return CreatePackageRequest.builder()
-				.contextCluster("default")
-				.contextNamespace("kubeapps")
-				.targetCluster("default")
-				.targetNamespace("kubeapps")
-				.pluginName("helm.packages")
-				.pluginVersion("v1alpha1")
-				.availablePackageIdentifier(app.getPackageIdentifier())
-				.availablePackageVersion(app.getPackageVersion()).build();
-	}
-
-	private AppServiceBuilder getServiceInstance(AppConstant app) throws Exception {
-		AppServiceBuilder appServiceBuilder = null;
-		switch (app) {
-
-		case EDC_CONTROLPLANE:
-			appServiceBuilder = new EDCControlPlaneBuilder();
-			break;
-		case EDC_DATAPLANE:
-			appServiceBuilder = new EDCDataPlaneBuilder();
-			break;
-		case POSTGRES_DB:
-			appServiceBuilder = new PostgresDBBuilder();
-			break;
-
-		case DFT_BACKEND:
-			appServiceBuilder = new DFTBackendBuilder();
-			break;
-
-		case DFT_FRONTEND:
-			appServiceBuilder = new DFTFrontendBuilder();
-			break;
-
-		default:
-			throw new Exception("Appliaction not supported for auto setup");
-
-		}
-		return appServiceBuilder;
+				.contextCluster(appDetails.getContextCluster())
+				.contextNamespace(appDetails.getContextNamespace())
+				.targetCluster(targetCluster)
+				.targetNamespace(targetNamespace)
+				.pluginName(appDetails.getPluginName())
+				.pluginVersion(appDetails.getPluginVersion())
+				.availablePackageIdentifier(appDetails.getPackageIdentifier())
+				.availablePackageVersion(appDetails.getPackageVersion()).build();
 	}
 
 }
