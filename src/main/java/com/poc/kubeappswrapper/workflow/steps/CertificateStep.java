@@ -1,29 +1,30 @@
 package com.poc.kubeappswrapper.workflow.steps;
 
-import com.poc.kubeappswrapper.model.CustomerDetails;
-import simplewfms.Task;
-
-import java.util.function.Supplier;
+import com.poc.kubeappswrapper.utility.Certutil;
+import com.poc.kubeappswrapper.workflow.Task;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import static com.poc.kubeappswrapper.utility.Certutil.generateSelfSignedCertificateSecret;
 
-public class CertificateStep extends Task<CertificateStep> {
+@Component
+public class CertificateStep extends Task {
 
-    private final Supplier<CustomerDetails> customerDetailsSupplier = registerExternalParameter("InputDataStep", "CustomerDetails");
+    @Getter
+    private Certutil.CertKeyPair certificateDetails;
 
-    public CertificateStep() {
-        super();
-        name = "Certificate";
-   }
+    @Autowired
+    private StartStep startStep;
+
 
     @Override
-    public void runThrows() throws Exception {
+    @SneakyThrows
+    public void run() {
         var name = String.format("O=%s, OU=%s, C=DE",
-                customerDetailsSupplier.get().getTenantName(),
-                customerDetailsSupplier.get().getBpnNumber());
-        setOutput(
-                "CERTIFICATE",
-                generateSelfSignedCertificateSecret(name, null, null)
-        );
+                startStep.getCustomerDetails().getTenantName(),
+                startStep.getCustomerDetails().getBpnNumber());
+        certificateDetails = generateSelfSignedCertificateSecret(name, null, null);
     }
 }

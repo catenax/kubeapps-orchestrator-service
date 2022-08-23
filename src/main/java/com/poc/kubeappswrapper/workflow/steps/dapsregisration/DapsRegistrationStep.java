@@ -1,27 +1,34 @@
 package com.poc.kubeappswrapper.workflow.steps.dapsregisration;
 
-import com.poc.kubeappswrapper.utility.Certutil;
+import com.poc.kubeappswrapper.workflow.Task;
+import com.poc.kubeappswrapper.workflow.steps.CertificateStep;
+import com.poc.kubeappswrapper.workflow.steps.StartStep;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
-import simplewfms.Task;
-
-import java.util.function.Supplier;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
-public class DapsRegistrationStep extends Task<DapsRegistrationStep> {
+@Component
+public class DapsRegistrationStep extends Task {
 
-    private final Supplier<Certutil.CertKeyPair> certificateSupplier = registerExternalParameter("Certificate", "CERTIFICATE");
-    private final Supplier<String> tokenSupplier = registerExternalParameter("InputData", "TOKEN");
-    private final Supplier<DapsRegServiceClient> dapsClientSupplier = registerExternalParameter("InputData", "DAPS_REG_CLIENT");
+    @Autowired
+    private StartStep startStep;
 
-    public DapsRegistrationStep() {
-        super();
-        name = "DAPS Registration";
-    }
+    @Autowired
+    private CertificateStep certificate;
+
+    @Autowired
+    private DapsRegServiceClient dapsRegServiceClient;
 
     @Override
-    public void runThrows() throws Exception {
-        var status = dapsClientSupplier.get().createClient(certificateSupplier.get().certificate(), tokenSupplier.get());
+    @SneakyThrows
+    public void run() {
+        var status = dapsRegServiceClient.createClient(
+                certificate.getCertificateDetails().certificate(),
+                startStep.getToken()
+        );
         if (status != CREATED) {
             throw new HttpClientErrorException(status);
         }
