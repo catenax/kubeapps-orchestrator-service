@@ -18,7 +18,7 @@ import java.security.cert.X509Certificate;
 @Service
 public class DapsRegServiceClient {
 
-    @Value("${dapsreg.url}")
+    @Value("${daps.url}")
     private String dapsRegistrationUrl;
 
     public HttpStatus createClient(X509Certificate certificate, String token) throws IOException {
