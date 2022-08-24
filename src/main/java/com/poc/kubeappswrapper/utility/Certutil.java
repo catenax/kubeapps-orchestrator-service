@@ -59,7 +59,7 @@ public class Certutil {
         return getSki(certificate).concat(":keyid:").concat(getAki(certificate));
     }
 
-    public static String getCertificate(X509Certificate certificate) throws IOException {
+    public static String getAsString(Object certificate) throws IOException {
         StringWriter sw = new StringWriter();
         try (JcaPEMWriter jpw = new JcaPEMWriter(sw)) {
             jpw.writeObject(certificate);

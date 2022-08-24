@@ -1,5 +1,6 @@
 package com.poc.kubeappswrapper.workflow;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Scope;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorCompletionService;
@@ -17,14 +19,15 @@ import java.util.concurrent.ExecutorCompletionService;
 @Scope("thread")
 public class Workflow implements Runnable{
 
-    private final List<Task> tasks;
+    @Getter
+    private final Map<String, Task> tasks;
     private final Executor executor;
 
     @Override
     @SneakyThrows
     public void run() {
         CompletionService<Task> cs = new ExecutorCompletionService<>(executor);
-        List<Task> ready = tasks.stream().filter(Task::isReadyToRun).toList();
+        List<Task> ready = tasks.values().stream().filter(Task::isReadyToRun).toList();
         int activeThreads = 0;
         while (!ready.isEmpty() || activeThreads > 0) {
             ready.stream().peek(task -> task.status = Status.ACTIVE).forEach(task -> cs.submit(task, task));
@@ -41,7 +44,7 @@ public class Workflow implements Runnable{
     @PostConstruct
     @SneakyThrows
     private void init() {
-        for (Task t: tasks) {
+        for (Task t: tasks.values()) {
             for (Field f: t.getClass().getDeclaredFields()) {
                 if (Task.class.isAssignableFrom(f.getType())) {
                     f.trySetAccessible();
@@ -54,7 +57,7 @@ public class Workflow implements Runnable{
     }
 
     public void reset() {
-        tasks.forEach(task -> task.status = Status.READY);
+        tasks.values().forEach(task -> task.status = Status.READY);
     }
 
 }

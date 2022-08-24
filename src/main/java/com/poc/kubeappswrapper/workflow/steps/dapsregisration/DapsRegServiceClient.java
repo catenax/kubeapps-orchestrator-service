@@ -27,7 +27,7 @@ public class DapsRegServiceClient {
         headers.setBearerAuth(token);
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("clientName", Certutil.getClientId(certificate));
-        body.add("file", new ByteArrayResource(Certutil.getCertificate(certificate).getBytes()));
+        body.add("file", new ByteArrayResource(Certutil.getAsString(certificate).getBytes()));
         HttpEntity<MultiValueMap<String, Object>> requestEntity
                 = new HttpEntity<>(body, headers);
 
