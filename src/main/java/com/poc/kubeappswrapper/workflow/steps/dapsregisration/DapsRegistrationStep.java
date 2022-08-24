@@ -5,12 +5,14 @@ import com.poc.kubeappswrapper.workflow.steps.CertificateStep;
 import com.poc.kubeappswrapper.workflow.steps.StartStep;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
 @Component
+@Scope("thread")
 public class DapsRegistrationStep extends Task {
 
     @Autowired

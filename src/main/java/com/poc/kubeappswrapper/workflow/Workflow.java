@@ -2,6 +2,7 @@ package com.poc.kubeappswrapper.workflow;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -13,6 +14,7 @@ import java.util.concurrent.ExecutorCompletionService;
 
 @Component
 @RequiredArgsConstructor
+@Scope("thread")
 public class Workflow implements Runnable{
 
     private final List<Task> tasks;

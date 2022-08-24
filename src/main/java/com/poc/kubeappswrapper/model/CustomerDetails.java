@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
+@Builder(access = lombok.AccessLevel.PUBLIC)
 public class CustomerDetails {
 
 	private String organizationName;
