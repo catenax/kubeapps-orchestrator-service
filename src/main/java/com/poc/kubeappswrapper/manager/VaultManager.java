@@ -14,8 +14,10 @@ import com.poc.kubeappswrapper.proxy.vault.VaultAppManageProxy;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class VaultManager {
 
@@ -48,14 +50,13 @@ public class VaultManager {
 		tenantVaultSecret.put("content", certificateManager.readPublicCertificate(tenantName));
 		uploadSecrete(tenantName, "certificate-private-key-pub", tenantVaultSecret);
 
-		Map<String, String> outputVaultSecret = new HashMap<>();
-		outputVaultSecret.put("daps-cert", tenantName + "daps-cert");
-		outputVaultSecret.put("certificate-private-key", tenantName + "certificate-private-key");
-		outputVaultSecret.put("vaulturl", valutURL);
-		outputVaultSecret.put("vaulttoken", vaulttoken);
-		outputVaultSecret.put("vaulttimeout", vaulttimeout);
+		inputData.put("daps-cert", tenantName + "daps-cert");
+		inputData.put("certificate-private-key", tenantName + "certificate-private-key");
+		inputData.put("vaulturl", valutURL);
+		inputData.put("vaulttoken", vaulttoken);
+		inputData.put("vaulttimeout", vaulttimeout);
 
-		return outputVaultSecret;
+		return inputData;
 	}
 
 	public void uploadSecrete(String tenantName, String secretePath, Map<String, String> tenantVaultSecret)
@@ -64,6 +65,7 @@ public class VaultManager {
 		String valutURLwithpath = valutURL + "/v1/secret/data/" + tenantName + "" + secretePath;
 		VaultSecreteRequest vaultSecreteRequest = VaultSecreteRequest.builder().data(tenantVaultSecret).build();
 		URI url = new URI(valutURLwithpath);
+		log.info(tenantName+"- Vault secrete created");
 		vaultManagerProxy.uploadKeyandValue(url, vaultSecreteRequest);
 
 	}

@@ -19,7 +19,6 @@ public class AppHandlerController {
 
 	@GetMapping("/get-all-install-packages")
 	public String getAllInstallPackages() {
-
 		return appHandlerService.getAllInstallPackages();
 	}
 

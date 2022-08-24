@@ -24,7 +24,7 @@ class VaultRequestInterceptor implements RequestInterceptor {
 	@Override
 	public void apply(RequestTemplate template) {
 		template.header("Authorization", "Bearer " + token);
-		log.info("Bearer authentication applied for vault");
+		log.debug("Bearer authentication applied for vault");
 	}
 
 }

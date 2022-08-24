@@ -1,7 +1,6 @@
 package com.poc.kubeappswrapper.manager;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -49,13 +48,13 @@ public class CertificateManager {
 		String authId = executeCommand("openssl x509 -in " + tenantName
 				+ "_cert.cert -noout -text| grep -A1 'Authority Key Identifier' | tail -n 1 ");
 
-		File f = new File(tenantName + "_cert.cert");
-		if (f.exists())
-			log.info("certificate exist after creation");
+//		File f = new File(tenantName + "_cert.cert");
+//		if (f.exists())
+//			log.info("certificate exist after creation");
 
 		Map<String, String> outputData = new HashMap<>();
 		outputData.put("dapsclientid", subId.trim() + ":" + authId.trim());
-
+		log.info(tenantName + "- certificate created");
 		return outputData;
 	}
 
