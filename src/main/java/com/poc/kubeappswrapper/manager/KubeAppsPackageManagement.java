@@ -14,8 +14,10 @@ import com.poc.kubeappswrapper.proxy.kubeapps.KubeAppManageProxy;
 import com.poc.kubeappswrapper.wrapper.model.CreatePackageRequest;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class KubeAppsPackageManagement {
 
@@ -26,17 +28,20 @@ public class KubeAppsPackageManagement {
 	private final KubeAppManageProxy kubeAppManageProxy;
 
 	public String createPackage(AppNameConstant app, String tenantName, Map<String, String> inputProperties) {
+		log.info(tenantName + "-" + app.name() + " Package creating");
 
 		CreatePackageRequest appWithStandardInfo = appFactory.getAppInputRequestwithrequireDetails(app,
 				inputProperties);
 
-		return kubeAppManageProxy.createPackage(
+		String createPackage = kubeAppManageProxy.createPackage(
 				createPackageMapper.getCreatePackageRequest(appWithStandardInfo, app.name(), tenantName));
+		log.info(tenantName + "-" + app.name() + " Package created");
+		return createPackage;
 
 	}
 
 	public String updatePackage(AppNameConstant app, String tenantName, Map<String, String> inputProperties) {
-
+		log.info(tenantName + "-" + app.name() + " Package updating");
 		CreatePackageRequest appWithStandardInfo = appFactory.getAppInputRequestwithrequireDetails(app,
 				inputProperties);
 
@@ -47,13 +52,15 @@ public class KubeAppsPackageManagement {
 
 		String appName = app.name().replaceAll("_", "");
 
-		return kubeAppManageProxy.updatePackage(plugin.getName(), plugin.getVersion(), context.getCluster(),
+		String updatePackage = kubeAppManageProxy.updatePackage(plugin.getName(), plugin.getVersion(), context.getCluster(),
 				context.getNamespace(), tenantName + appName.toLowerCase(), updateControlPlane);
+		log.info(tenantName + "-" + app.name() + " Package updated");
+		return updatePackage;
 
 	}
 
 	public String deletePackage(AppNameConstant app, String tenantName, Map<String, String> inputProperties) {
-
+		log.info(tenantName + "-" + app.name() + " Package deleting ");
 		CreatePackageRequest appWithStandardInfo = appFactory.getAppInputRequestwithrequireDetails(app,
 				inputProperties);
 
@@ -62,8 +69,10 @@ public class KubeAppsPackageManagement {
 		Plugin plugin = updateControlPlane.getAvailablePackageRef().getPlugin();
 		Context context = updateControlPlane.getAvailablePackageRef().getContext();
 		String appName = app.name().replaceAll("_", "");
-		return kubeAppManageProxy.deletePackage(plugin.getName(), plugin.getVersion(), context.getCluster(),
+		String deletePackage = kubeAppManageProxy.deletePackage(plugin.getName(), plugin.getVersion(), context.getCluster(),
 				context.getNamespace(), tenantName + appName.toLowerCase(), updateControlPlane);
+		log.info(tenantName + "-" + app.name() + " Package deleted ");
+		return deletePackage;
 
 	}
 

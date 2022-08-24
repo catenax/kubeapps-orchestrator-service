@@ -21,16 +21,14 @@ public class DFTFrontendManager {
 	public Map<String, String> managePackage(CustomerDetails customerDetails, AppActions action,
 			Map<String, String> inputData) {
 
-		String dsnName = inputData.get("dsnName");
-		
 		if (AppActions.ADD.equals(action))
 			appManagement.createPackage(DFT_FRONTEND, customerDetails.getTenantName(), inputData);
 		else
 			appManagement.updatePackage(DFT_FRONTEND, customerDetails.getTenantName(), inputData);
 
 		Map<String, String> outputData = new HashMap<>();
-		outputData.put("dftfrontendurl", "http://" + dsnName + ":8080/");
-
+		outputData.put("dftfrontendurl", inputData.get("dftfrontendurl"));
+		
 		return outputData;
 	}
 }

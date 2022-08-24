@@ -22,16 +22,14 @@ public class EDCControlplaneManager {
 			Map<String, String> inputData) {
 
 		String dsnName = inputData.get("dsnName");
-		String databasefor = inputData.get("database");
-		String packagefor = inputData.get("packagefor");
 
 		inputData.put("edcapi-key", "X-Api-Key");
 		inputData.put("edcapi-key-value", "password");
 		inputData.put("dataplanepublicurl",
 				"http://" + customerDetails.getTenantName() + "edcdataplane-edc-dataplane:8185/api/public");
 
-		String edcDb = "jdbc:postgresql://" + customerDetails.getTenantName() + packagefor
-				+ "postgresdb-postgresql:5432/" + databasefor;
+		String edcDb = "jdbc:postgresql://" + customerDetails.getTenantName() 
+				+ "edcpostgresdb-postgresql:5432/postgres" ;
 		inputData.put("edcdatabaseurl", edcDb);
 
 		if (AppActions.ADD.equals(action))

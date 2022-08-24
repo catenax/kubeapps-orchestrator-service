@@ -47,7 +47,7 @@ public class DAPsManager {
 		dapsAppManageProxy.deleteClient(connectorclientId, requestHeader);
 
 	}
-
+	
 	public Map<String, String> registerClientInDAPs(CustomerDetails customerDetails, Map<String, String> inputData) {
 
 		String tenantName = customerDetails.getOrganizationName();
@@ -86,11 +86,10 @@ public class DAPsManager {
 
 		dapsAppManageProxy.uploadClientCertificate(connectorclientId, dapsClientCertificate, requestHeader);
 
-		Map<String, String> inputConfiguration = new HashMap<>();
-		inputConfiguration.put("dapsurl", dapsurl);
-		inputConfiguration.put("dapsjsksurl", dapsjsksurl);
+		inputData.put("dapsurl", dapsurl);
+		inputData.put("dapsjsksurl", dapsjsksurl);
 
-		return inputConfiguration;
+		return inputData;
 	}
 
 }

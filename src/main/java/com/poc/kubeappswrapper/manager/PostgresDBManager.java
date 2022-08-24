@@ -17,22 +17,18 @@ public class PostgresDBManager {
 
 	private final KubeAppsPackageManagement appManagement;
 
-	public Map<String, String> managePackage(CustomerDetails customerDetails, AppActions action,
+	public Map<String, String> managePackage(CustomerDetails customerDetails, AppActions action, String packagefor,
 			Map<String, String> inputData) {
-
-		String packagefor = inputData.get("packagefor");
 
 		inputData.put("postgresPassword", "admin@123");
 		inputData.put("username", "admin");
 		inputData.put("password", "admin@123");
-		inputData.put("database", customerDetails.getTenantName() + "_" + packagefor);
+		inputData.put("database", "postgres");
 
 		if (AppActions.ADD.equals(action))
-			appManagement.createPackage(POSTGRES_DB, customerDetails.getTenantName() + "" + packagefor,
-					inputData);
+			appManagement.createPackage(POSTGRES_DB, customerDetails.getTenantName() + "" + packagefor, inputData);
 		else
-			appManagement.updatePackage(POSTGRES_DB, customerDetails.getTenantName() + "" + packagefor,
-					inputData);
+			appManagement.updatePackage(POSTGRES_DB, customerDetails.getTenantName() + "" + packagefor, inputData);
 
 		return inputData;
 	}
