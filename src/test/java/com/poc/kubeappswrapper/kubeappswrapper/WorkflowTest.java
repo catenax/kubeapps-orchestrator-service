@@ -8,6 +8,7 @@ import com.poc.kubeappswrapper.utility.Certutil;
 import com.poc.kubeappswrapper.workflow.Workflow;
 import com.poc.kubeappswrapper.workflow.steps.CertificateStep;
 import com.poc.kubeappswrapper.workflow.steps.dapsregisration.DapsRegServiceClient;
+import com.poc.kubeappswrapper.workflow.steps.vaultupload.VaultUploadStep;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -44,14 +45,22 @@ public class WorkflowTest {
     VaultAppManageProxy vaultAppManageProxy;
     @Value("${vault.url}")
     private String valutURL;
+    @Value("${vault.token}")
+    private String vaulttoken;
+    @Value("${vault.timeout}")
+    private String vaulttimeout;
 
 
     @Test
     public void workflowTest() throws IOException, ExecutionException, InterruptedException {
+        String TENANT_NAME = "Test-Tenant";
+        String BPN_NUMBER = "BPN123456";
+
+
         Mockito.when(dapsRegServiceClient.createClient(any(), any())).thenReturn(HttpStatus.CREATED);
         var customerDetails = CustomerDetails.builder()
-                 .bpnNumber("BPN123456")
-                 .tenantName("Test-Tenant")
+                 .bpnNumber(BPN_NUMBER)
+                 .tenantName(TENANT_NAME)
                  .build();
         Workflow w = workflowRunner.runWorkflow(customerDetails, "token").completable().get();
         var certificateStep = ((CertificateStep)w.getTasks().get("certificateStep"));
@@ -75,8 +84,19 @@ public class WorkflowTest {
         assertThat(vaultUploadPayload.get(1)).isEqualTo(VaultSecreteRequest.builder().data(Map.of("content", Certutil.getAsString(keyPair.getPrivate()))).build());
         assertThat(vaultUploadPayload.get(2)).isEqualTo(VaultSecreteRequest.builder().data(Map.of("content", Certutil.getAsString(keyPair.getPrivate()))).build());
         var vaultUploadUri = captor1.getAllValues();
-        assertThat(vaultUploadUri.get(0)).isEqualTo(URI.create(valutURL+ "/v1/secret/data/" + "Test-Tenant" + "daps-cert"));
-        assertThat(vaultUploadUri.get(1)).isEqualTo(URI.create(valutURL+ "/v1/secret/data/" + "Test-Tenant" + "certificate-private-key"));
-        assertThat(vaultUploadUri.get(2)).isEqualTo(URI.create(valutURL+ "/v1/secret/data/" + "Test-Tenant" + "certificate-private-key-pub"));
+        assertThat(vaultUploadUri.get(0)).isEqualTo(URI.create(valutURL+ "/v1/secret/data/" + TENANT_NAME + "daps-cert"));
+        assertThat(vaultUploadUri.get(1)).isEqualTo(URI.create(valutURL+ "/v1/secret/data/" + TENANT_NAME + "certificate-private-key"));
+        assertThat(vaultUploadUri.get(2)).isEqualTo(URI.create(valutURL+ "/v1/secret/data/" + TENANT_NAME + "certificate-private-key-pub"));
+        var vaultStep = ((VaultUploadStep)w.getTasks().get("vaultUploadStep"));
+        assertThat(vaultStep.getConfigParams())
+                .isEqualTo(
+                        Map.of(
+                        "daps-cert", TENANT_NAME + "daps-cert",
+                        "certificate-private-key", TENANT_NAME + "certificate-private-key",
+                        "vaulturl", valutURL,
+                        "vaulttoken", vaulttoken,
+                        "vaulttimeout", vaulttimeout
+                        )
+                );
     }
 }

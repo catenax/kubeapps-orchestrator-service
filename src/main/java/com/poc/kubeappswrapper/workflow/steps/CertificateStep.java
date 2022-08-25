@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.poc.kubeappswrapper.utility.Certutil.generateSelfSignedCertificateSecret;
 
 @Component
@@ -20,6 +23,13 @@ public class CertificateStep extends Task {
     @Autowired
     private StartStep startStep;
 
+    public String getClientId() {
+        return Certutil.getClientId(certificateDetails.certificate());
+    }
+
+    public Map<String, String> getConfigParams() {
+        return Map.of("dapsclientid", getClientId());
+    }
 
     @Override
     @SneakyThrows

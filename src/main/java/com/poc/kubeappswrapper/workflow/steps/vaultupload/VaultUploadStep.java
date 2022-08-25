@@ -44,18 +44,12 @@ public class VaultUploadStep extends Task {
     VaultAppManageProxy vaultManagerProxy;
 
     @Getter
-    private Map<String, String> outputVaultSecret;
+    private Map<String, String> configParams;
     @Override
     @SneakyThrows
     public void run() {
 
         String tenantName = startStep.getCustomerDetails().getTenantName();
-        Map<String, String> inputConfiguration = new HashMap<>();
-        inputConfiguration.put("dsnName", "localhost");
-        inputConfiguration.put("targetCluster", targetCluster);
-        inputConfiguration.put("targetNamespace", targetNamespace);
-        inputConfiguration.put("dapsclientid", Certutil.getClientId(certificateStep.getCertificateDetails().certificate()));
-
 
         uploadSecrete(tenantName, "daps-cert",
                 Map.of("content", Certutil.getAsString(certificateStep.getCertificateDetails().certificate()))
@@ -68,7 +62,7 @@ public class VaultUploadStep extends Task {
                 Map.of("content", Certutil.getAsString(certificateStep.getCertificateDetails().keyPair().getPrivate()))
         );
 
-        outputVaultSecret = Map.of(
+        configParams = Map.of(
                 "daps-cert", tenantName + "daps-cert",
                 "certificate-private-key", tenantName + "certificate-private-key",
                 "vaulturl", valutURL,
