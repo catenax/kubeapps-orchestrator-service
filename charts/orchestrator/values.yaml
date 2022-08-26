@@ -70,6 +70,10 @@ readinessProbe:
   timeoutSeconds: 1
 
 mysql:
+  auth:
+        username: root
+        password: root@123
+        database: mysqldb
   enabled: true
 
 
