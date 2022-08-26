@@ -1,6 +1,6 @@
 FROM openjdk:18
 
-RUN apk update && apk add maven && apk add --upgrade maven
+#RUN apk update && apk add maven && apk add --upgrade maven
 
 WORKDIR /app
 
