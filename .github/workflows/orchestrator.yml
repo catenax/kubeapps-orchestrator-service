@@ -24,7 +24,7 @@ jobs:
         
       - name: Build
         run: |
-            cd orchestrator && mvn -B package
+            mvn -B package
       
       - name: Extract Metadata (tags, labels) for Docker
         id: meta
@@ -43,7 +43,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
-          context: ./orchestrator/
+          #context: ./orchestrator/
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}  
