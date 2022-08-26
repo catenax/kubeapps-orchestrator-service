@@ -34,23 +34,17 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: MANUFACTURERID
-              value: "catenaX"
-            - name: SPRING_DATASOURCE_URL
+            - name: DB_user
+              value: root
+            - name: DB_password
               valueFrom:
                 secretKeyRef:
-                  name: mysql-secrets
-                  key: dbUrl
-            - name: SPRING_DATASOURCE_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-secrets
-                  key: dbUser
-            - name: SPRING_DATASOURCE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-secrets
-                  key: dbPassword
+                  name: {{ .Release.Name }}-mysql
+                  key: password
+            - name: DB_dbname
+              value: mysqldb
+            - name: DB_host
+              value: {{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc
             - name: VAULT_URL
               valueFrom:
                 secretKeyRef:
