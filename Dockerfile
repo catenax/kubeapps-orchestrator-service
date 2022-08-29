@@ -10,8 +10,8 @@ RUN mvn clean install -Dmaven.test.skip=true
 
 WORKDIR target
 
-RUN mv orchestrator-service-0.0.1-SNAPSHOT.jar orchestrator-service.jar 
+#RUN mv kubeapps-wrapper-0.0.1.jar orchestrator-service.jar 
 
-ENTRYPOINT ["java","-jar","orchestrator-service.jar"]
+ENTRYPOINT ["java","-jar","kubeapps-wrapper-0.0.1.jar"]
 
 EXPOSE 9999
