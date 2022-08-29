@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import com.poc.kubeappswrapper.constant.AppActions;
@@ -17,7 +19,9 @@ import com.poc.kubeappswrapper.model.CustomerDetails;
 import com.poc.kubeappswrapper.utility.PasswordGenerator;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EDCControlplaneManager {
@@ -25,15 +29,17 @@ public class EDCControlplaneManager {
 	private final KubeAppsPackageManagement appManagement;
 	private final AutoSetupTriggerManager autoSetupTriggerManager;
 
+	private int counter=0;
+	
+	@Retryable(value = {
+			ServiceException.class }, maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.backOffDelay}"))
 	public Map<String, String> managePackage(CustomerDetails customerDetails, AppActions action,
 			Map<String, String> inputData, AutoSetupTriggerEntry triger) {
 
 		Map<String, String> outputData = new HashMap<>();
 		AutoSetupTriggerDetails autoSetupTriggerDetails = AutoSetupTriggerDetails.builder()
-				.id(UUID.randomUUID().toString())
-				.step(EDC_CONTROLPLANE.name())
-				.triggerIdforinsert(triger.getTriggerId())
-				.build();
+				.id(UUID.randomUUID().toString()).step(EDC_CONTROLPLANE.name())
+				.triggerIdforinsert(triger.getTriggerId()).build();
 		try {
 
 			String generateRandomPassword = PasswordGenerator.generateRandomPassword(50);
@@ -62,10 +68,13 @@ public class EDCControlplaneManager {
 			outputData.put("edcapi-key", "X-Api-Key");
 			outputData.put("edcapi-key-value", generateRandomPassword);
 
-
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
 
 		} catch (Exception ex) {
+			
+			counter++;
+			log.info("EDCControlplaneMaanger failed retry attempt: "+counter);
+			
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.FAILED.name());
 			autoSetupTriggerDetails.setRemark(ex.getMessage());
 			throw new ServiceException("EDCControlplaneMaanger Oops! We have an exception - " + ex.getMessage());

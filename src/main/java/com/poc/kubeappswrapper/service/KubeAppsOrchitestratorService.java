@@ -43,13 +43,13 @@ public class KubeAppsOrchitestratorService {
 	private final EDCConnectorWorkFlow edcConnectorWorkFlow;
 	private final DFTAppWorkFlow dftWorkFlow;
 
-	@Value("${targetCluster}")
+	@Value("${target.cluster}")
 	private String targetCluster;
 
-	@Value("${targetNamespace}")
+	@Value("${target.namespace}")
 	private String targetNamespace;
 
-	@Value("${dnsName}")
+	@Value("${dns.name}")
 	private String dnsName;
 
 	public String getAllInstallPackages() {

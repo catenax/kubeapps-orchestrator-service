@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import com.poc.kubeappswrapper.constant.TriggerStatusEnum;
@@ -32,8 +34,11 @@ public class CertificateManager {
 	private String opensslconfile;
 
 	private final AutoSetupTriggerManager autoSetupTriggerManager;
+	
+	private int counter;
 
 	@SneakyThrows
+	@Retryable(value = { ServiceException.class }, maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.backOffDelay}"))
 	public Map<String, String> createCertificate(CustomerDetails customerDetails, Map<String, String> inputData,
 			AutoSetupTriggerEntry triger) {
 
@@ -67,6 +72,9 @@ public class CertificateManager {
 
 		} catch (Exception ex) {
 
+			counter++;
+			log.info("CertificateManager failed retry attempt: "+counter);
+			
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.FAILED.name());
 			autoSetupTriggerDetails.setRemark(ex.getMessage());
 			throw new ServiceException("CertificateManager Oops! We have an exception - " + ex.getMessage());
