@@ -7,7 +7,7 @@ image:
   pullPolicy: Always
   tag: "main"
 imagePullSecrets: []
-containerPort: 9999
+portContainer: 9999
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -26,7 +26,7 @@ probe:
   endpoint: "/api/ping"
 service:
   type: ClusterIP
-  port: 80
+  port: 9999
 ingress:
   className: nginx
   annotations:
