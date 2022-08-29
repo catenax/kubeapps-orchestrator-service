@@ -1,4 +1,4 @@
-FROM openjdk:18
+FROM openjdk:19-jdk-alpine3.16
 
 RUN apk update && apk add maven && apk add --upgrade maven
 
