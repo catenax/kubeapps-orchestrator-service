@@ -94,27 +94,7 @@ spec:
                   name: kubeapps-secrets
                   key: kubeappsToken
 
-          livenessProbe:
-            httpGet:
-              path: {{ .Values.probe.endpoint }}
-              port: {{ .Values.service.port }}
-              scheme: HTTP
-            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
-            successThreshold: {{ .Values.livenessProbe.successThreshold }}
-            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
-          # @url: https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes
-          readinessProbe:
-            httpGet:
-              path: {{ .Values.probe.endpoint }}
-              port: {{ .Values.service.port }}
-              scheme: HTTP
-            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
-            successThreshold: {{ .Values.readinessProbe.successThreshold }}
-            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          
 
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
