@@ -1,0 +1,133 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "orchestrator.fullname" . }}
+  labels:
+    {{- include "orchestrator.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "orchestrator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "orchestrator.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      automountServiceAccountToken: false
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: DB_user
+              value: root
+            - name: DB_password
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-mysql
+                  key: password
+            - name: DB_dbname
+              value: mysqldb
+            - name: DB_host
+              value: {{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc
+            - name: VAULT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: vault-secrets
+                  key: vaultUrl
+            - name: VAULT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vault-secrets
+                  key: vaultToken
+            - name: DAPS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: daps-secrets
+                  key: dapsUrl
+            - name: DAPS_TOKEN_URL
+              valueFrom:
+                secretKeyRef:
+                  name: daps-secrets
+                  key: dapsTokenUrl
+            - name: DAPS_JSK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: daps-secrets
+                  key: dapsJskUrl
+            - name: DAPS_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: daps-secrets
+                  key: dapsClientID
+            - name: DAPS_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: daps-secrets
+                  key: dapsClientSecret
+            - name: KUBEAPPS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: kubeapps-secrets
+                  key: kubeappsUrl
+            - name: KUBEAPPS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: kubeapps-secrets
+                  key: kubeappsToken
+
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probe.endpoint }}
+              port: {{ .Values.service.port }}
+              scheme: HTTP
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          # @url: https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probe.endpoint }}
+              port: {{ .Values.service.port }}
+              scheme: HTTP
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
