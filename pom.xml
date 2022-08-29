@@ -36,18 +36,18 @@
 		</dependency>
 
 		<dependency>
-		    <groupId>mysql</groupId>
-		    <artifactId>mysql-connector-java</artifactId>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
-			
+
 		<dependency>
-		    <groupId>com.github.json-template</groupId>
-		    <artifactId>jsontemplate</artifactId>
-		    <version>0.2.1</version>
+			<groupId>com.github.json-template</groupId>
+			<artifactId>jsontemplate</artifactId>
+			<version>0.2.1</version>
 		</dependency>
-			
-			
-				
+
+
+
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
@@ -68,6 +68,14 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-mysql</artifactId>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>

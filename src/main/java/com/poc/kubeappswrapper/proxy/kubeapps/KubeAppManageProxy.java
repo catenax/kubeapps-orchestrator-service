@@ -18,9 +18,13 @@ public interface KubeAppManageProxy {
 	String getAllInstallPackages();
 
 	@PostMapping(path = "/apis/plugins/resources/v1alpha1/c/{clusterName}/ns")
-	String createNamespace(@PathVariable("clusterName") String clusterName,@RequestParam("context.namespace") String namespace);
-	
-	
+	String createNamespace(@PathVariable("clusterName") String clusterName,
+			@RequestParam("context.namespace") String namespace);
+
+	@GetMapping(path = "/apis/plugins/resources/v1alpha1/c/{clusterName}/ns/{context.namespace}")
+	String getNamespaces(@PathVariable("clusterName") String clusterName,
+			@PathVariable("context.namespace") String namespace);
+
 	@PostMapping(path = "/apis/core/packages/v1alpha1/installedpackages")
 	String createPackage(@RequestBody CreateInstalledPackageRequest createInstalledPackageRequest);
 

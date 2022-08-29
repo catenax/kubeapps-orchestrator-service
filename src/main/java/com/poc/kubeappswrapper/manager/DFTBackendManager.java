@@ -3,11 +3,17 @@ package com.poc.kubeappswrapper.manager;
 import static com.poc.kubeappswrapper.constant.AppNameConstant.DFT_BACKEND;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
 import com.poc.kubeappswrapper.constant.AppActions;
+import com.poc.kubeappswrapper.constant.TriggerStatusEnum;
+import com.poc.kubeappswrapper.entity.AutoSetupTriggerDetails;
+import com.poc.kubeappswrapper.entity.AutoSetupTriggerEntry;
+import com.poc.kubeappswrapper.exception.ServiceException;
 import com.poc.kubeappswrapper.model.CustomerDetails;
+import com.poc.kubeappswrapper.utility.PasswordGenerator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,33 +22,52 @@ import lombok.RequiredArgsConstructor;
 public class DFTBackendManager {
 
 	private final KubeAppsPackageManagement appManagement;
+	private final AutoSetupTriggerManager autoSetupTriggerManager;
 
 	private final PortalIntegrationManager portalIntegrationManager;
 
-	public Map<String, String> managePackage(CustomerDetails customerDetails, AppActions action, 
-			Map<String, String> inputData) {
+	public Map<String, String> managePackage(CustomerDetails customerDetails, AppActions action,
+			Map<String, String> inputData, AutoSetupTriggerEntry triger) {
 
-		String dsnName = inputData.get("dsnName");
+		AutoSetupTriggerDetails autoSetupTriggerDetails = AutoSetupTriggerDetails.builder()
+				.id(UUID.randomUUID().toString())
+				.step(DFT_BACKEND.name())
+				.triggerIdforinsert(triger.getTriggerId())
+				.build();
+		try {
+			String dnsName = inputData.get("dnsName");
 
-		inputData.put("manufacturerId", customerDetails.getBpnNumber());
+			inputData.put("manufacturerId", customerDetails.getBpnNumber());
 
-		inputData.put("dftfrontendurl", "http://" + dsnName + ":8080/");
-		Map<String, String> portalDetails = portalIntegrationManager.getDigitalandKeyCloackDetails(customerDetails,
-				inputData);
-		inputData.putAll(portalDetails);
+			inputData.put("dftfrontendurl",
+					"http://" + dnsName + "/" + customerDetails.getTenantName() + "dftfrontend");
+			Map<String, String> portalDetails = portalIntegrationManager.getDigitalandKeyCloackDetails(customerDetails,
+					inputData);
+			inputData.putAll(portalDetails);
 
-		String dftDb = "jdbc:postgresql://" + customerDetails.getTenantName()  
-				+ "dftpostgresdb-postgresql:5432/postgres";
-		inputData.put("dftdatabaseurl", dftDb);
+			String dftDb = "jdbc:postgresql://" + customerDetails.getTenantName()
+					+ "dftpostgresdb-postgresql:5432/postgres";
+			inputData.put("dftdatabaseurl", dftDb);
 
-		if (AppActions.ADD.equals(action))
-			appManagement.createPackage(DFT_BACKEND, customerDetails.getTenantName(), inputData);
-		else
-			appManagement.updatePackage(DFT_BACKEND, customerDetails.getTenantName(), inputData);
+			if (AppActions.CREATE.equals(action))
+				appManagement.createPackage(DFT_BACKEND, customerDetails.getTenantName(), inputData);
+			else
+				appManagement.updatePackage(DFT_BACKEND, customerDetails.getTenantName(), inputData);
 
-		inputData.put("dftbackendurl", "http://" + dsnName + "dftbackend:8080");
-		inputData.put("dftbackendapikey", "ec8de3db3504b3b38a09536236ebbac2bd55f253bfcff43e2e6cf43248e110fc");
+			String backendurl = "http://" + dnsName + "/" + customerDetails.getTenantName() + "dftbackend";
 
+			inputData.put("dftbackendurl", backendurl);
+			inputData.put("dftbackendapikey", PasswordGenerator.generateRandomPassword(60));
+
+			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
+
+		} catch (Exception ex) {
+			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.FAILED.name());
+			autoSetupTriggerDetails.setRemark(ex.getMessage());
+			throw new ServiceException("DftBackendManager Oops! We have an exception - " + ex.getMessage());
+		} finally {
+			autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails);
+		}
 		return inputData;
 	}
 }
