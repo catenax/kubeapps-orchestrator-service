@@ -33,6 +33,8 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+          - containerPort: {{ .Values.portContainer }
           env:
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
@@ -92,10 +94,6 @@ spec:
                   name: kubeapps-secrets
                   key: kubeappsToken
 
-          ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
           livenessProbe:
             httpGet:
               path: {{ .Values.probe.endpoint }}
