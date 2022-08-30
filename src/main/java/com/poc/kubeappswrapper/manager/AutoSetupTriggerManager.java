@@ -3,6 +3,8 @@ package com.poc.kubeappswrapper.manager;
 import static com.poc.kubeappswrapper.constant.TriggerStatusEnum.FAILED;
 import static com.poc.kubeappswrapper.constant.TriggerStatusEnum.INPROGRESS;
 
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,9 +30,18 @@ public class AutoSetupTriggerManager {
 
 	public AutoSetupTriggerEntry createTrigger(CustomerDetails customerDetails, AppActions action, String triggerId) {
 		LocalDateTime now = LocalDateTime.now();
+		String json = "";
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			json = mapper.writeValueAsString(customerDetails);
+		} catch (Exception e) {
+
+		}
 
 		AutoSetupTriggerEntry autoSetupTriggerEntry = AutoSetupTriggerEntry.builder()
 				.organizationName(customerDetails.getOrganizationName())
+				.bpnNumber(customerDetails.getBpnNumber())
+				.autosetupRequest(json)
 				.triggerId(triggerId)
 				.triggerType(action.name())
 				.createdTimestamp(now.toString())

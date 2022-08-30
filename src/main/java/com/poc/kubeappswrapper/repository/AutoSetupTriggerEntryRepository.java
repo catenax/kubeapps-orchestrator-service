@@ -8,4 +8,5 @@ public interface AutoSetupTriggerEntryRepository extends JpaRepository<AutoSetup
 
 	public AutoSetupTriggerEntry findAllByTriggerId(String triggerId);
 
+	public AutoSetupTriggerEntry findTop1ByBpnNumberAndTriggerTypeAndStatusOrderByCreatedTimestampDesc(String bpnNumber, String triggerType, String status);
 }

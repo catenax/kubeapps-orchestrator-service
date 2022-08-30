@@ -38,7 +38,6 @@ public class PostgresDBManager {
 				.id(UUID.randomUUID().toString()).step(POSTGRES_DB.name() + "" + packagefor)
 				.triggerIdforinsert(triger.getTriggerId()).build();
 		try {
-
 			inputData.put("postgresPassword", "admin@123");
 			inputData.put("username", "admin");
 			inputData.put("password", "admin@123");
