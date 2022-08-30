@@ -1,6 +1,7 @@
 package com.poc.kubeappswrapper.service;
 
-import static com.poc.kubeappswrapper.constant.AppActions.ADD;
+import static com.poc.kubeappswrapper.constant.AppActions.CREATE;
+import static com.poc.kubeappswrapper.constant.AppActions.DELETE;
 import static com.poc.kubeappswrapper.constant.AppActions.UPDATE;
 import static com.poc.kubeappswrapper.constant.AppNameConstant.DFT_BACKEND;
 import static com.poc.kubeappswrapper.constant.AppNameConstant.DFT_FRONTEND;
@@ -8,47 +9,48 @@ import static com.poc.kubeappswrapper.constant.AppNameConstant.EDC_CONTROLPLANE;
 import static com.poc.kubeappswrapper.constant.AppNameConstant.EDC_DATAPLANE;
 import static com.poc.kubeappswrapper.constant.AppNameConstant.POSTGRES_DB;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.poc.kubeappswrapper.constant.AppActions;
+import com.poc.kubeappswrapper.constant.TriggerStatusEnum;
 import com.poc.kubeappswrapper.entity.AutoSetupTriggerEntry;
-import com.poc.kubeappswrapper.manager.CertificateManager;
-import com.poc.kubeappswrapper.manager.DAPsManager;
-import com.poc.kubeappswrapper.manager.DFTBackendManager;
-import com.poc.kubeappswrapper.manager.DFTFrontendManager;
-import com.poc.kubeappswrapper.manager.EDCControlplaneManager;
-import com.poc.kubeappswrapper.manager.EDCDataplaneManager;
+import com.poc.kubeappswrapper.manager.AutoSetupTriggerManager;
 import com.poc.kubeappswrapper.manager.KubeAppsPackageManagement;
-import com.poc.kubeappswrapper.manager.PostgresDBManager;
-import com.poc.kubeappswrapper.manager.VaultManager;
 import com.poc.kubeappswrapper.model.CustomerDetails;
 import com.poc.kubeappswrapper.proxy.kubeapps.KubeAppManageProxy;
-import com.poc.kubeappswrapper.repository.AutoSetupTriggerEntryRepository;
 
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class KubeAppsOrchitestratorService {
 
 	private final KubeAppManageProxy kubeAppManageProxy;
 	private final KubeAppsPackageManagement appManagement;
+	private final AutoSetupTriggerManager autoSetupTriggerManager;
 
-	private final CertificateManager certificateManager;
-	private final DAPsManager dapsManager;
-	private final VaultManager vaultManager;
-	private final PostgresDBManager postgresManager;
-	private final EDCControlplaneManager edcControlplaneManager;
-	private final EDCDataplaneManager edcDataplaneManager;
-	private final DFTBackendManager dftBackendManager;
-	private final DFTFrontendManager dftFrontendManager;
+	private final EDCConnectorWorkFlow edcConnectorWorkFlow;
+	private final DFTAppWorkFlow dftWorkFlow;
 
-	private AutoSetupTriggerEntryRepository autoSetupTriggerEntryRepository;
+	@Value("${target.cluster}")
+	private String targetCluster;
+
+	@Value("${target.namespace}")
+	private String targetNamespace;
+
+	@Value("${dns.name}")
+	private String dnsName;
 
 	public String getAllInstallPackages() {
 		return kubeAppManageProxy.getAllInstallPackages();
@@ -56,147 +58,128 @@ public class KubeAppsOrchitestratorService {
 
 	public String createPackage(CustomerDetails customerDetails) {
 
-		customerDetails.setTenantName(Optional.ofNullable(customerDetails.getOrganizationName()).map(orgname -> {
-			orgname = orgname.replaceAll("[^a-zA-Z0-9]", "");
-			return orgname.length() < 6 ? orgname : orgname.substring(0, 6);
-		}).orElseThrow(() -> new RuntimeException("Organization name should not be null")));
+		String targetNamespace = getTenantName(customerDetails);
 
-		AutoSetupTriggerEntry autoSetupTriggerEntry=AutoSetupTriggerEntry.builder()
-				.autosetupTenantName(customerDetails.getTenantName()).build();
-		//autoSetupTriggerEntryRepository.save(autoSetupTriggerEntry);
-		
-		String targetCluster = "default";
-		//String targetNamespace = customerDetails.getTenantName();
-		String targetNamespace = "kubeapps";
-		
-		Map<String, String> inputConfiguration = new HashMap<>();
-		inputConfiguration.put("dsnName", "localhost");
+		Map<String, String> inputConfiguration = new ConcurrentHashMap<>();
+		inputConfiguration.put("dnsName", dnsName);
 		inputConfiguration.put("targetCluster", targetCluster);
 		inputConfiguration.put("targetNamespace", targetNamespace);
 
-		//kubeAppManageProxy.createNamespace(targetCluster, targetNamespace);
+		String triggerId = UUID.randomUUID().toString();
 
-		Map<String, String> certificateConfiguration = certificateManager.createCertificate(customerDetails,
-				inputConfiguration);
-		inputConfiguration.putAll(certificateConfiguration);
+		Runnable runnable = () -> {
+			String namespaces = kubeAppManageProxy.getNamespaces(targetCluster, targetNamespace);
+			if (!namespaces.contains("true"))
+				kubeAppManageProxy.createNamespace(targetCluster, targetNamespace);
 
-		Map<String, String> dapsConfiguration = dapsManager.registerClientInDAPs(customerDetails,
-				certificateConfiguration);
-		inputConfiguration.putAll(dapsConfiguration);
+			proceessTrigger(customerDetails, targetNamespace, CREATE, triggerId, inputConfiguration);
+		};
 
-		Map<String, String> tenantKeyinVault = vaultManager.uploadKeyandValues(customerDetails, inputConfiguration);
-		inputConfiguration.putAll(tenantKeyinVault);
+		new Thread(runnable).start();
 
-		inputConfiguration.put("packagefor", "edc");
-		Map<String, String> edcpostgresConfiguration = postgresManager.managePackage(customerDetails, ADD,
-				inputConfiguration);
-		inputConfiguration.putAll(edcpostgresConfiguration);
-
-		Map<String, String> edcControlplaneConfiguration = edcControlplaneManager.managePackage(customerDetails, ADD,
-				inputConfiguration);
-		inputConfiguration.putAll(edcControlplaneConfiguration);
-
-		Map<String, String> edcDataplaneConfiguration = edcDataplaneManager.managePackage(customerDetails, ADD,
-				inputConfiguration);
-		inputConfiguration.putAll(edcDataplaneConfiguration);
-
-		inputConfiguration.put("packagefor", "dft");
-		Map<String, String> dftpostgresConfiguration = postgresManager.managePackage(customerDetails, ADD,
-				inputConfiguration);
-		inputConfiguration.putAll(dftpostgresConfiguration);
-
-		Map<String, String> dftBackendConfiguration = dftBackendManager.managePackage(customerDetails, ADD,
-				inputConfiguration);
-		inputConfiguration.putAll(dftBackendConfiguration);
-
-		Map<String, String> dftFrontendConfiguration = dftFrontendManager.managePackage(customerDetails, ADD,
-				inputConfiguration);
-		inputConfiguration.putAll(dftFrontendConfiguration);
-
-		return "AppInstall";
+		return triggerId;
 	}
 
 	public String updatePackage(CustomerDetails customerDetails) {
 
-		customerDetails.setTenantName(Optional.ofNullable(customerDetails.getOrganizationName()).map(orgname -> {
-			orgname = orgname.replaceAll("[^a-zA-Z0-9]", "");
-			return orgname.length() < 6 ? orgname : orgname.substring(0, 6);
-		}).orElseThrow(() -> new RuntimeException("Organization name should not be null")));
+		String targetNamespace = getTenantName(customerDetails);;
 
-		String targetCluster = "default";
-		// String targetNamespace = customerDetails.getTenantName();
-		String targetNamespace = "kubeapps";
-
-		Map<String, String> inputConfiguration = new HashMap<>();
-		inputConfiguration.put("dsnName", "localhost");
+		Map<String, String> inputConfiguration = new ConcurrentHashMap<>();
+		inputConfiguration.put("dnsName", dnsName);
 		inputConfiguration.put("targetCluster", targetCluster);
 		inputConfiguration.put("targetNamespace", targetNamespace);
+		String triggerId = UUID.randomUUID().toString();
 
-		Map<String, String> certificateConfiguration = certificateManager.createCertificate(customerDetails,
+		Runnable runnable = () -> proceessTrigger(customerDetails, targetNamespace, UPDATE, triggerId,
 				inputConfiguration);
-		inputConfiguration.putAll(certificateConfiguration);
 
-		Map<String, String> dapsConfiguration = dapsManager.registerClientInDAPs(customerDetails,
-				certificateConfiguration);
-		inputConfiguration.putAll(dapsConfiguration);
+		new Thread(runnable).start();
 
-		Map<String, String> tenantKeyinVault = vaultManager.uploadKeyandValues(customerDetails, inputConfiguration);
-		inputConfiguration.putAll(tenantKeyinVault);
+		return triggerId;
+	}
 
-		inputConfiguration.put("packagefor", "edc");
-		Map<String, String> edcpostgresConfiguration = postgresManager.managePackage(customerDetails, UPDATE,
-				inputConfiguration);
-		inputConfiguration.putAll(edcpostgresConfiguration);
+	private void proceessTrigger(CustomerDetails customerDetails, String targetNamespace, AppActions action,
+			String triggerId, Map<String, String> inputConfiguration) {
+		
+		AutoSetupTriggerEntry createTrigger = null;
+		
+		try {
+			createTrigger = autoSetupTriggerManager.createTrigger(customerDetails, action, triggerId);
 
-		Map<String, String> edcControlplaneConfiguration = edcControlplaneManager.managePackage(customerDetails,
-				AppActions.UPDATE, inputConfiguration);
-		inputConfiguration.putAll(edcControlplaneConfiguration);
+			Map<String, String> edcOutput = edcConnectorWorkFlow.getWorkFlow(customerDetails, action,
+					inputConfiguration, createTrigger);
 
-		Map<String, String> edcDataplaneConfiguration = edcDataplaneManager.managePackage(customerDetails,
-				AppActions.UPDATE, inputConfiguration);
-		inputConfiguration.putAll(edcDataplaneConfiguration);
+			inputConfiguration.putAll(edcOutput);
 
-		inputConfiguration.put("packagefor", "dft");
-		Map<String, String> dftpostgresConfiguration = postgresManager.managePackage(customerDetails, AppActions.UPDATE,
-				inputConfiguration);
-		inputConfiguration.putAll(dftpostgresConfiguration);
+			Map<String, String> map = dftWorkFlow.getWorkFlow(customerDetails, action, inputConfiguration,
+					createTrigger);
+			Map<String, String> resultMap = new ConcurrentHashMap<>();
+			resultMap.put("dftfrontendurl", map.get("dftfrontendurl"));
+			resultMap.put("dftbackendurl", map.get("dftbackendurl"));
+			resultMap.put("controlplanedataendpoint", map.get("controlplanedataendpoint"));
+			resultMap.put("dataplanepublicendpoint", map.get("dataplanepublicendpoint"));
 
-		Map<String, String> dftBackendConfiguration = dftBackendManager.managePackage(customerDetails,
-				AppActions.UPDATE, inputConfiguration);
-		inputConfiguration.putAll(dftBackendConfiguration);
+			// log.info(resultMap.toString());
+			String json = new ObjectMapper().writeValueAsString(resultMap);
+			createTrigger.setAutosetupResult(json);
+			createTrigger.setStatus(TriggerStatusEnum.SUCCESS.name());
 
-		Map<String, String> dftFrontendConfiguration = dftFrontendManager.managePackage(customerDetails,
-				AppActions.UPDATE, inputConfiguration);
-		inputConfiguration.putAll(dftFrontendConfiguration);
-
-		return "AppUpdate";
+		} catch (Exception e) {
+			log.error("Error in package creation " + e.getMessage());
+			createTrigger.setStatus(TriggerStatusEnum.FAILED.name());
+			createTrigger.setRemark(e.getMessage());
+		}
+		LocalDateTime now = LocalDateTime.now();
+		createTrigger.setModifiedTimestamp(now.toString());
+		autoSetupTriggerManager.saveTriggerUpdate(createTrigger);
 	}
 
 	public String deletePackage(CustomerDetails customerDetails) {
 
+		getTenantName(customerDetails);
+
+		String targetNamespace = customerDetails.getTenantName();
+
+		Map<String, String> inputConfiguration = new HashMap<>();
+		inputConfiguration.put("dnsName", dnsName);
+		inputConfiguration.put("targetCluster", targetCluster);
+		inputConfiguration.put("targetNamespace", targetNamespace);
+
+		String triggerId = UUID.randomUUID().toString();
+		Runnable runnable = () -> processDeleteTrigger(customerDetails, targetNamespace, triggerId, inputConfiguration);
+
+		new Thread(runnable).start();
+
+		return triggerId;
+
+	}
+
+	private String getTenantName(CustomerDetails customerDetails) {
+		
 		customerDetails.setTenantName(Optional.ofNullable(customerDetails.getOrganizationName()).map(orgname -> {
 			orgname = orgname.replaceAll("[^a-zA-Z0-9]", "");
 			return orgname.length() < 6 ? orgname : orgname.substring(0, 6);
 		}).orElseThrow(() -> new RuntimeException("Organization name should not be null")));
+		
+		return customerDetails.getTenantName();
+	}
+
+	private void processDeleteTrigger(CustomerDetails customerDetails, String targetNamespace, String triggerId,
+			Map<String, String> inputConfiguration) {
 
 		String tenantName = customerDetails.getTenantName();
-		String targetCluster = "default";
-		// String targetNamespace = customerDetails.getTenantName();
-		String targetNamespace = "kubeapps";
-
-		Map<String, String> inputConfiguration = new HashMap<>();
-		inputConfiguration.put("dsnName", "localhost");
-		inputConfiguration.put("targetCluster", targetCluster);
-		inputConfiguration.put("targetNamespace", targetNamespace);
+		AutoSetupTriggerEntry createTrigger = autoSetupTriggerManager.createTrigger(customerDetails, DELETE, triggerId);
 
 		appManagement.deletePackage(POSTGRES_DB, tenantName + "edc", inputConfiguration);
-		appManagement.deletePackage(POSTGRES_DB, tenantName + "dft", inputConfiguration);
 		appManagement.deletePackage(EDC_CONTROLPLANE, tenantName, inputConfiguration);
 		appManagement.deletePackage(EDC_DATAPLANE, tenantName, inputConfiguration);
+
+		appManagement.deletePackage(POSTGRES_DB, tenantName + "dft", inputConfiguration);
 		appManagement.deletePackage(DFT_BACKEND, tenantName, inputConfiguration);
 		appManagement.deletePackage(DFT_FRONTEND, tenantName, inputConfiguration);
 
-		return "Appdeleted";
+		createTrigger.setStatus(TriggerStatusEnum.SUCCESS.name());
+		autoSetupTriggerManager.saveTriggerUpdate(createTrigger);
 
 	}
 

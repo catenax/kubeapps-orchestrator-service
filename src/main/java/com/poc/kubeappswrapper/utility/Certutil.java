@@ -28,70 +28,70 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class Certutil {
 
-    static {
-        Security.addProvider(new BouncyCastleProvider());
-    }
+	 static {
+	        Security.addProvider(new BouncyCastleProvider());
+	    }
 
-    public static String getAki(X509Certificate cert) {
-        byte[] extensionValue = cert.getExtensionValue("2.5.29.35");
-        byte[] octets = DEROctetString.getInstance(extensionValue).getOctets();
-        AuthorityKeyIdentifier authorityKeyIdentifier = AuthorityKeyIdentifier.getInstance(octets);
-        byte[] keyIdentifier = authorityKeyIdentifier.getKeyIdentifier();
-        return HexFormat.ofDelimiter(":").withUpperCase().formatHex(keyIdentifier);
-    }
+	    public static String getAki(X509Certificate cert) {
+	        byte[] extensionValue = cert.getExtensionValue("2.5.29.35");
+	        byte[] octets = DEROctetString.getInstance(extensionValue).getOctets();
+	        AuthorityKeyIdentifier authorityKeyIdentifier = AuthorityKeyIdentifier.getInstance(octets);
+	        byte[] keyIdentifier = authorityKeyIdentifier.getKeyIdentifier();
+	        return HexFormat.ofDelimiter(":").withUpperCase().formatHex(keyIdentifier);
+	    }
 
-    public static String getSki(X509Certificate cert) {
-        var extensionValue = cert.getExtensionValue("2.5.29.14");
-        var octets = DEROctetString.getInstance(extensionValue).getOctets();
-        SubjectKeyIdentifier subjectKeyIdentifier = SubjectKeyIdentifier.getInstance(octets);
-        var keyIdentifier = subjectKeyIdentifier.getKeyIdentifier();
-        return HexFormat.ofDelimiter(":").withUpperCase().formatHex(keyIdentifier);
-    }
+	    public static String getSki(X509Certificate cert) {
+	        var extensionValue = cert.getExtensionValue("2.5.29.14");
+	        var octets = DEROctetString.getInstance(extensionValue).getOctets();
+	        SubjectKeyIdentifier subjectKeyIdentifier = SubjectKeyIdentifier.getInstance(octets);
+	        var keyIdentifier = subjectKeyIdentifier.getKeyIdentifier();
+	        return HexFormat.ofDelimiter(":").withUpperCase().formatHex(keyIdentifier);
+	    }
 
-    public static X509Certificate loadCertificate(String pem) throws IOException, CertificateException {
-        try(var ts = new ByteArrayInputStream(pem.getBytes(UTF_8))) {
-            CertificateFactory fac  = CertificateFactory.getInstance("X509");
-            return  (X509Certificate) fac.generateCertificate(ts);
-        }
-    }
+	    public static X509Certificate loadCertificate(String pem) throws IOException, CertificateException {
+	        try(var ts = new ByteArrayInputStream(pem.getBytes(UTF_8))) {
+	            CertificateFactory fac  = CertificateFactory.getInstance("X509");
+	            return  (X509Certificate) fac.generateCertificate(ts);
+	        }
+	    }
 
-    public static String getClientId(X509Certificate certificate) {
-        return getSki(certificate).concat(":keyid:").concat(getAki(certificate));
-    }
+	    public static String getClientId(X509Certificate certificate) {
+	        return getSki(certificate).concat(":keyid:").concat(getAki(certificate));
+	    }
 
-    public static String getAsString(Object certificate) throws IOException {
-        StringWriter sw = new StringWriter();
-        try (JcaPEMWriter jpw = new JcaPEMWriter(sw)) {
-            jpw.writeObject(certificate);
-        }
-        return sw.toString();
-    }
+	    public static String getAsString(Object certificate) throws IOException {
+	        StringWriter sw = new StringWriter();
+	        try (JcaPEMWriter jpw = new JcaPEMWriter(sw)) {
+	            jpw.writeObject(certificate);
+	        }
+	        return sw.toString();
+	    }
 
-    public record CertKeyPair(X509Certificate certificate, KeyPair keyPair){}
-    public static CertKeyPair generateSelfSignedCertificateSecret(String name, Integer days, Integer bits) throws GeneralSecurityException, OperatorCreationException, CertIOException {
-        var subject = new X500Principal(name);
-        var keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(Optional.ofNullable(bits).orElse(2048), new SecureRandom());
-        var keyPair = keyPairGenerator.generateKeyPair();
-        var notBefore = System.currentTimeMillis();
-        var notAfter = notBefore + (1000L * 3600L * 24 * Optional.ofNullable(days).orElse(365));
-        var certBuilder = new JcaX509v3CertificateBuilder(
-                subject, // signed by
-                BigInteger.ONE,
-                new Date(notBefore),
-                new Date(notAfter),
-                subject,
-                keyPair.getPublic()
-        );
-        certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(false));
-        certBuilder.addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.digitalSignature + KeyUsage.keyEncipherment));
-        var spki = SubjectPublicKeyInfo.getInstance(keyPair.getPublic().getEncoded());
-        var ski = new BcX509ExtensionUtils().createSubjectKeyIdentifier(spki);
-        certBuilder.addExtension(Extension.subjectKeyIdentifier, false, ski);
-        var aki = new BcX509ExtensionUtils().createAuthorityKeyIdentifier(spki);
-        certBuilder.addExtension(Extension.authorityKeyIdentifier, false, aki);
-        var signer = new JcaContentSignerBuilder(("SHA256withRSA")).build(keyPair.getPrivate());
-        var certHolder = certBuilder.build(signer);
-        return new CertKeyPair(new JcaX509CertificateConverter().setProvider("BC").getCertificate(certHolder), keyPair);
-    }
+	    public record CertKeyPair(X509Certificate certificate, KeyPair keyPair){}
+	    public static CertKeyPair generateSelfSignedCertificateSecret(String name, Integer days, Integer bits) throws GeneralSecurityException, OperatorCreationException, CertIOException {
+	        var subject = new X500Principal(name);
+	        var keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+	        keyPairGenerator.initialize(Optional.ofNullable(bits).orElse(2048), new SecureRandom());
+	        var keyPair = keyPairGenerator.generateKeyPair();
+	        var notBefore = System.currentTimeMillis();
+	        var notAfter = notBefore + (1000L * 3600L * 24 * Optional.ofNullable(days).orElse(365));
+	        var certBuilder = new JcaX509v3CertificateBuilder(
+	                subject, // signed by
+	                BigInteger.ONE,
+	                new Date(notBefore),
+	                new Date(notAfter),
+	                subject,
+	                keyPair.getPublic()
+	        );
+	        certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(false));
+	        certBuilder.addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.digitalSignature + KeyUsage.keyEncipherment));
+	        var spki = SubjectPublicKeyInfo.getInstance(keyPair.getPublic().getEncoded());
+	        var ski = new BcX509ExtensionUtils().createSubjectKeyIdentifier(spki);
+	        certBuilder.addExtension(Extension.subjectKeyIdentifier, false, ski);
+	        var aki = new BcX509ExtensionUtils().createAuthorityKeyIdentifier(spki);
+	        certBuilder.addExtension(Extension.authorityKeyIdentifier, false, aki);
+	        var signer = new JcaContentSignerBuilder(("SHA256withRSA")).build(keyPair.getPrivate());
+	        var certHolder = certBuilder.build(signer);
+	        return new CertKeyPair(new JcaX509CertificateConverter().setProvider("BC").getCertificate(certHolder), keyPair);
+	    }
 }

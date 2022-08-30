@@ -7,15 +7,15 @@ import org.springframework.stereotype.Service;
 import com.poc.kubeappswrapper.constant.AppNameConstant;
 import com.poc.kubeappswrapper.factory.AppFactory;
 import com.poc.kubeappswrapper.kubeapp.mapper.CreatePackageMapper;
-import com.poc.kubeappswrapper.kubeapp.model.Context;
 import com.poc.kubeappswrapper.kubeapp.model.CreateInstalledPackageRequest;
-import com.poc.kubeappswrapper.kubeapp.model.Plugin;
 import com.poc.kubeappswrapper.proxy.kubeapps.KubeAppManageProxy;
 import com.poc.kubeappswrapper.wrapper.model.CreatePackageRequest;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class KubeAppsPackageManagement {
 
@@ -26,44 +26,55 @@ public class KubeAppsPackageManagement {
 	private final KubeAppManageProxy kubeAppManageProxy;
 
 	public String createPackage(AppNameConstant app, String tenantName, Map<String, String> inputProperties) {
+		log.info(tenantName + "-" + app.name() + " package creating");
 
 		CreatePackageRequest appWithStandardInfo = appFactory.getAppInputRequestwithrequireDetails(app,
 				inputProperties);
 
-		return kubeAppManageProxy.createPackage(
+		String createPackage = kubeAppManageProxy.createPackage(
 				createPackageMapper.getCreatePackageRequest(appWithStandardInfo, app.name(), tenantName));
+		log.info(tenantName + "-" + app.name() + " package created");
+		return createPackage;
 
 	}
 
 	public String updatePackage(AppNameConstant app, String tenantName, Map<String, String> inputProperties) {
-
+		log.info(tenantName + "-" + app.name() + " package updating");
 		CreatePackageRequest appWithStandardInfo = appFactory.getAppInputRequestwithrequireDetails(app,
 				inputProperties);
 
 		CreateInstalledPackageRequest updateControlPlane = createPackageMapper
 				.getUpdatePackageRequest(appWithStandardInfo, app.name(), tenantName);
-		Plugin plugin = updateControlPlane.getAvailablePackageRef().getPlugin();
-		Context context = updateControlPlane.getAvailablePackageRef().getContext();
 
 		String appName = app.name().replaceAll("_", "");
 
-		return kubeAppManageProxy.updatePackage(plugin.getName(), plugin.getVersion(), context.getCluster(),
-				context.getNamespace(), tenantName + appName.toLowerCase(), updateControlPlane);
+		String updatePackage = kubeAppManageProxy.updatePackage(appWithStandardInfo.getPluginName(),
+				appWithStandardInfo.getPluginVersion(), appWithStandardInfo.getTargetCluster(),
+				appWithStandardInfo.getTargetNamespace(), tenantName + appName.toLowerCase(), updateControlPlane);
+		log.info(tenantName + "-" + app.name() + " package updated");
+		return updatePackage;
 
 	}
 
-	public String deletePackage(AppNameConstant app, String tenantName, Map<String, String> inputProperties) {
+	public void deletePackage(AppNameConstant app, String tenantName, Map<String, String> inputProperties) {
 
-		CreatePackageRequest appWithStandardInfo = appFactory.getAppInputRequestwithrequireDetails(app,
-				inputProperties);
+		try {
+			log.info(tenantName + "-" + app.name() + " package deleting ");
+			CreatePackageRequest appWithStandardInfo = appFactory.getAppInputRequestwithrequireDetails(app,
+					inputProperties);
 
-		CreateInstalledPackageRequest updateControlPlane = createPackageMapper
-				.getUpdatePackageRequest(appWithStandardInfo, app.name(), tenantName);
-		Plugin plugin = updateControlPlane.getAvailablePackageRef().getPlugin();
-		Context context = updateControlPlane.getAvailablePackageRef().getContext();
-		String appName = app.name().replaceAll("_", "");
-		return kubeAppManageProxy.deletePackage(plugin.getName(), plugin.getVersion(), context.getCluster(),
-				context.getNamespace(), tenantName + appName.toLowerCase(), updateControlPlane);
+			CreateInstalledPackageRequest updateControlPlane = createPackageMapper
+					.getUpdatePackageRequest(appWithStandardInfo, app.name(), tenantName);
+
+			String appName = app.name().replaceAll("_", "");
+
+			kubeAppManageProxy.deletePackage(appWithStandardInfo.getPluginName(),
+					appWithStandardInfo.getPluginVersion(), appWithStandardInfo.getTargetCluster(),
+					appWithStandardInfo.getTargetNamespace(), tenantName + appName.toLowerCase(), updateControlPlane);
+			log.info(tenantName + "-" + app.name() + " package deleted ");
+		} catch (Exception e) {
+			log.error("Error in " + tenantName + "-" + app.name() + " package delete " + e.getMessage());
+		}
 
 	}
 

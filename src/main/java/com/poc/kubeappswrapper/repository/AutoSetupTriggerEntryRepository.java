@@ -6,4 +6,6 @@ import com.poc.kubeappswrapper.entity.AutoSetupTriggerEntry;
 
 public interface AutoSetupTriggerEntryRepository extends JpaRepository<AutoSetupTriggerEntry, String> {
 
+	public AutoSetupTriggerEntry findAllByTriggerId(String triggerId);
+
 }
