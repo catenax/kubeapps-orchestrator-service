@@ -9,6 +9,8 @@ import static com.poc.kubeappswrapper.constant.AppNameConstant.EDC_CONTROLPLANE;
 import static com.poc.kubeappswrapper.constant.AppNameConstant.EDC_DATAPLANE;
 import static com.poc.kubeappswrapper.constant.AppNameConstant.POSTGRES_DB;
 
+import com.poc.kubeappswrapper.model.DFTUpdateRequest;
+import com.poc.kubeappswrapper.repository.AutoSetupTriggerEntryRepository;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +45,9 @@ public class KubeAppsOrchitestratorService {
 
 	private final EDCConnectorWorkFlow edcConnectorWorkFlow;
 	private final DFTAppWorkFlow dftWorkFlow;
+
+	@Autowired
+	private AutoSetupTriggerEntryRepository autoSetupTriggerEntryRepository;
 
 	@Value("${targetCluster}")
 	private String targetCluster;
@@ -118,12 +124,14 @@ public class KubeAppsOrchitestratorService {
 			resultMap.put("dftbackendurl", map.get("dftbackendurl"));
 			resultMap.put("controlplanedataendpoint", map.get("controlplanedataendpoint"));
 			resultMap.put("dataplanepublicendpoint", map.get("dataplanepublicendpoint"));
+			resultMap.put("edcapi-key", inputConfiguration.get("edcapi-key"));
+			resultMap.put("edcapi-key-value", inputConfiguration.get("edcapi-key-value"));
 
 			// log.info(resultMap.toString());
 			String json = new ObjectMapper().writeValueAsString(resultMap);
 			createTrigger.setAutosetupResult(json);
-			createTrigger.setStatus(TriggerStatusEnum.SUCCESS.name());
-
+			createTrigger.setStatus(TriggerStatusEnum.MANUAL_UPDATE_PENDING.name());
+			log.info("All Packages created/updated successfully!!!!");
 		} catch (Exception e) {
 			log.error("Error in package creation " + e.getMessage());
 			createTrigger.setStatus(TriggerStatusEnum.FAILED.name());
@@ -177,10 +185,71 @@ public class KubeAppsOrchitestratorService {
 		appManagement.deletePackage(POSTGRES_DB, tenantName + "dft", inputConfiguration);
 		appManagement.deletePackage(DFT_BACKEND, tenantName, inputConfiguration);
 		appManagement.deletePackage(DFT_FRONTEND, tenantName, inputConfiguration);
-
 		createTrigger.setStatus(TriggerStatusEnum.SUCCESS.name());
 		autoSetupTriggerManager.saveTriggerUpdate(createTrigger);
+		log.info("All Packages deleted successfully!!!!");
 
 	}
 
+	public String updateDftPackage(DFTUpdateRequest dftUpdateRequest) {
+		try {
+			AutoSetupTriggerEntry autoSetupTriggerEntry = autoSetupTriggerEntryRepository.findTop1ByBpnNumberAndTriggerTypeAndStatusOrderByCreatedTimestampDesc(dftUpdateRequest.getBpnNumber(), "CREATE", "MANUAL_UPDATE_PENDING");
+			if (autoSetupTriggerEntry != null) {
+				ObjectMapper mapper = new ObjectMapper();
+				CustomerDetails customerDetails = mapper.readValue(autoSetupTriggerEntry.getAutosetupRequest(), CustomerDetails.class);
+				String targetNamespace = getTenantName(customerDetails);;
+
+				Map<String, String> inputConfiguration = new ConcurrentHashMap<>();
+				inputConfiguration.put("dnsName", dnsName);
+				inputConfiguration.put("targetCluster", targetCluster);
+				inputConfiguration.put("targetNamespace", targetNamespace);
+				inputConfiguration.put("dthostname", dftUpdateRequest.getDigitalTwinUrl());
+				inputConfiguration.put("dtauthurl", dftUpdateRequest.getDigitalTwinAuthUrl());
+				inputConfiguration.put("dtclientId", dftUpdateRequest.getDigitalTwinClientId());
+				inputConfiguration.put("dtclientsecret", dftUpdateRequest.getDigitalTwinClientSecret());
+				inputConfiguration.put("kcrealm", dftUpdateRequest.getKeyclackRealm());
+				inputConfiguration.put("kcurl", dftUpdateRequest.getKeycloackUrl());
+				inputConfiguration.put("kcresource", dftUpdateRequest.getKeycloackClientId());
+				Map<String, String> autosetupResult = new ObjectMapper().readValue(autoSetupTriggerEntry.getAutosetupResult(),
+						HashMap.class);
+				inputConfiguration.putAll(autosetupResult);
+				String triggerId = UUID.randomUUID().toString();
+
+				AutoSetupTriggerEntry createTrigger = autoSetupTriggerManager.createTrigger(customerDetails, UPDATE, triggerId);
+
+				Runnable runnable = () -> {
+					try {
+						Map<String, String> map = dftWorkFlow.getWorkFlow(customerDetails, UPDATE, inputConfiguration, createTrigger);
+						// log.info(resultMap.toString());
+						Map<String, String> resultMap = new ConcurrentHashMap<>();
+						resultMap.put("dftfrontendurl", map.get("dftfrontendurl"));
+						resultMap.put("dftbackendurl", map.get("dftbackendurl"));
+						resultMap.put("controlplanedataendpoint", map.get("controlplanedataendpoint"));
+						resultMap.put("dataplanepublicendpoint", map.get("dataplanepublicendpoint"));
+						resultMap.put("edcapi-key", inputConfiguration.get("edcapi-key"));
+						resultMap.put("edcapi-key-value", inputConfiguration.get("edcapi-key-value"));
+
+						String json = new ObjectMapper().writeValueAsString(resultMap);
+						createTrigger.setAutosetupResult(json);
+						createTrigger.setStatus(TriggerStatusEnum.SUCCESS.name());
+						log.info("DFT Packages updated successfully!!!!");
+					} catch (Exception e) {
+						log.error("Error in package creation " + e.getMessage());
+						createTrigger.setStatus(TriggerStatusEnum.FAILED.name());
+						createTrigger.setRemark(e.getMessage());
+					}
+					LocalDateTime now = LocalDateTime.now();
+					createTrigger.setModifiedTimestamp(now.toString());
+					autoSetupTriggerManager.saveTriggerUpdate(createTrigger);
+				};
+				new Thread(runnable).start();
+
+				return triggerId;
+			}
+			return "Autosetup create entry not present";
+		} catch (Exception e) {
+			return "Exception in updating dft package : " + e.getMessage();
+		}
+
+	}
 }

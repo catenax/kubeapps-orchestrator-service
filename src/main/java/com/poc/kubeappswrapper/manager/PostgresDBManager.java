@@ -35,9 +35,9 @@ public class PostgresDBManager {
 		try {
 
 			String generateRandomPassword = PasswordGenerator.generateRandomPassword(50);
-			inputData.put("postgresPassword", generateRandomPassword);
+			inputData.put("postgresPassword", "admin@123");
 			inputData.put("username", "admin");
-			inputData.put("password", generateRandomPassword);
+			inputData.put("password", "admin@123");
 			inputData.put("database", "postgres");
 
 			if (AppActions.CREATE.equals(action))

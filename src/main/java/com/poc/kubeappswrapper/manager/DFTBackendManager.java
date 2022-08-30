@@ -39,6 +39,9 @@ public class DFTBackendManager {
 
 			inputData.put("manufacturerId", customerDetails.getBpnNumber());
 
+			String generateRandomPassword = PasswordGenerator.generateRandomPassword(50);
+			inputData.put("dft.apiKey",generateRandomPassword);
+			inputData.put("dft.apiKeyHeader", "API_KEY");
 			inputData.put("dftfrontendurl",
 					"http://" + dnsName + "/" + customerDetails.getTenantName() + "dftfrontend");
 			Map<String, String> portalDetails = portalIntegrationManager.getDigitalandKeyCloackDetails(customerDetails,
@@ -49,12 +52,14 @@ public class DFTBackendManager {
 					+ "dftpostgresdb-postgresql:5432/postgres";
 			inputData.put("dftdatabaseurl", dftDb);
 
+			String backendurl = "http://" + dnsName + "/" + customerDetails.getTenantName() + "dftbackend";
+			inputData.put("dft.hostname",backendurl);
+
 			if (AppActions.CREATE.equals(action))
 				appManagement.createPackage(DFT_BACKEND, customerDetails.getTenantName(), inputData);
 			else
 				appManagement.updatePackage(DFT_BACKEND, customerDetails.getTenantName(), inputData);
 
-			String backendurl = "http://" + dnsName + "/" + customerDetails.getTenantName() + "dftbackend";
 
 			inputData.put("dftbackendurl", backendurl);
 			inputData.put("dftbackendapikey", PasswordGenerator.generateRandomPassword(60));

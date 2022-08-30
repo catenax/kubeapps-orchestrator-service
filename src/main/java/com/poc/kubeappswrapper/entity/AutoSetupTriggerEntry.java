@@ -43,8 +43,14 @@ public class AutoSetupTriggerEntry {
 	@JoinColumn(name = "trigger_id", referencedColumnName = "triggerId")
 	private List<AutoSetupTriggerDetails> autosetupTriggerDetails;
 
+	@Column(name="autosetup_request",columnDefinition="LONGTEXT")
+	private String autosetupRequest;
+
 	@Column(name="autosetup_result",columnDefinition="LONGTEXT")
 	private String autosetupResult;
+
+	@Column(name="bpn_number")
+	private String bpnNumber;
 	
 	private String createdTimestamp;
 

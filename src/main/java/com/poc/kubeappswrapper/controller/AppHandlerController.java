@@ -1,5 +1,6 @@
 package com.poc.kubeappswrapper.controller;
 
+import com.poc.kubeappswrapper.model.DFTUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,12 @@ public class AppHandlerController {
 	@PutMapping("/update-package")
 	public String updatePackage(@RequestBody CustomerDetails customerDetails) {
 		return appHandlerService.updatePackage(customerDetails);
+	}
+
+	 //update dft packages input: keycloack details for frontend and backend, digital twin details
+	@PutMapping("/update-dft-package")
+	public String updateDftPackage(@RequestBody DFTUpdateRequest dftUpdateRequest) {
+		return appHandlerService.updateDftPackage(dftUpdateRequest);
 	}
 
 	@DeleteMapping("/delete-package")
