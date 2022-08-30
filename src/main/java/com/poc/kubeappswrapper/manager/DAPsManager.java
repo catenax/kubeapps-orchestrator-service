@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import com.poc.kubeappswrapper.constant.TriggerStatusEnum;
@@ -43,6 +45,8 @@ public class DAPsManager {
 	@Value("${daps.jskurl}")
 	private String dapsjsksurl;
 
+	private int counter=0;
+	
 	public void deleteClientfromDAPs(String connectorclientId) {
 
 		DAPsTokenResponse reponse = dapsAppManageProxy.readAuthToken("client_credentials", clientId, clientSecret,
@@ -55,6 +59,7 @@ public class DAPsManager {
 
 	}
 
+	@Retryable(value = { ServiceException.class }, maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.backOffDelay}"))
 	public Map<String, String> registerClientInDAPs(CustomerDetails customerDetails, Map<String, String> inputData,
 			AutoSetupTriggerEntry triger) {
 
@@ -111,6 +116,9 @@ public class DAPsManager {
 
 		} catch (Exception ex) {
 
+			counter++;
+			log.info("DapsManager failed retry attempt: "+counter);
+			
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.FAILED.name());
 			autoSetupTriggerDetails.setRemark(ex.getMessage());
 			throw new ServiceException("DapsManager Oops! We have an exception - " + ex.getMessage());

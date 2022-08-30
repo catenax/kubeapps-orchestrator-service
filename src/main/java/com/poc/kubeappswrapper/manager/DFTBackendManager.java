@@ -5,6 +5,8 @@ import static com.poc.kubeappswrapper.constant.AppNameConstant.DFT_BACKEND;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import com.poc.kubeappswrapper.constant.AppActions;
@@ -16,7 +18,9 @@ import com.poc.kubeappswrapper.model.CustomerDetails;
 import com.poc.kubeappswrapper.utility.PasswordGenerator;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DFTBackendManager {
@@ -25,7 +29,9 @@ public class DFTBackendManager {
 	private final AutoSetupTriggerManager autoSetupTriggerManager;
 
 	private final PortalIntegrationManager portalIntegrationManager;
+	private int counter;
 
+	@Retryable(value = { ServiceException.class }, maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.backOffDelay}"))
 	public Map<String, String> managePackage(CustomerDetails customerDetails, AppActions action,
 			Map<String, String> inputData, AutoSetupTriggerEntry triger) {
 
@@ -67,6 +73,10 @@ public class DFTBackendManager {
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
 
 		} catch (Exception ex) {
+			
+			counter++;
+			log.info("DftBackendManager failed retry attempt: "+counter);
+			
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.FAILED.name());
 			autoSetupTriggerDetails.setRemark(ex.getMessage());
 			throw new ServiceException("DftBackendManager Oops! We have an exception - " + ex.getMessage());

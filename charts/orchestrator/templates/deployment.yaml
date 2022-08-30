@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "orchestrator.fullname" . }}
+  labels:
+    {{- include "orchestrator.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "orchestrator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "orchestrator.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      automountServiceAccountToken: false
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+          - containerPort: {{ .Values.portContainer }}
+          env:
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: dbuser
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: dbpassword
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql:3306/orchDB?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
+            - name: VAULT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: vault-secrets
+                  key: vaultUrl
+            - name: VAULT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vault-secrets
+                  key: vaultToken
+            - name: DAPS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: daps-secrets
+                  key: dapsUrl
+            - name: DAPS_TOKEN_URL
+              valueFrom:
+                secretKeyRef:
+                  name: daps-secrets
+                  key: dapsTokenUrl
+            - name: DAPS_JSKURL
+              valueFrom:
+                secretKeyRef:
+                  name: daps-secrets
+                  key: dapsJskUrl
+            - name: DAPS_CLIENTID
+              valueFrom:
+                secretKeyRef:
+                  name: daps-secrets
+                  key: dapsClientID
+            - name: DAPS_CLIENTSECRET
+              valueFrom:
+                secretKeyRef:
+                  name: daps-secrets
+                  key: dapsClientSecret
+            - name: KUBEAPP_URL
+              valueFrom:
+                secretKeyRef:
+                  name: kubeapps-secrets
+                  key: kubeappsUrl
+            - name: KUBEAPP_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: kubeapps-secrets
+                  key: kubeappsToken
+
+          
+
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

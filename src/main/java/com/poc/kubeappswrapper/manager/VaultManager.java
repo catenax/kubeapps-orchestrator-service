@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import com.poc.kubeappswrapper.constant.TriggerStatusEnum;
@@ -38,16 +40,17 @@ public class VaultManager {
 	@Value("${vault.timeout}")
 	private String vaulttimeout;
 
+	private int counter = 0;
+
 	@SneakyThrows
+	@Retryable(value = {
+			ServiceException.class }, maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.backOffDelay}"))
 	public Map<String, String> uploadKeyandValues(CustomerDetails customerDetails, Map<String, String> inputData,
 			AutoSetupTriggerEntry triger) {
 
 		AutoSetupTriggerDetails autoSetupTriggerDetails = AutoSetupTriggerDetails.builder()
-				.id(UUID.randomUUID().toString())
-				.step("VAULT")
-				.triggerIdforinsert(triger.getTriggerId())
-				.build();
-		
+				.id(UUID.randomUUID().toString()).step("VAULT").triggerIdforinsert(triger.getTriggerId()).build();
+
 		try {
 
 			String tenantName = customerDetails.getTenantName();
@@ -73,11 +76,14 @@ public class VaultManager {
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
 
 		} catch (Exception ex) {
-			
+
+			counter++;
+			log.info("VaultManager failed retry attempt: " + counter);
+
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.FAILED.name());
 			autoSetupTriggerDetails.setRemark(ex.getMessage());
 			throw new ServiceException("VaultManager Oops! We have an exception - " + ex.getMessage());
-			
+
 		} finally {
 			autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails);
 		}

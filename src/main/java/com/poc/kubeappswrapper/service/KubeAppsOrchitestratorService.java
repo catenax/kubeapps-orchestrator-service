@@ -49,13 +49,13 @@ public class KubeAppsOrchitestratorService {
 	@Autowired
 	private AutoSetupTriggerEntryRepository autoSetupTriggerEntryRepository;
 
-	@Value("${targetCluster}")
+	@Value("${target.cluster}")
 	private String targetCluster;
 
-	@Value("${targetNamespace}")
+	@Value("${target.namespace}")
 	private String targetNamespace;
 
-	@Value("${dnsName}")
+	@Value("${dns.name}")
 	private String dnsName;
 
 	public String getAllInstallPackages() {
