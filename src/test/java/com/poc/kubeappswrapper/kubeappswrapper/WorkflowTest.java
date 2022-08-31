@@ -133,5 +133,15 @@ public class WorkflowTest {
             var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(createInstalledPackageRequest);
             System.out.println(json);
         }
+
+        // DFT Postgres Check
+        {
+            ArgumentCaptor<CreateInstalledPackageRequest> kubAppsProxyCaptor = ArgumentCaptor.forClass(CreateInstalledPackageRequest.class);
+            Mockito.verify(kubeAppManageProxy, Mockito.times(1)).createPackage(kubAppsProxyCaptor.capture());
+            var createInstalledPackageRequest = kubAppsProxyCaptor.getValue();
+            assertThat(createInstalledPackageRequest).isNotNull();
+            var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(createInstalledPackageRequest);
+            System.out.println(json);
+        }
     }
 }
