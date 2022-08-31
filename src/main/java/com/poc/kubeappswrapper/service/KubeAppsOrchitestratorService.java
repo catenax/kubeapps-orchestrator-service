@@ -9,8 +9,6 @@ import static com.poc.kubeappswrapper.constant.AppNameConstant.EDC_CONTROLPLANE;
 import static com.poc.kubeappswrapper.constant.AppNameConstant.EDC_DATAPLANE;
 import static com.poc.kubeappswrapper.constant.AppNameConstant.POSTGRES_DB;
 
-import com.poc.kubeappswrapper.model.DFTUpdateRequest;
-import com.poc.kubeappswrapper.repository.AutoSetupTriggerEntryRepository;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +27,9 @@ import com.poc.kubeappswrapper.entity.AutoSetupTriggerEntry;
 import com.poc.kubeappswrapper.manager.AutoSetupTriggerManager;
 import com.poc.kubeappswrapper.manager.KubeAppsPackageManagement;
 import com.poc.kubeappswrapper.model.CustomerDetails;
+import com.poc.kubeappswrapper.model.DFTUpdateRequest;
 import com.poc.kubeappswrapper.proxy.kubeapps.KubeAppManageProxy;
+import com.poc.kubeappswrapper.repository.AutoSetupTriggerEntryRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +57,11 @@ public class KubeAppsOrchitestratorService {
 
 	@Value("${dns.name}")
 	private String dnsName;
+	
+	@Value("${dns.name.protocol}")
+	private String dnsNameURLProtocol;
+	
+	
 
 	public String getAllInstallPackages() {
 		return kubeAppManageProxy.getAllInstallPackages();
@@ -65,9 +70,12 @@ public class KubeAppsOrchitestratorService {
 	public String createPackage(CustomerDetails customerDetails) {
 
 		String targetNamespace = getTenantName(customerDetails);
-
+		
+		dnsName = dnsName.replace("tenantname", targetNamespace); 
+		
 		Map<String, String> inputConfiguration = new ConcurrentHashMap<>();
 		inputConfiguration.put("dnsName", dnsName);
+		inputConfiguration.put("dnsNameURLProtocol", dnsNameURLProtocol);
 		inputConfiguration.put("targetCluster", targetCluster);
 		inputConfiguration.put("targetNamespace", targetNamespace);
 
@@ -90,10 +98,14 @@ public class KubeAppsOrchitestratorService {
 
 		String targetNamespace = getTenantName(customerDetails);;
 
+		dnsName = dnsName.replace("tenantname", targetNamespace); 
+		
 		Map<String, String> inputConfiguration = new ConcurrentHashMap<>();
 		inputConfiguration.put("dnsName", dnsName);
+		inputConfiguration.put("dnsNameURLProtocol", dnsNameURLProtocol);
 		inputConfiguration.put("targetCluster", targetCluster);
 		inputConfiguration.put("targetNamespace", targetNamespace);
+		
 		String triggerId = UUID.randomUUID().toString();
 
 		Runnable runnable = () -> proceessTrigger(customerDetails, targetNamespace, UPDATE, triggerId,
@@ -148,8 +160,11 @@ public class KubeAppsOrchitestratorService {
 
 		String targetNamespace = customerDetails.getTenantName();
 
-		Map<String, String> inputConfiguration = new HashMap<>();
+		dnsName = dnsName.replace("tenantname", targetNamespace); 
+		
+		Map<String, String> inputConfiguration = new ConcurrentHashMap<>();
 		inputConfiguration.put("dnsName", dnsName);
+		inputConfiguration.put("dnsNameURLProtocol", dnsNameURLProtocol);
 		inputConfiguration.put("targetCluster", targetCluster);
 		inputConfiguration.put("targetNamespace", targetNamespace);
 
@@ -210,6 +225,7 @@ public class KubeAppsOrchitestratorService {
 				inputConfiguration.put("kcrealm", dftUpdateRequest.getKeyclackRealm());
 				inputConfiguration.put("kcurl", dftUpdateRequest.getKeycloackUrl());
 				inputConfiguration.put("kcresource", dftUpdateRequest.getKeycloackClientId());
+				
 				Map<String, String> autosetupResult = new ObjectMapper().readValue(autoSetupTriggerEntry.getAutosetupResult(),
 						HashMap.class);
 				inputConfiguration.putAll(autosetupResult);

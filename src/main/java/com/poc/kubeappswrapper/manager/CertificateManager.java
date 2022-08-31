@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.retry.support.RetrySynchronizationManager;
 import org.springframework.stereotype.Service;
 
 import com.poc.kubeappswrapper.constant.TriggerStatusEnum;
@@ -35,8 +36,6 @@ public class CertificateManager {
 
 	private final AutoSetupTriggerManager autoSetupTriggerManager;
 	
-	private int counter;
-
 	@SneakyThrows
 	@Retryable(value = { ServiceException.class }, maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.backOffDelay}"))
 	public Map<String, String> createCertificate(CustomerDetails customerDetails, Map<String, String> inputData,
@@ -71,9 +70,8 @@ public class CertificateManager {
 			log.info(tenantName + "- certificate created");
 
 		} catch (Exception ex) {
-
-			counter++;
-			log.info("CertificateManager failed retry attempt: "+counter);
+			
+			log.error("CertificateManager failed retry attempt: : {}",RetrySynchronizationManager.getContext().getRetryCount()+1);
 			
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.FAILED.name());
 			autoSetupTriggerDetails.setRemark(ex.getMessage());

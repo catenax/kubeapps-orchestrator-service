@@ -47,6 +47,8 @@ public class AppConfigurationBuilder {
 			dyanamicYamlValues.put("yamlValues", sb.toString());
 		}
 		
+		dyanamicYamlValues.put("dnsName", inputProperties.get("dnsName") );
+		
 		JsonTemplate jstemplate = new JsonTemplate(appDetails.getRequiredYamlConfiguration())
 				.withVars(dyanamicYamlValues);
 		return jstemplate.compactString();

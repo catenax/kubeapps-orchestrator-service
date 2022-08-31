@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.retry.support.RetrySynchronizationManager;
 import org.springframework.stereotype.Service;
 
 import com.poc.kubeappswrapper.constant.AppActions;
@@ -26,8 +27,6 @@ public class EDCDataplaneManager {
 
 	private final KubeAppsPackageManagement appManagement;
 	private final AutoSetupTriggerManager autoSetupTriggerManager;
-	
-	private int counter;
 
 	@Retryable(value = {
 			ServiceException.class }, maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.backOffDelay}"))
@@ -40,24 +39,24 @@ public class EDCDataplaneManager {
 		try {
 
 			String dnsName = inputData.get("dnsName");
+			String dnsNameURLProtocol = inputData.get("dnsNameURLProtocol");
+
+			String dataplaneurl = dnsNameURLProtocol + "://" + dnsName + "/edcdataplane";
 
 			if (AppActions.CREATE.equals(action))
 				appManagement.createPackage(EDC_DATAPLANE, customerDetails.getTenantName(), inputData);
 			else
 				appManagement.updatePackage(EDC_DATAPLANE, customerDetails.getTenantName(), inputData);
 
-			String dataplaneurl = "http://" + dnsName + "/" + customerDetails.getTenantName()
-					+ "edcdataplane/api/public";
-
 			inputData.put("dataplanepublicendpoint", dataplaneurl);
 
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
 
 		} catch (Exception ex) {
-			
-			counter++;
-			log.info("EDCDataplaneManager failed retry attempt: "+counter);
-			
+
+			log.error("EDCDataplaneManager failed retry attempt: : {}",
+					RetrySynchronizationManager.getContext().getRetryCount() + 1);
+
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.FAILED.name());
 			autoSetupTriggerDetails.setRemark(ex.getMessage());
 

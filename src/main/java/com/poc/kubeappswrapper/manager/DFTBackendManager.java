@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.retry.support.RetrySynchronizationManager;
 import org.springframework.stereotype.Service;
 
 import com.poc.kubeappswrapper.constant.AppActions;
@@ -29,27 +30,26 @@ public class DFTBackendManager {
 	private final AutoSetupTriggerManager autoSetupTriggerManager;
 
 	private final PortalIntegrationManager portalIntegrationManager;
-	private int counter;
 
-	@Retryable(value = { ServiceException.class }, maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.backOffDelay}"))
+	@Retryable(value = {
+			ServiceException.class }, maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.backOffDelay}"))
 	public Map<String, String> managePackage(CustomerDetails customerDetails, AppActions action,
 			Map<String, String> inputData, AutoSetupTriggerEntry triger) {
 
 		AutoSetupTriggerDetails autoSetupTriggerDetails = AutoSetupTriggerDetails.builder()
-				.id(UUID.randomUUID().toString())
-				.step(DFT_BACKEND.name())
-				.triggerIdforinsert(triger.getTriggerId())
+				.id(UUID.randomUUID().toString()).step(DFT_BACKEND.name()).triggerIdforinsert(triger.getTriggerId())
 				.build();
 		try {
 			String dnsName = inputData.get("dnsName");
+			String dnsNameURLProtocol = inputData.get("dnsNameURLProtocol");
 
 			inputData.put("manufacturerId", customerDetails.getBpnNumber());
 
 			String generateRandomPassword = PasswordGenerator.generateRandomPassword(50);
-			inputData.put("dft.apiKey",generateRandomPassword);
+			inputData.put("dft.apiKey", generateRandomPassword);
 			inputData.put("dft.apiKeyHeader", "API_KEY");
-			inputData.put("dftfrontendurl",
-					"http://" + dnsName + "/" + customerDetails.getTenantName() + "dftfrontend");
+			inputData.put("dftfrontendurl", dnsNameURLProtocol + "://" + dnsName + "/dftfrontend");
+
 			Map<String, String> portalDetails = portalIntegrationManager.getDigitalandKeyCloackDetails(customerDetails,
 					inputData);
 			inputData.putAll(portalDetails);
@@ -58,14 +58,14 @@ public class DFTBackendManager {
 					+ "dftpostgresdb-postgresql:5432/postgres";
 			inputData.put("dftdatabaseurl", dftDb);
 
-			String backendurl = "http://" + dnsName + "/" + customerDetails.getTenantName() + "dftbackend";
-			inputData.put("dft.hostname",backendurl);
+			String backendurl = dnsNameURLProtocol + "://" + dnsName + "/dftbackend";
+
+			inputData.put("dft.hostname", backendurl);
 
 			if (AppActions.CREATE.equals(action))
 				appManagement.createPackage(DFT_BACKEND, customerDetails.getTenantName(), inputData);
 			else
 				appManagement.updatePackage(DFT_BACKEND, customerDetails.getTenantName(), inputData);
-
 
 			inputData.put("dftbackendurl", backendurl);
 			inputData.put("dftbackendapikey", PasswordGenerator.generateRandomPassword(60));
@@ -73,10 +73,10 @@ public class DFTBackendManager {
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
 
 		} catch (Exception ex) {
-			
-			counter++;
-			log.info("DftBackendManager failed retry attempt: "+counter);
-			
+
+			log.error("DftBackendManager failed retry attempt: : {}",
+					RetrySynchronizationManager.getContext().getRetryCount() + 1);
+
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.FAILED.name());
 			autoSetupTriggerDetails.setRemark(ex.getMessage());
 			throw new ServiceException("DftBackendManager Oops! We have an exception - " + ex.getMessage());

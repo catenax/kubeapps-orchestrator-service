@@ -9,7 +9,8 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.stereotype.Service;
+import org.springframework.retry.support.RetrySynchronizationManager;
+import org.springframework.stereotype.Component;
 
 import com.poc.kubeappswrapper.constant.TriggerStatusEnum;
 import com.poc.kubeappswrapper.entity.AutoSetupTriggerDetails;
@@ -25,7 +26,7 @@ import com.poc.kubeappswrapper.proxy.daps.DAPsAppManageProxy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Service
+@Component
 @Slf4j
 @RequiredArgsConstructor
 public class DAPsManager {
@@ -45,8 +46,6 @@ public class DAPsManager {
 	@Value("${daps.jskurl}")
 	private String dapsjsksurl;
 
-	private int counter=0;
-	
 	public void deleteClientfromDAPs(String connectorclientId) {
 
 		DAPsTokenResponse reponse = dapsAppManageProxy.readAuthToken("client_credentials", clientId, clientSecret,
@@ -62,7 +61,6 @@ public class DAPsManager {
 	@Retryable(value = { ServiceException.class }, maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.backOffDelay}"))
 	public Map<String, String> registerClientInDAPs(CustomerDetails customerDetails, Map<String, String> inputData,
 			AutoSetupTriggerEntry triger) {
-
 		AutoSetupTriggerDetails autoSetupTriggerDetails = AutoSetupTriggerDetails.builder()
 				.id(UUID.randomUUID().toString())
 				.step("DAPS")
@@ -116,8 +114,8 @@ public class DAPsManager {
 
 		} catch (Exception ex) {
 
-			counter++;
-			log.info("DapsManager failed retry attempt: "+counter);
+			log.error("DapsManager failed retry attempt: : {}",
+					RetrySynchronizationManager.getContext().getRetryCount() + 1);
 			
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.FAILED.name());
 			autoSetupTriggerDetails.setRemark(ex.getMessage());

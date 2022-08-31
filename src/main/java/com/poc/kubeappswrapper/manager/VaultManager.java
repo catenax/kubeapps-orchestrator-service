@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.retry.support.RetrySynchronizationManager;
 import org.springframework.stereotype.Service;
 
 import com.poc.kubeappswrapper.constant.TriggerStatusEnum;
@@ -40,7 +41,7 @@ public class VaultManager {
 	@Value("${vault.timeout}")
 	private String vaulttimeout;
 
-	private int counter = 0;
+	int counter = 0;
 
 	@SneakyThrows
 	@Retryable(value = {
@@ -77,8 +78,8 @@ public class VaultManager {
 
 		} catch (Exception ex) {
 
-			counter++;
-			log.info("VaultManager failed retry attempt: " + counter);
+			log.error("VaultManager failed retry attempt: : {}",
+					RetrySynchronizationManager.getContext().getRetryCount() + 1);
 
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.FAILED.name());
 			autoSetupTriggerDetails.setRemark(ex.getMessage());
