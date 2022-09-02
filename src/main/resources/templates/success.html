@@ -1,0 +1,402 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Data Intelligence hub</title>
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
+    <style type="text/css">
+        @import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);
+    </style>
+    <style>
+      /* -------------------------------------
+          GLOBAL RESETS
+      ------------------------------------- */
+      
+      /*All the styling goes here*/
+      
+      img {
+        border: none;
+        -ms-interpolation-mode: bicubic;
+        max-width: 100%; 
+      }
+
+      body {
+        background-color: #f6f6f6;
+        -webkit-font-smoothing: antialiased;
+        font-size: 14px;
+        line-height: 1.4;
+        margin: 0;
+        padding: 0;
+        -ms-text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%; 
+        font-family: TeleGroteskNextBold, sans-serif;
+      }
+
+      table {
+        border-collapse: collapse;
+        mso-table-lspace: 0pt;
+        mso-table-rspace: 0pt;
+        width: 100%; }
+        table td {
+          font-family: sans-serif;
+          font-size: 14px;
+          vertical-align: top; 
+      }
+
+      /* -------------------------------------
+          BODY & CONTAINER
+      ------------------------------------- */
+
+      .body {
+        background-color: #f6f6f6;
+        width: 100%; 
+      }
+
+      .brand-background {
+        background-color:#E20074;
+      } 
+
+      /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
+      .container {
+        display: block;
+        margin: 0 auto !important;
+        /* makes it centered */
+        max-width: 648px;
+        padding: 10px;
+        width: 648px; 
+      }
+
+      /* This should also be a block element, so that it will fill 100% of the .container */
+      .content {
+        box-sizing: border-box;
+        display: block;
+        margin: 0 auto;
+        max-width: 648px;
+      }
+
+      /* -------------------------------------
+          HEADER, FOOTER, MAIN
+      ------------------------------------- */
+      .main {
+        background: #ffffff;
+        border-radius: 3px;
+        width: 100%; 
+      }
+
+      .wrapper {
+        box-sizing: border-box;
+        padding: 20px; 
+      }
+
+      .content-block {
+        padding-bottom: 10px;
+        padding-top: 10px;
+      }
+
+      .top-header {
+        color: #fff;
+        font-size: 18px;
+        line-height: 24px;
+        font-weight: 700;
+      }
+
+      .footer {
+        clear: both;
+        margin-top: 10px;
+        width: 100%; 
+      }
+      
+      .footer td,
+      .footer p,
+      .footer span,
+      .footer a {
+        color: #ffffff;
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: 400;
+        text-decoration: none;
+      }
+
+      .main-content {
+        padding: 48px 24px;
+      }
+
+      .main-content,
+      .main-content p {
+        font-size: 18px;
+        line-height: 24px;
+        color: #1C0E15;
+        font-weight: 400;
+        letter-spacing: 0.25px;
+      }
+
+      .main-content p {
+        margin-bottom: 24px;
+        font-weight: 400;
+      }
+
+      /* -------------------------------------
+          TYPOGRAPHY
+      ------------------------------------- */
+      h1,
+      h2,
+      h3,
+      h4 {
+        color: #1C0E15;
+        font-family: sans-serif;
+        font-weight: 400;
+        line-height: 1.4;
+        margin: 0;
+        margin-bottom: 30px; 
+      }
+
+      h1 {
+        font-size: 24px;
+        line-height: 36px;
+        font-weight: 700;
+        text-align: center;
+        text-transform: capitalize; 
+      }
+
+      p,
+      ul,
+      ol {
+        font-family: sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        margin: 0;
+        margin-bottom: 15px; 
+      }
+        p li,
+        ul li,
+        ol li {
+          list-style-position: inside;
+          margin-left: 5px; 
+      }
+
+      a {
+        color: #00A2E4;
+        text-decoration: none; 
+      }
+
+      /* -------------------------------------
+          BUTTONS
+      ------------------------------------- */
+      .btn {
+        box-sizing: border-box;
+        width: 100%; 
+      }
+      .btn > tbody > tr > td {
+        padding-bottom: 15px;
+      }
+      .btn table {
+        width: auto; 
+      }
+      .btn table td {
+        background-color: #ffffff;
+        border-radius: 5px;
+        text-align: center; 
+      }
+      .btn a {
+        box-sizing: border-box;
+        color: #fff;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 18px;
+        line-height: 20px;
+        font-weight: 700;
+        margin: 0;
+        padding: 8px 20px;
+        border-radius: 4px;
+        text-decoration: none;
+        text-transform: capitalize; 
+      }
+
+      .btn-primary a {
+        background-color: #E20074;
+        border-color: #E20074;
+        color: #ffffff; 
+      }
+
+      .btn-primary a:hover {
+        background-color: #E20074;
+      }
+
+      /* -------------------------------------
+          OTHER STYLES THAT MIGHT BE USEFUL
+      ------------------------------------- */
+      .last {
+        margin-bottom: 0; 
+      }
+
+      .first {
+        margin-top: 0; 
+      }
+
+      .align-center {
+        text-align: center; 
+      }
+
+      .align-right {
+        text-align: right; 
+      }
+
+      .align-left {
+        text-align: left; 
+      }
+
+      .clear {
+        clear: both; 
+      }
+
+      .mt0 {
+        margin-top: 0; 
+      }
+
+      .mb0 {
+        margin-bottom: 0; 
+      }
+
+      hr {
+        border: 0;
+        border-bottom: 1px solid #f6f6f6;
+        margin: 20px 0; 
+      }
+
+      .footer p {
+        font-size: 12px;
+        line-height: 16px;
+        color: #fff;
+        font-weight: 400;
+      }
+
+      .footer-menu {
+        width: 50%;
+      }
+
+    </style>
+  </head>
+  <body>
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
+      <tr>
+        <td>&nbsp;</td>
+        <td class="container">
+          <div class="content">
+
+            <!-- START CENTERED WHITE CONTAINER -->
+            <table role="presentation" class="main">
+              <!--START HEADER-->
+              <tr>
+                <td class="wrapper brand-background top-header" style="height: 84px;">
+                  <table>
+                    <tr>
+                      <td align="left" style="vertical-align: middle; font-size: 0; line-height: 0;">
+                          <svg width="73" height="38" viewBox="0 0 73 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M3.952 17.1144H0V24.6484H7.534V17.1144H3.952Z" fill="#FEFEFE"/>
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M30.135 0H0.372L0 13.128L1.974 13.469C2.341 9.601 3.357 6.731 5.02 4.858C6.77 2.898 9.179 1.874 12.277 1.786V29.249C12.277 31.648 11.942 33.205 11.242 33.923C10.647 34.536 9.64 34.912 8.223 35.052C7.802 35.087 7.085 35.105 6.07 35.105V37.205H24.437V35.105C23.422 35.105 22.705 35.087 22.284 35.052C20.867 34.912 19.86 34.536 19.265 33.923C18.565 33.205 18.226 31.648 18.226 29.249V1.786C21.324 1.874 23.737 2.898 25.488 4.858C27.151 6.731 28.166 9.601 28.533 13.469L30.507 13.128L30.135 0Z" fill="#FEFEFE"/>
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M22.9736 24.6485V17.1145H26.6186H30.5076V24.6485H22.9736Z" fill="#FEFEFE"/>
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M44.5762 24.6485V17.1145H48.1182H52.1102V24.6485H44.5762Z" fill="#FEFEFE"/>
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M68.9517 17.1144H65.1777V24.6484H72.7117V17.1144H68.9517Z" fill="#FEFEFE"/>
+  </svg>
+  
+                      </td>
+                      <td align="right" style="vertical-align: middle">
+
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <!-- END HEADER -->
+              <!-- START:: second header -->
+              <tr>
+                <td class="wrapper" style="background-color: #f8f8f8;padding: 36px 0;">
+                  <table>
+                    <tr>
+                      <td align="center" style="background: #f8f8f8;vertical-align: middle; font-size: 0; line-height: 0;">
+
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M4 12V49.001C4 50.104 4.897 51.001 6 51.001H58C59.103 51.001 60 50.104 60 49.001V12H4ZM32.003 31.396L9.531 15H54.474L32.003 31.396ZM7 48.001V15.629L31.414 33.441C31.445 33.464 31.482 33.474 31.515 33.492C31.547 33.51 31.577 33.526 31.61 33.541C31.737 33.596 31.869 33.634 32.002 33.634H32.003H32.004C32.138 33.634 32.269 33.597 32.396 33.542C32.43 33.528 32.46 33.511 32.492 33.493C32.525 33.474 32.561 33.465 32.592 33.442L57 15.632V48.001H7Z" fill="#6BB324"/>
+                        </svg>
+                          
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="center" style="vertical-align: middle">
+                        <h1 style="margin: 10px 0 0">DFT TOOL DETAILS</h1>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <!-- END: Second header -->
+
+              <!-- START MAIN CONTENT AREA -->
+              <tr>
+                <td class="wrapper main-content">
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td>
+                        <p><strong>Hello ${name},</strong></p>
+                        <p>DFT application deployed successfully.<table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
+                        <p>DFT frontend URL : ${dftfrontendurl}.<table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
+                        <p>DFT backend URL : ${dftbackendurl}.<table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
+                        </table>
+                        <p>Kind Regards<br/>Catina-X</p>
+<!--                        <p><a href="#">Learn more </a>about the Data Intelligence Hub</p>-->
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <!-- END MAIN CONTENT AREA -->
+
+              <!-- START: Footer -->
+              <tr>
+                <td class="wrapper footer align-center" style="padding: 36px;background-color: #1c0e15;font-size: 12px;line-height: 16px;font-weight: 400;color: #fff;">
+                  <table>
+                    <tr>
+                      <td style="padding: 0 100px;">
+<!--                        <p>DEUTSCHE TELEKOM AG<br/> Data Intelligence Hub (DIH) is a service offered by Deutsche Telekom IoT GmbH, a subsidiary of DEUTSCHE TELEKOM AG </p>-->
+<!--                        <p>Friedrich-Ebert-Allee 71 - 77  53113 Bonn, Germany<br>-->
+<!--                          E-Mail: impressum@telekom.de, Phone: +49 228 181-0</p>-->
+<!--                        <p>District Court of Bonn HRB 15237, Registered Office Bonn <br/>-->
+<!--                            VAT ID No. DE 254595353</p>-->
+                      </td>
+                    </tr>
+                  </table>
+<!--                  <table>-->
+<!--                    <tr>-->
+<!--                      <td class="align-left">© Deutsche Telekom AG</td>-->
+<!--                      <td class="align-right footer-menu">-->
+<!--                        <table>-->
+<!--                          <tr>-->
+<!--                            <td class="align-right">-->
+<!--                              <a href="#" target="_blank">Terms & Conditions</a>-->
+<!--                            </td>-->
+<!--                            <td class="align-right">-->
+<!--                              <a href="#" target="_blank">Data Privacy</a>-->
+<!--                            </td>-->
+<!--                            <td class="align-right">-->
+<!--                              <a href="#" target="_blank">Imprint</a>-->
+<!--                            </td>-->
+<!--                          </tr>-->
+<!--                        </table>-->
+<!--                      </td>-->
+<!--                    </tr>-->
+<!--                  </table>-->
+                  
+                </td>
+              </tr>
+              <!-- END: Footer -->
+            </table>
+            
+
+          </div>
+        </td>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+  </body>
+</html>
