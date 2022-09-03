@@ -9,6 +9,9 @@ import static com.poc.kubeappswrapper.constant.AppNameConstant.EDC_CONTROLPLANE;
 import static com.poc.kubeappswrapper.constant.AppNameConstant.EDC_DATAPLANE;
 import static com.poc.kubeappswrapper.constant.AppNameConstant.POSTGRES_DB;
 
+
+import com.poc.kubeappswrapper.manager.EmailManager;
+import com.poc.kubeappswrapper.model.EmailRequest;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +52,9 @@ public class KubeAppsOrchitestratorService {
 	@Autowired
 	private AutoSetupTriggerEntryRepository autoSetupTriggerEntryRepository;
 
+	@Autowired
+	private EmailManager emailManager;
+
 	@Value("${target.cluster}")
 	private String targetCluster;
 
@@ -58,7 +64,7 @@ public class KubeAppsOrchitestratorService {
 	@Value("${dns.name}")
 	private String dnsName;
 	
-	@Value("${dns.name.protocol}")
+	@Value("${dns.name}")
 	private String dnsNameURLProtocol;
 	
 	
@@ -131,6 +137,16 @@ public class KubeAppsOrchitestratorService {
 
 			Map<String, String> map = dftWorkFlow.getWorkFlow(customerDetails, action, inputConfiguration,
 					createTrigger);
+
+			//Send an email
+			Map<String, Object> emailContent = new HashMap<>();
+			emailContent.put("name", customerDetails.getOrganizationName());
+			emailContent.put("dftfrontendurl", map.get("dftfrontendurl"));
+			emailContent.put("dftbackendurl", map.get("dftbackendurl"));
+			emailManager.sendEmail(emailContent,"DFT Application Deployed Successfully", "success.html");
+			log.info("Email sent successfully");
+			//End of email sending code
+
 			Map<String, String> resultMap = new ConcurrentHashMap<>();
 			resultMap.put("dftfrontendurl", map.get("dftfrontendurl"));
 			resultMap.put("dftbackendurl", map.get("dftbackendurl"));
