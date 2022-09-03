@@ -143,12 +143,7 @@ public class KubeAppsOrchitestratorService {
 			emailContent.put("name", customerDetails.getOrganizationName());
 			emailContent.put("dftfrontendurl", map.get("dftfrontendurl"));
 			emailContent.put("dftbackendurl", map.get("dftbackendurl"));
-			EmailRequest emailRequest = EmailRequest.builder()
-					.emailContent(emailContent)
-					.subject("DFT Application Deployed Successfully")
-					.templateFileName("success.html")
-					.build();
-			emailManager.sendEmail(emailRequest);
+			emailManager.sendEmail(emailContent,"DFT Application Deployed Successfully", "success.html");
 			log.info("Email sent successfully");
 			//End of email sending code
 

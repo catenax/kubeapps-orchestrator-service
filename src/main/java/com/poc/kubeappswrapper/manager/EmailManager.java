@@ -6,6 +6,7 @@ import freemarker.template.TemplateException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Date;
+import java.util.Map;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Transport;
@@ -35,11 +36,16 @@ public class EmailManager {
         this.configuration = configuration;
     }
 
-    public ResponseEntity<String> sendEmail(EmailRequest emailRequest) {
+    public ResponseEntity<String> sendEmail(Map<String, Object> emailContent, String subject, String templateFileName) {
         try {
-
+            EmailRequest emailRequest = EmailRequest.builder()
+                    .emailContent(emailContent)
+                    .toEmail(toEmail)
+                    .subject(subject)
+                    .templateFileName(templateFileName)
+                    .build();
             mimeMessage.setFrom(new InternetAddress(fromEmail));
-            mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
+            mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(emailRequest.getToEmail()));
             mimeMessage.setSubject(emailRequest.getSubject());
 
             String data = getEmailContent(emailRequest);
