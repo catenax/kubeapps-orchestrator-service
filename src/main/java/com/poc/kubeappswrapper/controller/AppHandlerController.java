@@ -23,12 +23,12 @@ public class AppHandlerController {
 		return appHandlerService.getAllInstallPackages();
 	}
 
-	@PostMapping("/create-package")
+	@PostMapping("/trigger-autosetup")
 	public String createPackage(@RequestBody CustomerDetails customerDetails) {
 		return appHandlerService.createPackage(customerDetails);
 	}
 
-	@PutMapping("/update-package")
+	@PutMapping("/update-autosetup")
 	public String updatePackage(@RequestBody CustomerDetails customerDetails) {
 		return appHandlerService.updatePackage(customerDetails);
 	}
