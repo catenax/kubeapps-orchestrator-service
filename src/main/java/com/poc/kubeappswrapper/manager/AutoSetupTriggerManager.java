@@ -2,11 +2,13 @@ package com.poc.kubeappswrapper.manager;
 
 import static com.poc.kubeappswrapper.constant.TriggerStatusEnum.FAILED;
 import static com.poc.kubeappswrapper.constant.TriggerStatusEnum.INPROGRESS;
+import static com.poc.kubeappswrapper.constant.TriggerStatusEnum.MANUAL_UPDATE_PENDING;
 
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,9 @@ import com.poc.kubeappswrapper.constant.AppActions;
 import com.poc.kubeappswrapper.entity.AutoSetupTriggerDetails;
 import com.poc.kubeappswrapper.entity.AutoSetupTriggerEntry;
 import com.poc.kubeappswrapper.exception.NoDataFoundException;
+import com.poc.kubeappswrapper.kubeapp.mapper.AutoSetupTriggerMapper;
+import com.poc.kubeappswrapper.kubeapp.mapper.CustomerDetailsMapper;
+import com.poc.kubeappswrapper.model.AutoSetupTriggerResponse;
 import com.poc.kubeappswrapper.model.CustomerDetails;
 import com.poc.kubeappswrapper.repository.AutoSetupTriggerCustomRepository;
 import com.poc.kubeappswrapper.repository.AutoSetupTriggerEntryRepository;
@@ -27,27 +32,16 @@ public class AutoSetupTriggerManager {
 
 	private final AutoSetupTriggerEntryRepository autoSetupTriggerEntryRepository;
 	private final AutoSetupTriggerCustomRepository autoSetupTriggerDetailsRepository;
+	private final CustomerDetailsMapper customerDetailsMapper;
+	private final AutoSetupTriggerMapper autoSetupTriggerMapper;
 
 	public AutoSetupTriggerEntry createTrigger(CustomerDetails customerDetails, AppActions action, String triggerId) {
 		LocalDateTime now = LocalDateTime.now();
-		String json = "";
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			json = mapper.writeValueAsString(customerDetails);
-		} catch (Exception e) {
-
-		}
-
 		AutoSetupTriggerEntry autoSetupTriggerEntry = AutoSetupTriggerEntry.builder()
-				.organizationName(customerDetails.getOrganizationName())
-				.bpnNumber(customerDetails.getBpnNumber())
-				.autosetupRequest(json)
-				.triggerId(triggerId)
-				.triggerType(action.name())
-				.createdTimestamp(now.toString())
-				.modifiedTimestamp(now.toString())
-				.status(INPROGRESS.name())
-				.autosetupTenantName(customerDetails.getTenantName()).build();
+				.organizationName(customerDetails.getOrganizationName()).bpnNumber(customerDetails.getBpnNumber())
+				.autosetupRequest(customerDetailsMapper.fromCustomer(customerDetails)).triggerId(triggerId)
+				.triggerType(action.name()).createdTimestamp(now.toString()).modifiedTimestamp(now.toString())
+				.status(INPROGRESS.name()).autosetupTenantName(customerDetails.getTenantName()).build();
 
 		return autoSetupTriggerEntryRepository.save(autoSetupTriggerEntry);
 	}
@@ -62,28 +56,37 @@ public class AutoSetupTriggerManager {
 		return autoSetupTriggerDetailsRepository.save(autoSetupTriggerDetails);
 	}
 
-	public List<AutoSetupTriggerEntry> getAllTriggers() {
-		return autoSetupTriggerEntryRepository.findAll();
+	public List<AutoSetupTriggerResponse> getAllTriggers() {
+		return Optional.of(autoSetupTriggerEntryRepository.findAll())
+				.orElseGet(ArrayList::new)
+				.stream().map((obj)-> autoSetupTriggerMapper.fromEntitytoCustom(obj))
+				.toList();
 	}
 
-	public AutoSetupTriggerEntry getTriggerDetails(String triggerId) {
+	public AutoSetupTriggerResponse getTriggerDetails(String triggerId) {
 		return autoSetupTriggerEntryRepository.findById(triggerId)
-				.orElseThrow(() -> new NoDataFoundException("No data found for "+triggerId));
+				.map((obj)-> autoSetupTriggerMapper.fromEntitytoCustom(obj))
+				.orElseThrow(() -> new NoDataFoundException("No data found for " + triggerId));
+				
 	}
 
-	public AutoSetupTriggerEntry getCheckDetails(String triggerId) {
-		
-		AutoSetupTriggerEntry findAllByTriggerId = autoSetupTriggerEntryRepository.findById(triggerId)
-				.map(obj -> {
-						obj.setAutosetupTriggerDetails(null);
-						if (FAILED.name().equals(obj.getStatus())) {
-							obj.setRemark("Please connect with T-systems technical team for more advice");
-						}
-					 return obj;
-					})
-				.orElseThrow(() -> new NoDataFoundException("No data found for " + triggerId));
+	public AutoSetupTriggerResponse getCheckDetails(String triggerId) {
 
-		return findAllByTriggerId;
+		return autoSetupTriggerEntryRepository.findById(triggerId).map(obj -> {
+			AutoSetupTriggerResponse newobj= autoSetupTriggerMapper.fromEntitytoCustom(obj);
+			newobj.setAutosetupTriggerDetails(null);
+			newobj.setAutosetupRequest(null);
+			
+			if (FAILED.name().equals(obj.getStatus())) {
+				newobj.setRemark("Please connect with technical team for more advice");
+			}
+			
+			if(MANUAL_UPDATE_PENDING.name().equals(obj.getStatus())) {
+				newobj.setProcessResult(Map.of());
+			}
+			return newobj;
+		}).orElseThrow(() -> new NoDataFoundException("No data found for " + triggerId));
+
 	}
 
 }

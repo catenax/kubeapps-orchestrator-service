@@ -2,9 +2,13 @@ package com.poc.kubeappswrapper.manager;
 
 import java.util.Map;
 
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.retry.support.RetrySynchronizationManager;
 import org.springframework.stereotype.Service;
 
 import com.poc.kubeappswrapper.constant.AppNameConstant;
+import com.poc.kubeappswrapper.exception.ServiceException;
 import com.poc.kubeappswrapper.factory.AppFactory;
 import com.poc.kubeappswrapper.kubeapp.mapper.CreatePackageMapper;
 import com.poc.kubeappswrapper.kubeapp.model.CreateInstalledPackageRequest;
@@ -56,6 +60,8 @@ public class KubeAppsPackageManagement {
 
 	}
 
+	@Retryable(value = {
+			ServiceException.class }, maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.backOffDelay}"))
 	public void deletePackage(AppNameConstant app, String tenantName, Map<String, String> inputProperties) {
 
 		try {
@@ -73,7 +79,13 @@ public class KubeAppsPackageManagement {
 					appWithStandardInfo.getTargetNamespace(), tenantName + appName.toLowerCase(), updateControlPlane);
 			log.info(tenantName + "-" + app.name() + " package deleted ");
 		} catch (Exception e) {
-			log.error("Error in " + tenantName + "-" + app.name() + " package delete " + e.getMessage());
+
+			log.error("DeletePackage failed retry attempt: : {}, Error: {}",
+					RetrySynchronizationManager.getContext().getRetryCount() + 1, e.getMessage());
+			
+			if (!e.getMessage().contains("404"))
+				throw new ServiceException(
+						"Error in " + tenantName + "-" + app.name() + " package delete " + e.getMessage());
 		}
 
 	}

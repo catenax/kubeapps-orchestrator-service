@@ -3,10 +3,11 @@ package com.poc.kubeappswrapper.factory.builder;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.text.StringSubstitutor;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.jsontemplate.JsonTemplate;
 import com.poc.kubeappswrapper.entity.AppDetails;
 
 import lombok.SneakyThrows;
@@ -26,19 +27,19 @@ public class AppConfigurationBuilder {
 				HashMap.class);
 
 		expectedInputConfiguration.forEach((key, value) -> {
-			
-			if(inputProperties.containsKey(value)) {
+
+			if (inputProperties.containsKey(value)) {
 				String stringValue = inputProperties.get(value);
 				expectedConfiguration.put(key, stringValue);
-			}
-			else 
+			} else
 				expectedConfiguration.put(key, value.toString());
 		});
 
 		StringBuffer sb = new StringBuffer();
 		Map<String, Object> dyanamicYamlValues = new HashMap<>();
 		if ("JSON".equals(appDetails.getYamlValueFieldType())) {
-			dyanamicYamlValues.put("yamlValues", expectedConfiguration);
+			String str=new JSONObject(expectedConfiguration).toString();
+			dyanamicYamlValues.put("yamlValues", str);
 
 		} else {
 			expectedConfiguration.forEach((key, value) -> {
@@ -46,12 +47,15 @@ public class AppConfigurationBuilder {
 			});
 			dyanamicYamlValues.put("yamlValues", sb.toString());
 		}
-		
-		dyanamicYamlValues.put("dnsName", inputProperties.get("dnsName") );
-		
-		JsonTemplate jstemplate = new JsonTemplate(appDetails.getRequiredYamlConfiguration())
-				.withVars(dyanamicYamlValues);
-		return jstemplate.compactString();
+
+		dyanamicYamlValues.put("dnsName", inputProperties.get("dnsName"));
+
+
+		// Initialize StringSubstitutor instance with value map
+		StringSubstitutor stringSubstitutor = new StringSubstitutor(dyanamicYamlValues);
+
+		// replace value map to template string
+		return stringSubstitutor.replace(appDetails.getRequiredYamlConfiguration());
 	}
 
 }

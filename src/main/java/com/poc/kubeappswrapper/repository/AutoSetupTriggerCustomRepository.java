@@ -24,11 +24,13 @@ public class AutoSetupTriggerCustomRepository {
 	}
 
 	public AutoSetupTriggerEntry saveTriggerUpdate(AutoSetupTriggerEntry autoSetupTriggerEntry) throws Exception {
-//		jdbcTemplate.update(
-//				"UPDATE auto_setup_trigger_tbl set status=?, modified_timestamp=?, remark=? where status=? and autosetup_tenant_name=? and bpn_number=?",
-//				"CLOSED",
-//				autoSetupTriggerEntry.getModifiedTimestamp(), "Force close",
-//				TriggerStatusEnum.MANUAL_UPDATE_PENDING.name(), autoSetupTriggerEntry.getAutosetupTenantName(), autoSetupTriggerEntry.getBpnNumber());
+		
+		jdbcTemplate.update(
+				"UPDATE auto_setup_trigger_tbl set status=?, modified_timestamp=?, remark=? where status=? and autosetup_tenant_name=? and bpn_number=?",
+				"CLOSED",
+				autoSetupTriggerEntry.getModifiedTimestamp(), "Force close",
+				TriggerStatusEnum.MANUAL_UPDATE_PENDING.name(), autoSetupTriggerEntry.getAutosetupTenantName(), autoSetupTriggerEntry.getBpnNumber());
+		
 		jdbcTemplate.update(
 				"UPDATE auto_setup_trigger_tbl set status=? ,autosetup_result=?, modified_timestamp=?, remark=? where trigger_id=?",
 				autoSetupTriggerEntry.getStatus(), autoSetupTriggerEntry.getAutosetupResult(),

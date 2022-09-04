@@ -41,14 +41,15 @@ public class EDCDataplaneManager {
 			String dnsName = inputData.get("dnsName");
 			String dnsNameURLProtocol = inputData.get("dnsNameURLProtocol");
 
-			String dataplaneurl = dnsNameURLProtocol + "://" + dnsName + "/edcdataplane";
+			String dataplaneurl = dnsNameURLProtocol + "://" + dnsName;
 
 			if (AppActions.CREATE.equals(action))
 				appManagement.createPackage(EDC_DATAPLANE, customerDetails.getTenantName(), inputData);
 			else
 				appManagement.updatePackage(EDC_DATAPLANE, customerDetails.getTenantName(), inputData);
 
-			inputData.put("dataplanepublicendpoint", dataplaneurl);
+			inputData.put("dataplaneendpoint", dataplaneurl);
+			inputData.put("dataplanepublicendpoint", dataplaneurl+"/public");
 
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
 

@@ -30,7 +30,6 @@ public class EDCControlplaneManager {
 	private final KubeAppsPackageManagement appManagement;
 	private final AutoSetupTriggerManager autoSetupTriggerManager;
 
-
 	@Retryable(value = {
 			ServiceException.class }, maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.backOffDelay}"))
 	public Map<String, String> managePackage(CustomerDetails customerDetails, AppActions action,
@@ -48,11 +47,10 @@ public class EDCControlplaneManager {
 
 			inputData.put("edcapi-key", "X-Api-Key");
 			inputData.put("edcapi-key-value", generateRandomPassword);
-			inputData.put("dataplanepublicurl",
-					"http://" + customerDetails.getTenantName() + "edcdataplane-edc-dataplane:8185/api/public");
+			inputData.put("dataplanepublicurl", dnsNameURLProtocol + "://" + customerDetails.getTenantName()
+					+ "edcdataplane-edc-dataplane:8185/api/public");
 
-			String controlplaneurl = dnsNameURLProtocol+"://"+dnsName + "/edccontrolplane";
-			
+			String controlplaneurl = dnsNameURLProtocol + "://" + dnsName;
 
 			String edcDb = "jdbc:postgresql://" + customerDetails.getTenantName()
 					+ "edcpostgresdb-postgresql:5432/postgres";
@@ -63,9 +61,12 @@ public class EDCControlplaneManager {
 			else
 				appManagement.updatePackage(EDC_CONTROLPLANE, customerDetails.getTenantName(), inputData);
 
-			outputData.put("controlplanevalidationendpoint",
-					customerDetails.getTenantName() + "edccontrolplane-edc-controlplane");
-			outputData.put("controlplanedataendpoint", controlplaneurl);
+			outputData.put(
+					"controlplanevalidationendpoint",
+					dnsNameURLProtocol + "://" + customerDetails.getTenantName() + "edccontrolplane-edc-controlplane:8182/validation/token");
+
+			outputData.put("controlplaneendpoint", controlplaneurl);
+			outputData.put("controlplanedataendpoint", controlplaneurl + "/data");
 			outputData.put("edcapi-key", "X-Api-Key");
 			outputData.put("edcapi-key-value", generateRandomPassword);
 

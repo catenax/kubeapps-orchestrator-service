@@ -8,9 +8,12 @@ import lombok.Data;
 public class DFTUpdateRequest {
 
     private String bpnNumber;
-    private String keycloackUrl;
-    private String keycloackClientId;
-    private String keyclackRealm;
+    
+    private String keycloakUrl;
+    private String keycloakRealm;
+    private String keycloakFrontendClientId;
+    private String keycloakBackendClientId;
+    
     private String digitalTwinUrl;
     private String digitalTwinAuthUrl;
     private String digitalTwinClientId;

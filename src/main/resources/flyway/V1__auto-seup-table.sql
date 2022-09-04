@@ -1,16 +1,16 @@
-CREATE TABLE app_tbl (
-  app_name varchar(255) NOT NULL,
-  context_cluster varchar(255) DEFAULT NULL,
-  context_namespace varchar(255) DEFAULT NULL,
-  expected_input_data longtext,
-  output_data longtext,
-  package_identifier varchar(255) DEFAULT NULL,
-  package_version varchar(255) DEFAULT NULL,
-  plugin_name varchar(255) DEFAULT NULL,
-  plugin_version varchar(255) DEFAULT NULL,
-  required_yaml_configuration longtext,
-  yaml_value_field_type longtext,
-  PRIMARY KEY (app_name)
+CREATE TABLE `app_tbl` (
+  `app_name` varchar(255) NOT NULL,
+  `context_cluster` varchar(255) DEFAULT NULL,
+  `context_namespace` varchar(255) DEFAULT NULL,
+  `expected_input_data` longtext,
+  `output_data` longtext,
+  `package_identifier` varchar(255) DEFAULT NULL,
+  `package_version` varchar(255) DEFAULT NULL,
+  `plugin_name` varchar(255) DEFAULT NULL,
+  `plugin_version` varchar(255) DEFAULT NULL,
+  `required_yaml_configuration` longtext,
+  `yaml_value_field_type` longtext,
+  PRIMARY KEY (`app_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT INTO app_tbl
@@ -20,44 +20,55 @@ VALUES('DFT_BACKEND', 'default', 'kubeapps', '{"server.port":"8080",
 "spring.servlet.multipart.file-size-threshold":"2KB",
 "spring.servlet.multipart.max-file-size":"200MB",
 "spring.servlet.multipart.max-request-size":"215MB",
-"server.servlet.context-path":"/api",
+"server.servlet.context-path":"/dftbackend/api",
 "spring.flyway.baseline-on-migrate":"true",
 "spring.flyway.locations":"classpath:/flyway",
 "file.upload-dir":"./temp/",
 "logging.level.org.apache.http":"info",
 "logging.level.root":"info",
+
 "spring.datasource.driver-class-name":"org.postgresql.Driver",
 "spring.jpa.open-in-view":"false",
 "spring.datasource.url":"dftdatabaseurl",
 "spring.datasource.username":"username",
 "spring.datasource.password":"password",
-"digital-twins.hostname":"dthostname",
-"digital-twins.authentication.url":"dtauthurl",
-"digital-twins.authentication.clientId":"dtclientId",
-"digital-twins.authentication.clientSecret":"dtclientsecret",
+
+"digital-twins.hostname":"digital-twins.hostname",
+"digital-twins.authentication.url":"digital-twins.authentication.url",
+"digital-twins.authentication.clientId":"digital-twins.authentication.clientId",	
+"digital-twins.authentication.clientSecret":"digital-twins.authentication.clientSecret",
+
 "edc.enabled":"true",
 "edc.hostname":"controlplanedataendpoint",
 "edc.apiKeyHeader":"edcapi-key",
 "edc.apiKey":"edcapi-key-value",
-"dft.hostname":"dft.hostname",
-"dft.apiKeyHeader":"dft.apiKeyHeader",
-"dft.apiKey":"dft.apiKey",
+
+"dft.hostname":"dftbackendurl",
+"dft.apiKeyHeader":"dftbackendapiKeyHeader",
+"dft.apiKey":"dftbackendapikey",
 "manufacturerId":"manufacturerId",
-"keycloak.realm":"kcrealm",
-"keycloak.auth-server-url":"kcurl",
+
+"edc.consumer.hostname":"controlplaneendpoint",
+"edc.consumer.apikeyheader":"edcapi-key",
+"edc.consumer.apikey":"edcapi-key-value",
+"edc.consumer.datauri":"/api/v1/ids/data",
+
+"keycloak.realm":"dftcloakrealm",
+"keycloak.auth-server-url":"dftkeycloakurl",
 "keycloak.ssl-required":"external",
-"keycloak.resource":"kcresource",
+"keycloak.resource":"dftbackendkeycloakclientid",
 "keycloak.use-resource-role-mappings":"true",
-"keycloak.bearer-only":"true"}', NULL, 'dft/dftbackend', '1.0.0', 'helm.packages', 'v1alpha1', '{configuration: {properties:$yamlValues}}', 'PROPERTY');
+"keycloak.bearer-only":"true"
+}', NULL, 'orch-repo/dftbackend', '1.1.7', 'helm.packages', 'v1alpha1', '{"ingresses":[{"enabled": true, "hostname":"$\{dnsName\}", "className": "nginx", "endpoints":["default"], "tls":{"enabled":true, "tlsSecret": "backendsecret"}}], "configuration": {"properties": "$\{yamlValues\}"}}', 'PROPERTY');
 INSERT INTO app_tbl
 (app_name, context_cluster, context_namespace, expected_input_data, output_data, package_identifier, package_version, plugin_name, plugin_version, required_yaml_configuration, yaml_value_field_type)
 VALUES('DFT_FRONTEND', 'default', 'kubeapps', '{"REACT_APP_API_URL":"dftbackendurl",
 "REACT_APP_API_KEY":"dftbackendapikey",
-"REACT_APP_API_KEYCLOCK_URL":"kcurl",
-"REACT_APP_API_KEYCLOCK_REALM":"kcrealm",
-"REACT_APP_API_KEYCLOCK_CLIENTID":"kcresource",
-"REACT_APP_FILESIZE":"268435456"}', NULL, 'dft/dftfrontend', '1.0.0', 'helm.packages', 'v1alpha1', '{configuration: {properties:$yamlValues}}
-', 'PROPERTY');
+"REACT_APP_KEYCLOAK_URL":"dftkeycloakurl",
+"REACT_APP_KEYCLOAK_REALM":"dftcloakrealm",
+"REACT_APP_CLIENT_ID":"dftfrontendkeycloakclientid",
+"REACT_APP_DEFAULT_COMPANY_BPN":"bpnnumber",
+"REACT_APP_FILESIZE":"268435456"}', NULL, 'orch-repo/dftfrontend', '1.2.0', 'helm.packages', 'v1alpha1', '{"ingresses":[{"enabled": true, "hostname":"$\{dnsName\}", "className": "nginx", "endpoints":["default"], "tls":{"enabled":true, "tlsSecret": "frontend"}}], "configuration": {"properties": "$\{yamlValues\}"}}', 'PROPERTY');
 INSERT INTO app_tbl
 (app_name, context_cluster, context_namespace, expected_input_data, output_data, package_identifier, package_version, plugin_name, plugin_version, required_yaml_configuration, yaml_value_field_type)
 VALUES('EDC_CONTROLPLANE', 'default', 'kubeapps', '{"edc.receiver.http.endpoint": "http://localhost:10092/edc-backend/api/v1/public",
@@ -90,9 +101,11 @@ VALUES('EDC_CONTROLPLANE', 'default', 'kubeapps', '{"edc.receiver.http.endpoint"
 "edc.transfer.dataplane.token.signer.privatekey.alias": "certificate-private-key",
 
 "edc.transfer.proxy.token.signer.privatekey.alias": "certificate-private-key",
+"edc.transfer.proxy.token.verifier.publickey.alias":"certificate-private-key",
 
 "edc.oauth.public.key.alias": "daps-cert",
 "edc.oauth.private.key.alias": "certificate-private-key",
+"edc.data.encryption.keys.alias":"certificate-private-key",
 
 "edc.datasource.asset.name": "asset",
 "edc.datasource.asset.url": "edcdatabaseurl",
@@ -119,18 +132,17 @@ VALUES('EDC_CONTROLPLANE', 'default', 'kubeapps', '{"edc.receiver.http.endpoint"
 "edc.datasource.transferprocess.user": "username",
 "edc.datasource.transferprocess.password": "password",
 "edc.transfer.proxy.endpoint":"dataplanepublicurl"
-}', NULL, 'edcrepo/edc-controlplane', '0.0.6', 'helm.packages', 'v1alpha1', '{configuration: {properties:$yamlValues}}
-', 'PROPERTY');
+}', NULL, 'edcrepo/edc-controlplane', '0.0.6', 'helm.packages', 'v1alpha1', '{"ingresses":[{"enabled": true,  "tls":{"enabled": true, "tlsSecret": "edccontrolplane"}, "hostname": "$\{dnsName\}", "className": "nginx", "endpoints":["ids", "data", "control", "default"]}], "configuration": {"properties": "$\{yamlValues\}"}}', 'PROPERTY');
 INSERT INTO app_tbl
 (app_name, context_cluster, context_namespace, expected_input_data, output_data, package_identifier, package_version, plugin_name, plugin_version, required_yaml_configuration, yaml_value_field_type)
 VALUES('EDC_DATAPLANE', 'default', 'kubeapps', '{"edc.hostname":"localhost",
 "edc.vault.hashicorp.url":"vaulturl",
 "edc.vault.hashicorp.token":"vaulttoken",
 "edc.vault.hashicorp.timeout.seconds":"vaulttimeout",
-"edc.dataplane.token.validation.endpoint":"controlplanevalidationendpoint"}', NULL, 'edcrepo/edc-dataplane', '0.0.6', 'helm.packages', 'v1alpha1', '{configuration:{properties:$yamlValues}}', 'PROPERTY');
+"edc.dataplane.token.validation.endpoint":"controlplanevalidationendpoint"}', NULL, 'edcrepo/edc-dataplane', '0.0.6', 'helm.packages', 'v1alpha1', '{"ingresses":[{"enabled": true, "tls":{"enabled": true, "tlsSecret": "edcdataplane"}, "hostname": "$\{dnsName\}", "className": "nginx", "endpoints":["public"]}], "configuration": {"properties": "$\{yamlValues\}"}}', 'PROPERTY');
 INSERT INTO app_tbl
 (app_name, context_cluster, context_namespace, expected_input_data, output_data, package_identifier, package_version, plugin_name, plugin_version, required_yaml_configuration, yaml_value_field_type)
 VALUES('POSTGRES_DB', 'default', 'kubeapps', '{"postgresPassword":"postgresPassword",
 		"username":"username",
 		"password":"password",
-		"database":"database"}', NULL, 'bitnami/postgresql', '11.8.1', 'helm.packages', 'v1alpha1', '{global:{postgresql:{auth:$yamlValues}}}', 'JSON');
+		"database":"database"}', NULL, 'bitnami/postgresql', '11.8.1', 'helm.packages', 'v1alpha1', '{"global": {"postgresql" : {"auth" :$\{yamlValues\}}}}', 'JSON');

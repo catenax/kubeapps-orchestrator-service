@@ -33,7 +33,7 @@ public class AutoSetupTriggerEntry {
 	private String triggerId;
 
 	private String triggerType;
-	
+
 	private String organizationName;
 
 	@JsonIgnore
@@ -43,22 +43,22 @@ public class AutoSetupTriggerEntry {
 	@JoinColumn(name = "trigger_id", referencedColumnName = "triggerId")
 	private List<AutoSetupTriggerDetails> autosetupTriggerDetails;
 
-	@Column(name="autosetup_request",columnDefinition="LONGTEXT")
+	@Column(name = "autosetup_request", columnDefinition = "LONGTEXT")
 	private String autosetupRequest;
 
-	@Column(name="autosetup_result",columnDefinition="LONGTEXT")
+	@Column(name = "autosetup_result", columnDefinition = "LONGTEXT")
 	private String autosetupResult;
 
-	@Column(name="bpn_number")
+	@Column(name = "bpn_number")
 	private String bpnNumber;
-	
+
 	private String createdTimestamp;
 
 	private String modifiedTimestamp;
 
 	private String status;
 
-	@Column(name="remark",columnDefinition="LONGTEXT")
+	@Column(name = "remark", columnDefinition = "LONGTEXT")
 	private String remark;
 
 	public void addTriggerDetails(AutoSetupTriggerDetails autoSetupTriggerDetails) {
@@ -66,5 +66,4 @@ public class AutoSetupTriggerEntry {
 			autosetupTriggerDetails = new ArrayList<>();
 		autosetupTriggerDetails.add(autoSetupTriggerDetails);
 	}
-
 }

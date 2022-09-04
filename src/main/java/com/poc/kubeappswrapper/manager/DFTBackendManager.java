@@ -45,10 +45,14 @@ public class DFTBackendManager {
 
 			inputData.put("manufacturerId", customerDetails.getBpnNumber());
 
+			String backendurl = dnsNameURLProtocol + "://" + dnsName + "/dftbackend/api";
+			String dftfrontend = dnsNameURLProtocol + "://" + dnsName;
+
 			String generateRandomPassword = PasswordGenerator.generateRandomPassword(50);
-			inputData.put("dft.apiKey", generateRandomPassword);
-			inputData.put("dft.apiKeyHeader", "API_KEY");
-			inputData.put("dftfrontendurl", dnsNameURLProtocol + "://" + dnsName + "/dftfrontend");
+			inputData.put("dftbackendurl", backendurl);
+			inputData.put("dftbackendapikey", generateRandomPassword);
+			inputData.put("dftbackendapiKeyHeader", "API_KEY");
+			inputData.put("dftfrontendurl", dftfrontend);
 
 			Map<String, String> portalDetails = portalIntegrationManager.getDigitalandKeyCloackDetails(customerDetails,
 					inputData);
@@ -58,17 +62,14 @@ public class DFTBackendManager {
 					+ "dftpostgresdb-postgresql:5432/postgres";
 			inputData.put("dftdatabaseurl", dftDb);
 
-			String backendurl = dnsNameURLProtocol + "://" + dnsName + "/dftbackend";
-
-			inputData.put("dft.hostname", backendurl);
+			
 
 			if (AppActions.CREATE.equals(action))
 				appManagement.createPackage(DFT_BACKEND, customerDetails.getTenantName(), inputData);
 			else
 				appManagement.updatePackage(DFT_BACKEND, customerDetails.getTenantName(), inputData);
 
-			inputData.put("dftbackendurl", backendurl);
-			inputData.put("dftbackendapikey", PasswordGenerator.generateRandomPassword(60));
+			
 
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
 
