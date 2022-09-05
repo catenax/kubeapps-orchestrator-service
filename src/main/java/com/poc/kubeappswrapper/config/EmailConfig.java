@@ -45,7 +45,7 @@ public class EmailConfig {
         props.put("mail.smtp.port", port);
         props.put("mail.smtp.starttls.enable", startTlsEnable);
         props.put("mail.smtp.auth", auth);
-        props.put("mail.debug", "true");
+        //props.put("mail.debug", "true");
         return props;
     }
 }
