@@ -120,9 +120,9 @@ spec:
             - name: KEYCLOAK_SSL-REQUIRED
               value: "external"
             - name: KEYCLOAK_USE-RESOURCE-ROLE-MAPPINGS
-              value: true
+              value: "true"
             - name: KEYCLOAK_BEARER-TOKEN
-              value: true
+              value: "true"
             - name: MAIL_SMTP_HOST
               value: "mailauth.telekom.de"
             - name: MAIL_SMTP_PORT
@@ -130,9 +130,9 @@ spec:
             - name: MAIL_FROM_ADDRESS
               value: "Auto Setup technical team<tech@telekom.de>"
             - name: MAIL_SMTP_STARTTLS_ENABLE
-              value: true
+              value: "true"
             - name: MAIL_SMTP_AUTH
-              value: true
+              value: "true"
 
 
           resources:
