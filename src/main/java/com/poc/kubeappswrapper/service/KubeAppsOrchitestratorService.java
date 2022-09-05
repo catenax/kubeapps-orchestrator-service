@@ -304,6 +304,7 @@ public class KubeAppsOrchitestratorService {
 		resultMap.put("dftfrontendurl", outputMap.get("dftfrontendurl"));
 		resultMap.put("dftbackendurl", outputMap.get("dftbackendurl"));
 		resultMap.put("controlplaneendpoint", outputMap.get("controlplaneendpoint"));
+		resultMap.put("controlplanedataendpoint", outputMap.get("controlplanedataendpoint"));
 		resultMap.put("dataplanepublicendpoint", outputMap.get("dataplanepublicendpoint"));
 		resultMap.put("edcapi-key", outputMap.get("edcapi-key"));
 		resultMap.put("edcapi-key-value", outputMap.get("edcapi-key-value"));

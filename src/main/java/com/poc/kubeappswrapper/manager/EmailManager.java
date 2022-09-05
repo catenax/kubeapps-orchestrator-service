@@ -1,27 +1,28 @@
 package com.poc.kubeappswrapper.manager;
 
-import com.poc.kubeappswrapper.exception.ValidationException;
-import com.poc.kubeappswrapper.model.EmailRequest;
-import freemarker.template.Configuration;
-import freemarker.template.TemplateException;
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.Map;
 
-import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import com.poc.kubeappswrapper.exception.ValidationException;
+import com.poc.kubeappswrapper.model.EmailRequest;
+
+import freemarker.template.Configuration;
+import freemarker.template.TemplateException;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
