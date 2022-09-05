@@ -58,6 +58,8 @@ spec:
                 secretKeyRef:
                   name: vault-secrets
                   key: vaultToken
+            - name: VAULT_TIMEOUT
+              value: "30"
             - name: DAPS_URL
               valueFrom:
                 secretKeyRef:
