@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.retry.support.RetrySynchronizationManager;
 import org.springframework.stereotype.Service;
 
 import com.poc.kubeappswrapper.constant.AppActions;
@@ -27,8 +28,6 @@ public class DFTFrontendManager {
 	private final KubeAppsPackageManagement appManagement;
 	private final AutoSetupTriggerManager autoSetupTriggerManager;
 	
-	private int counter=0;
-
 	
 	@Retryable(value = { ServiceException.class }, maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.backOffDelay}"))
 	public Map<String, String> managePackage(CustomerDetails customerDetails, AppActions action,
@@ -51,8 +50,8 @@ public class DFTFrontendManager {
 
 		} catch (Exception ex) {
 			
-			counter++;
-			log.info("DftFrontendManager failed retry attempt: "+counter);
+			log.error("DftFrontendManager failed retry attempt: : {}",
+					RetrySynchronizationManager.getContext().getRetryCount() + 1);
 			
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.FAILED.name());
 			autoSetupTriggerDetails.setRemark(ex.getMessage());

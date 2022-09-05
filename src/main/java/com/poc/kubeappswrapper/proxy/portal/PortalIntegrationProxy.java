@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "PortalIntegrationProxy", url = "${portal.url}", configuration = PortalIntegrationConfiguration.class)
 public interface  PortalIntegrationProxy {
 	
-	@GetMapping(path = "/portal/getDigitaltwinandKeyclockdetails")
-	String getDigitaltwinandKeyclockdetails(@RequestParam String dftFrontendUrl);
+	@GetMapping(path = "/portal/getDigitaltwinandkeycloakdetails")
+	String getDigitaltwinandkeycloakdetails(@RequestParam String dftFrontendUrl);
 
 }

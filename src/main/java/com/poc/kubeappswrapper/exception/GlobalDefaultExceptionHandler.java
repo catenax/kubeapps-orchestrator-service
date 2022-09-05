@@ -24,5 +24,10 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
 
 		return new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-	
+
+	@ExceptionHandler(ValidationException.class)
+	public ResponseEntity<String> handleValidationException(ValidationException ex, WebRequest request) {
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+	}
+
 }

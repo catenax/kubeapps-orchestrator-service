@@ -18,19 +18,22 @@ public class PortalIntegrationManager {
 	public Map<String, String> getDigitalandKeyCloackDetails(CustomerDetails customerDetails,
 			Map<String, String> inputData) {
 
-		//String dftfrontendUrl = inputData.get("dftfrontendurl");
-		
-		//String digitaltwinandKeyclockdetails = portalIntegrationProxy.getDigitaltwinandKeyclockdetails(dftfrontendUrl);
+		// String dftfrontendUrl = inputData.get("dftfrontendurl");
 
-		inputData.put("digital-twins.hostname", "https://semantics.dev.demo.catena-x.net");
-		inputData.put("digital-twins.authentication.url",
-				"https://centralidp.dev.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token");
-		inputData.put("digital-twins.authentication.clientId", "sa-cl6-cx-17");
-		inputData.put("digital-twins.authentication.clientSecret", "Fc82eBzxmqSGkmRykBwqRdoYiJ3xVFyy");
+		// String digitaltwinandkeycloakdetails =
+		// portalIntegrationProxy.getDigitaltwinandkeycloakdetails(dftfrontendUrl);
 
-		inputData.put("dftkeyclockurl", "");
-		inputData.put("dftkeyclockrealm", "");
-		inputData.put("dftkeyclockclientid", "");
+//		inputData.put("digital-twins.hostname", "https://semantics.dev.demo.catena-x.net");
+//		inputData.put("digital-twins.authentication.url",
+//				"https://centralidp.dev.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token");
+//		inputData.put("digital-twins.authentication.clientId", "sa-cl6-cx-17");
+//		inputData.put("digital-twins.authentication.clientSecret", "Fc82eBzxmqSGkmRykBwqRdoYiJ3xVFyy");
+
+//		inputData.put("dftkeycloakurl", dftUpdateRequest.getKeycloakUrl());
+//		inputData.put("dftcloakrealm", dftUpdateRequest.getKeycloakRealm());
+//		inputData.put("dftbackendkeycloakclientid", dftUpdateRequest.getKeycloakBackendClientId());
+//		inputData.put("dftfrontendkeycloakclientid", dftUpdateRequest.getKeycloakFrontendClientId());
+
 
 		return inputData;
 	}

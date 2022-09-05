@@ -2,11 +2,15 @@ package com.poc.kubeappswrapper.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Builder(access = lombok.AccessLevel.PUBLIC)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CustomerDetails {
 
 	private String organizationName;

@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.retry.support.RetrySynchronizationManager;
 import org.springframework.stereotype.Service;
 
 import com.poc.kubeappswrapper.constant.AppActions;
@@ -26,8 +27,6 @@ public class PostgresDBManager {
 
 	private final KubeAppsPackageManagement appManagement;
 	private final AutoSetupTriggerManager autoSetupTriggerManager;
-	
-	private int counter;
 
 	@Retryable(value = {
 			ServiceException.class }, maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.backOffDelay}"))
@@ -38,7 +37,6 @@ public class PostgresDBManager {
 				.id(UUID.randomUUID().toString()).step(POSTGRES_DB.name() + "" + packagefor)
 				.triggerIdforinsert(triger.getTriggerId()).build();
 		try {
-
 			inputData.put("postgresPassword", "admin@123");
 			inputData.put("username", "admin");
 			inputData.put("password", "admin@123");
@@ -52,10 +50,10 @@ public class PostgresDBManager {
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
 
 		} catch (Exception ex) {
-			
-			counter++;
-			log.info("PostgresDBManager failed retry attempt: "+counter);
-			
+
+			log.error("PostgresDBManager failed retry attempt: : {}",
+					RetrySynchronizationManager.getContext().getRetryCount() + 1);
+
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.FAILED.name());
 			autoSetupTriggerDetails.setRemark(ex.getMessage());
 			throw new ServiceException("PostgresDBManager Oops! We have an exception - " + ex.getMessage());

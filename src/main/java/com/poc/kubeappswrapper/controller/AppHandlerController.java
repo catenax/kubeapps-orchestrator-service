@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.poc.kubeappswrapper.model.CustomerDetails;
+import com.poc.kubeappswrapper.model.DFTUpdateRequest;
 import com.poc.kubeappswrapper.service.KubeAppsOrchitestratorService;
 
 @RestController
@@ -22,14 +23,20 @@ public class AppHandlerController {
 		return appHandlerService.getAllInstallPackages();
 	}
 
-	@PostMapping("/create-package")
+	@PostMapping("/trigger-autosetup")
 	public String createPackage(@RequestBody CustomerDetails customerDetails) {
 		return appHandlerService.createPackage(customerDetails);
 	}
 
-	@PutMapping("/update-package")
+	@PutMapping("/update-autosetup")
 	public String updatePackage(@RequestBody CustomerDetails customerDetails) {
 		return appHandlerService.updatePackage(customerDetails);
+	}
+
+	 //update dft packages input: keycloack details for frontend and backend, digital twin details
+	@PutMapping("/update-dft-package")
+	public String updateDftPackage(@RequestBody DFTUpdateRequest dftUpdateRequest) {
+		return appHandlerService.updateDftPackage(dftUpdateRequest);
 	}
 
 	@DeleteMapping("/delete-package")
