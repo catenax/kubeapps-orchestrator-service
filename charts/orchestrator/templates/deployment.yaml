@@ -46,6 +46,8 @@ spec:
                 secretKeyRef:
                   name: db-secrets
                   key: dbpassword
+            - name: SPRING_JPA_HIBERNATE_DDL-AUTO
+              value: "update"
             - name: VAULT_URL
               valueFrom:
                 secretKeyRef:
