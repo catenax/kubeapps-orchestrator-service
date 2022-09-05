@@ -61,9 +61,8 @@ public class EDCControlplaneManager {
 			else
 				appManagement.updatePackage(EDC_CONTROLPLANE, customerDetails.getTenantName(), inputData);
 
-			outputData.put(
-					"controlplanevalidationendpoint",
-					dnsNameURLProtocol + "://" + customerDetails.getTenantName() + "edccontrolplane-edc-controlplane:8182/validation/token");
+			outputData.put("controlplanevalidationendpoint", dnsNameURLProtocol + "://"
+					+ customerDetails.getTenantName() + "edccontrolplane-edc-controlplane:8182/validation/token");
 
 			outputData.put("controlplaneendpoint", controlplaneurl);
 			outputData.put("controlplanedataendpoint", controlplaneurl + "/data");

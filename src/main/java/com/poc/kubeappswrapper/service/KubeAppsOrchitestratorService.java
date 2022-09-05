@@ -218,6 +218,11 @@ public class KubeAppsOrchitestratorService {
 				Map<String, String> autosetupResult = new ObjectMapper()
 						.readValue(autoSetupTriggerEntry.getAutosetupResult(), HashMap.class);
 				inputConfiguration.putAll(autosetupResult);
+				
+				String controlService=  "http://" + customerDetails.getTenantName() + "edccontrolplane-edc-controlplane:8181/data";
+				inputConfiguration.put("controlplaneservice", controlService);
+				
+				inputConfiguration.putAll(autosetupResult);
 
 				Runnable runnable = () -> {
 					
