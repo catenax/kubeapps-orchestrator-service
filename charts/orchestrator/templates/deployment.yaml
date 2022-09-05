@@ -93,46 +93,7 @@ spec:
                 secretKeyRef:
                   name: kubeapps-secrets
                   key: kubeappsToken
-            - name: TARGET_NAMESPACE
-              value: "kubeapps"
-            - name: TARGET_CLUSTER
-              value: "default"
-            - name: DNS_NAME_PROTOCOL
-              value: "https"
-            - name: DNS_NAME
-              value: "tenantname.cx.dih-cloud.com"
-            - name: RETRY_MAXATTEMPTS
-              value: 3
-            - name: RETRY_BACKOFFDELAY
-              value: 500
-            - name: PORTAL.EMAIL.ADDRESS
-              value: "sachin.argade@t-systems.com"
-            - name: PORTAL_URL
-              value: "http://192.168.0.105/auth"
-            - name: KEYCLOAK_REALM
-              value: "orchestrator"
-            - name: KEYCLOAK_AUTH-SERVER-URL
-              value: "https://keycloak.cx.dih-cloud.com"
-            - name: KEYCLOAK_SSL-REQUIRED
-              value: "external"
-            - name: KEYCLOAK_RESOURCES
-              value: "orchestratorservice"
-            - name: KEYCLOAK_SSL-REQUIRED
-              value: "external"
-            - name: KEYCLOAK_USE-RESOURCE-ROLE-MAPPINGS
-              value: true
-            - name: KEYCLOAK_BEARER-TOKEN
-              value: true
-            - name: MAIL_SMTP_HOST
-              value: "mailauth.telekom.de"
-            - name: MAIL_SMTP_PORT
-              value: 587
-            - name: MAIL_FROM_ADDRESS
-              value: "Auto Setup technical team<tech@telekom.de>"
-            - name: MAIL_SMTP_STARTTLS_ENABLE
-              value: true
-            - name: MAIL_SMTP_AUTH
-              value: true
+
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
