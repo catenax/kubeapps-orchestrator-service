@@ -27,7 +27,7 @@ public class EDCControlPlaneStep extends Task {
     private StartStep startStep;
 
     @Autowired
-    private EDCControlPlaneStep edcControlPlaneStep;
+    private EDCDataPlaneStep edcDataPlaneStep;
 
     @Autowired
     private KubeAppsPackageManagement appManagement;

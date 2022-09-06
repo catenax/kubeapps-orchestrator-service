@@ -1,6 +1,8 @@
 package com.poc.kubeappswrapper.kubeappswrapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.poc.kubeappswrapper.config.EmailConfig;
+import com.poc.kubeappswrapper.factory.AppFactory;
 import com.poc.kubeappswrapper.kubeapp.model.CreateInstalledPackageRequest;
 import com.poc.kubeappswrapper.model.CustomerDetails;
 import com.poc.kubeappswrapper.model.VaultSecreteRequest;
@@ -24,14 +26,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.net.URI;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
+import static com.poc.kubeappswrapper.constant.AppNameConstant.DFT_BACKEND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -73,6 +78,10 @@ public class WorkflowTest {
 
         Mockito.when(dapsRegServiceClient.createClient(any(), any())).thenReturn(HttpStatus.CREATED);
         Mockito.when(appRepository.findById("POSTGRES_DB")).thenReturn(Optional.of(PostgresInitializer.getAppDetails()));
+        Mockito.when(appRepository.findById("EDC_DATAPLANE")).thenReturn(Optional.of(EDCDataPlaneInitializer.getAppDetails()));
+        Mockito.when(appRepository.findById("EDC_CONTROLPLANE")).thenReturn(Optional.of(EDCControlPlaneInitializer.getAppDetails()));
+        Mockito.when(appRepository.findById("DFT_BACKEND")).thenReturn(Optional.of(DFTBackendInitializer.getAppDetails()));
+
         var customerDetails = CustomerDetails.builder()
                  .bpnNumber(BPN_NUMBER)
                  .tenantName(TENANT_NAME)
@@ -124,24 +133,16 @@ public class WorkflowTest {
                             )
                     );
         }
+
         // EDC Postgres Check
         {
             ArgumentCaptor<CreateInstalledPackageRequest> kubAppsProxyCaptor = ArgumentCaptor.forClass(CreateInstalledPackageRequest.class);
-            Mockito.verify(kubeAppManageProxy, Mockito.times(1)).createPackage(kubAppsProxyCaptor.capture());
+            Mockito.verify(kubeAppManageProxy, Mockito.times(5)).createPackage(kubAppsProxyCaptor.capture());
             var createInstalledPackageRequest = kubAppsProxyCaptor.getValue();
             assertThat(createInstalledPackageRequest).isNotNull();
             var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(createInstalledPackageRequest);
-            System.out.println(json);
         }
 
-        // DFT Postgres Check
-        {
-            ArgumentCaptor<CreateInstalledPackageRequest> kubAppsProxyCaptor = ArgumentCaptor.forClass(CreateInstalledPackageRequest.class);
-            Mockito.verify(kubeAppManageProxy, Mockito.times(1)).createPackage(kubAppsProxyCaptor.capture());
-            var createInstalledPackageRequest = kubAppsProxyCaptor.getValue();
-            assertThat(createInstalledPackageRequest).isNotNull();
-            var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(createInstalledPackageRequest);
-            System.out.println(json);
-        }
+
     }
 }
