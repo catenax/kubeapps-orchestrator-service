@@ -134,7 +134,7 @@ public class WorkflowTest {
                     );
         }
 
-        // EDC Postgres Check
+        // All other steps check - EDC data, control plane, DFT DB, DFT backend and DFT frontend
         {
             ArgumentCaptor<CreateInstalledPackageRequest> kubAppsProxyCaptor = ArgumentCaptor.forClass(CreateInstalledPackageRequest.class);
             Mockito.verify(kubeAppManageProxy, Mockito.times(5)).createPackage(kubAppsProxyCaptor.capture());
