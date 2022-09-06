@@ -3,7 +3,6 @@ package com.poc.kubeappswrapper.workflow.steps.edc;
 import com.poc.kubeappswrapper.manager.KubeAppsPackageManagement;
 import com.poc.kubeappswrapper.workflow.Task;
 import com.poc.kubeappswrapper.workflow.steps.StartStep;
-import com.poc.kubeappswrapper.workflow.steps.postgresedc.PostgresEdcStep;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ public class EDCDataPlaneStep extends Task {
     private StartStep startStep;
 
     @Autowired
-    private PostgresEdcStep postgresEdcStep;
+    private EDCControlPlaneStep edcControlPlaneStep;
 
     @Autowired
     private KubeAppsPackageManagement appManagement;

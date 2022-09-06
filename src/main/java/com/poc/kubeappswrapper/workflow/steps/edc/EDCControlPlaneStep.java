@@ -6,7 +6,9 @@ import com.poc.kubeappswrapper.workflow.Task;
 import com.poc.kubeappswrapper.workflow.steps.StartStep;
 import com.poc.kubeappswrapper.workflow.steps.postgresedc.PostgresEdcStep;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
@@ -20,6 +22,8 @@ import static com.poc.kubeappswrapper.constant.AppNameConstant.EDC_CONTROLPLANE;
 
 @Component
 @Scope("thread")
+@RequiredArgsConstructor
+@Slf4j
 public class EDCControlPlaneStep extends Task {
 
 
@@ -27,7 +31,7 @@ public class EDCControlPlaneStep extends Task {
     private StartStep startStep;
 
     @Autowired
-    private EDCDataPlaneStep edcDataPlaneStep;
+    private PostgresEdcStep postgresEdcStep;
 
     @Autowired
     private KubeAppsPackageManagement appManagement;
