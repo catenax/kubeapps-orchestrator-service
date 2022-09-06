@@ -17,8 +17,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.poc.kubeappswrapper.constant.AppNameConstant.DFT_BACKEND;
-import static com.poc.kubeappswrapper.constant.AppNameConstant.EDC_CONTROLPLANE;
+import static com.poc.kubeappswrapper.constant.AppNameConstant.*;
 
 @Component
 @Scope("thread")
@@ -50,9 +49,13 @@ public class DftBackendStep extends Task {
     @Getter
     private Map<String, String> configParams;
 
+    @Getter
+    private String name;
+
     @Override
     @SneakyThrows
     public void run() {
+        name = (startStep.getCustomerDetails().getTenantName() + DFT_BACKEND.name().toLowerCase()).replace("_", "");
         Map<String, String> inputData = new ConcurrentHashMap<>();
         inputData.putAll(startStep.getConfigParams());
 

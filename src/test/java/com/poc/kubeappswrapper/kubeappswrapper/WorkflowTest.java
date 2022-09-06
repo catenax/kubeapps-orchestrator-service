@@ -14,6 +14,11 @@ import com.poc.kubeappswrapper.utility.Certutil;
 import com.poc.kubeappswrapper.workflow.Workflow;
 import com.poc.kubeappswrapper.workflow.steps.CertificateStep;
 import com.poc.kubeappswrapper.workflow.steps.dapsregisration.DapsRegServiceClient;
+import com.poc.kubeappswrapper.workflow.steps.dftbackendcreation.DftBackendStep;
+import com.poc.kubeappswrapper.workflow.steps.dftdbcreation.DftDbCreationStep;
+import com.poc.kubeappswrapper.workflow.steps.edc.EDCControlPlaneStep;
+import com.poc.kubeappswrapper.workflow.steps.edc.EDCDataPlaneStep;
+import com.poc.kubeappswrapper.workflow.steps.postgresedc.PostgresEdcStep;
 import com.poc.kubeappswrapper.workflow.steps.vaultupload.VaultUploadStep;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -35,6 +40,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.poc.kubeappswrapper.constant.AppNameConstant.DFT_BACKEND;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,6 +94,10 @@ public class WorkflowTest {
                  .tenantName(TENANT_NAME)
                  .build();
         Workflow w = workflowRunner.runWorkflow(customerDetails, "token").completable().get();
+        ArgumentCaptor<CreateInstalledPackageRequest> kubAppsProxyCaptor = ArgumentCaptor.forClass(CreateInstalledPackageRequest.class);
+        Mockito.verify(kubeAppManageProxy , Mockito.atLeastOnce()).createPackage(kubAppsProxyCaptor.capture());
+        var createInstalledPackageRequest = kubAppsProxyCaptor.getAllValues();
+        var kubAppsProxyParams= createInstalledPackageRequest.stream().collect(Collectors.toMap(CreateInstalledPackageRequest::getName, Function.identity()));
 
         // Certificate Step Check
         var certificateStep = ((CertificateStep)w.getTasks().get("certificateStep"));
@@ -135,14 +146,45 @@ public class WorkflowTest {
         }
 
         // All other steps check - EDC data, control plane, DFT DB, DFT backend and DFT frontend
+        //EDC Postgres Step
         {
-            ArgumentCaptor<CreateInstalledPackageRequest> kubAppsProxyCaptor = ArgumentCaptor.forClass(CreateInstalledPackageRequest.class);
-            Mockito.verify(kubeAppManageProxy, Mockito.times(5)).createPackage(kubAppsProxyCaptor.capture());
-            var createInstalledPackageRequest = kubAppsProxyCaptor.getValue();
-            assertThat(createInstalledPackageRequest).isNotNull();
-            var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(createInstalledPackageRequest);
+            var postgresEdcStep = ((PostgresEdcStep)w.getTasks().get("postgresEdcStep"));
+            var postgresEdcKubAppsProxyParam = kubAppsProxyParams.get(postgresEdcStep.getName());
+            assertThat(postgresEdcKubAppsProxyParam).isNotNull();
+            var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(postgresEdcKubAppsProxyParam);
+            System.out.println(postgresEdcStep.getName() + " = " + json);
         }
-
-
+        //EDC Control Plane Step
+        {
+            var edcControlPlaneStep = ((EDCControlPlaneStep)w.getTasks().get("EDCControlPlaneStep"));
+            var edcControlPlaneKubAppsProxyParam = kubAppsProxyParams.get(edcControlPlaneStep.getName());
+            assertThat(edcControlPlaneKubAppsProxyParam).isNotNull();
+            var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(edcControlPlaneKubAppsProxyParam);
+            System.out.println(edcControlPlaneStep.getName() + " = " + json);
+        }
+        //EDC Data Plane Step
+        {
+            var edcDataPlaneStep = ((EDCDataPlaneStep)w.getTasks().get("EDCDataPlaneStep"));
+            var edcDataPlaneKubAppsProxyParam = kubAppsProxyParams.get(edcDataPlaneStep.getName());
+            assertThat(edcDataPlaneKubAppsProxyParam).isNotNull();
+            var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(edcDataPlaneKubAppsProxyParam);
+            System.out.println(edcDataPlaneStep.getName() + " = " + json);
+        }
+        //DFT DB Creation Step
+        {
+            var dftDbCreationStep = ((DftDbCreationStep)w.getTasks().get("dftDbCreationStep"));
+            var dftDbCreationKubAppsProxyParam = kubAppsProxyParams.get(dftDbCreationStep.getName());
+            assertThat(dftDbCreationKubAppsProxyParam).isNotNull();
+            var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dftDbCreationKubAppsProxyParam);
+            System.out.println(dftDbCreationStep.getName() + " = " + json);
+        }
+        //DFT Backend Step
+        {
+            var dftBackendStep = ((DftBackendStep)w.getTasks().get("dftBackendStep"));
+            var dftBackendKubAppsProxyParam = kubAppsProxyParams.get(dftBackendStep.getName());
+            assertThat(dftBackendKubAppsProxyParam).isNotNull();
+            var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dftBackendKubAppsProxyParam);
+            System.out.println(dftBackendStep.getName() + " = " + json);
+        }
     }
 }
