@@ -39,7 +39,7 @@ VALUES('DFT_BACKEND', 'default', 'kubeapps', '{"server.port":"8080",
 "digital-twins.authentication.clientSecret":"digital-twins.authentication.clientSecret",
 
 "edc.enabled":"true",
-"edc.hostname":"controlplanedataendpoint",
+"edc.hostname":"internalcontrolplaneservicedata",
 "edc.apiKeyHeader":"edcapi-key",
 "edc.apiKey":"edcapi-key-value",
 
@@ -48,7 +48,7 @@ VALUES('DFT_BACKEND', 'default', 'kubeapps', '{"server.port":"8080",
 "dft.apiKey":"dftbackendapikey",
 "manufacturerId":"manufacturerId",
 
-"edc.consumer.hostname":"controlplaneendpoint",
+"edc.consumer.hostname":"internalcontrolplaneservice",
 "edc.consumer.apikeyheader":"edcapi-key",
 "edc.consumer.apikey":"edcapi-key-value",
 "edc.consumer.datauri":"/api/v1/ids/data",
@@ -59,7 +59,7 @@ VALUES('DFT_BACKEND', 'default', 'kubeapps', '{"server.port":"8080",
 "keycloak.resource":"dftbackendkeycloakclientid",
 "keycloak.use-resource-role-mappings":"true",
 "keycloak.bearer-only":"true"
-}', NULL, 'orch-repo/dftbackend', '1.1.7', 'helm.packages', 'v1alpha1', '{"ingresses":[{"enabled": true, "hostname":"$\{dnsName\}", "className": "nginx", "endpoints":["default"], "tls":{"enabled":true, "tlsSecret": "backendsecret"}}], "configuration": {"properties": "$\{yamlValues\}"}}', 'PROPERTY');
+}', NULL, 'orch-repo/dftbackend', '1.1.8', 'helm.packages', 'v1alpha1', '{"ingresses":[{"enabled": true, "hostname":"$\{dnsName\}", "className": "nginx", "endpoints":["default"], "tls":{"enabled":true, "tlsSecret": "backendsecret"}}], "configuration": {"properties": "$\{yamlValues\}"}}', 'PROPERTY');
 INSERT INTO app_tbl
 (app_name, context_cluster, context_namespace, expected_input_data, output_data, package_identifier, package_version, plugin_name, plugin_version, required_yaml_configuration, yaml_value_field_type)
 VALUES('DFT_FRONTEND', 'default', 'kubeapps', '{"REACT_APP_API_URL":"dftbackendurl",

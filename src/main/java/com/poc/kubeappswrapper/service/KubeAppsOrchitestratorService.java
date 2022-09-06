@@ -219,8 +219,9 @@ public class KubeAppsOrchitestratorService {
 						.readValue(autoSetupTriggerEntry.getAutosetupResult(), HashMap.class);
 				inputConfiguration.putAll(autosetupResult);
 				
-				String controlService=  "http://" + customerDetails.getTenantName() + "edccontrolplane-edc-controlplane:8181/data";
-				inputConfiguration.put("controlplaneservice", controlService);
+				String controlService=  "http://" + customerDetails.getTenantName() + "edccontrolplane-edc-controlplane";
+				inputConfiguration.put("internalcontrolplaneservicedata", controlService+":8181/data");
+				inputConfiguration.put("internalcontrolplaneservice", controlService+":8181");
 				
 				inputConfiguration.putAll(autosetupResult);
 
