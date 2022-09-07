@@ -191,9 +191,9 @@ public class WorkflowTest {
         //DFT Frontend Step
         {
             var dftFrontendStep = ((DftFrontendStep)w.getTasks().get("dftFrontendStep"));
-            var dftBackendKubAppsProxyParam = kubAppsProxyParams.get(dftFrontendStep.getName());
-            assertThat(dftBackendKubAppsProxyParam).isNotNull();
-            var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dftBackendKubAppsProxyParam);
+            var dftFrontendKubAppsProxyParam = kubAppsProxyParams.get(dftFrontendStep.getName());
+            assertThat(dftFrontendKubAppsProxyParam).isNotNull();
+            var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dftFrontendKubAppsProxyParam);
             System.out.println(dftFrontendStep.getName() + " = " + json);
         }
     }
