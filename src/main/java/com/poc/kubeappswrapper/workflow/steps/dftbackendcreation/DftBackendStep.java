@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.poc.kubeappswrapper.constant.AppNameConstant.DFT_BACKEND;
-import static com.poc.kubeappswrapper.constant.AppNameConstant.EDC_CONTROLPLANE;
 
 @Component
 @Scope("thread")

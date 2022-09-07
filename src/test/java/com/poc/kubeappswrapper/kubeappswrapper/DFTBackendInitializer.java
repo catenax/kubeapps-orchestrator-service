@@ -6,7 +6,7 @@ public class DFTBackendInitializer {
 
     public static AppDetails getAppDetails() {
         var appDetails = new AppDetails();
-        appDetails.setAppName("EDC_DATAPLANE");
+        appDetails.setAppName("DFT_BACKEND");
         appDetails.setExpectedInputData(
                 """
                 {"server.port":"8080",

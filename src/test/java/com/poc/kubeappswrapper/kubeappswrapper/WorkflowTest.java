@@ -81,6 +81,7 @@ public class WorkflowTest {
         Mockito.when(appRepository.findById("EDC_DATAPLANE")).thenReturn(Optional.of(EDCDataPlaneInitializer.getAppDetails()));
         Mockito.when(appRepository.findById("EDC_CONTROLPLANE")).thenReturn(Optional.of(EDCControlPlaneInitializer.getAppDetails()));
         Mockito.when(appRepository.findById("DFT_BACKEND")).thenReturn(Optional.of(DFTBackendInitializer.getAppDetails()));
+        Mockito.when(appRepository.findById("DFT_FRONTEND")).thenReturn(Optional.of(DFTFrontendInitializer.getAppDetails()));
 
         var customerDetails = CustomerDetails.builder()
                  .bpnNumber(BPN_NUMBER)
@@ -137,7 +138,7 @@ public class WorkflowTest {
         // All other steps check - EDC data, control plane, DFT DB, DFT backend and DFT frontend
         {
             ArgumentCaptor<CreateInstalledPackageRequest> kubAppsProxyCaptor = ArgumentCaptor.forClass(CreateInstalledPackageRequest.class);
-            Mockito.verify(kubeAppManageProxy, Mockito.times(5)).createPackage(kubAppsProxyCaptor.capture());
+            Mockito.verify(kubeAppManageProxy, Mockito.times(6)).createPackage(kubAppsProxyCaptor.capture());
             var createInstalledPackageRequest = kubAppsProxyCaptor.getValue();
             assertThat(createInstalledPackageRequest).isNotNull();
             var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(createInstalledPackageRequest);
