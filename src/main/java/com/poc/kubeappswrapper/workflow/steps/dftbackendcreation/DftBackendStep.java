@@ -71,7 +71,7 @@ public class DftBackendStep extends Task {
         inputData.put("dftfrontendurl", dftfrontend);
 
         // Get DFT database config
-        inputData.put("dftdatabaseurl", dftDbCreationStep.getConfigParams().get("dftdatabaseurl"));
+        inputData.putAll(dftDbCreationStep.getConfigParams());
 
         // Get EDC control plane config params
         inputData.putAll(edcControlPlaneStep.getConfigParams());
