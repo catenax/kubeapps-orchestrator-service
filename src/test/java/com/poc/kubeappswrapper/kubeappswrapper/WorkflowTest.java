@@ -16,6 +16,7 @@ import com.poc.kubeappswrapper.workflow.steps.CertificateStep;
 import com.poc.kubeappswrapper.workflow.steps.dapsregisration.DapsRegServiceClient;
 import com.poc.kubeappswrapper.workflow.steps.dftbackendcreation.DftBackendStep;
 import com.poc.kubeappswrapper.workflow.steps.dftdbcreation.DftDbCreationStep;
+import com.poc.kubeappswrapper.workflow.steps.dftfrontendcreation.DftFrontendStep;
 import com.poc.kubeappswrapper.workflow.steps.edc.EDCControlPlaneStep;
 import com.poc.kubeappswrapper.workflow.steps.edc.EDCDataPlaneStep;
 import com.poc.kubeappswrapper.workflow.steps.postgresedc.PostgresEdcStep;
@@ -189,8 +190,8 @@ public class WorkflowTest {
         }
         //DFT Frontend Step
         {
-            var dftFrontendStep = ((DftBackendStep)w.getTasks().get("dftFrontendStep"));
-            var dftBackendKubAppsProxyParam = kubAppsProxyParams.get(dftBackendStep.getName());
+            var dftFrontendStep = ((DftFrontendStep)w.getTasks().get("dftFrontendStep"));
+            var dftBackendKubAppsProxyParam = kubAppsProxyParams.get(dftFrontendStep.getName());
             assertThat(dftBackendKubAppsProxyParam).isNotNull();
             var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dftBackendKubAppsProxyParam);
             System.out.println(dftFrontendStep.getName() + " = " + json);

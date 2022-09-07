@@ -1,7 +1,6 @@
 package com.poc.kubeappswrapper.workflow.steps.dftfrontendcreation;
 
 import com.poc.kubeappswrapper.manager.KubeAppsPackageManagement;
-import com.poc.kubeappswrapper.utility.PasswordGenerator;
 import com.poc.kubeappswrapper.workflow.Task;
 import com.poc.kubeappswrapper.workflow.steps.StartStep;
 import com.poc.kubeappswrapper.workflow.steps.dftbackendcreation.DftBackendStep;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.poc.kubeappswrapper.constant.AppNameConstant.DFT_BACKEND;
 import static com.poc.kubeappswrapper.constant.AppNameConstant.DFT_FRONTEND;
 
 @Component
@@ -32,8 +30,12 @@ public class DftFrontendStep extends Task {
     @Getter
     private Map<String, String> configParams;
 
+    @Getter
+    private String name;
+
     @Override
     public void run() {
+        name = (startStep.getCustomerDetails().getTenantName() + DFT_FRONTEND.name().toLowerCase()).replace("_", "");
         Map<String, String> inputData = new ConcurrentHashMap<>();
         inputData.putAll(startStep.getConfigParams());
 
