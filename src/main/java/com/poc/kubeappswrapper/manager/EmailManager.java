@@ -2,6 +2,7 @@ package com.poc.kubeappswrapper.manager;
 
 import com.poc.kubeappswrapper.exception.ValidationException;
 import com.poc.kubeappswrapper.model.EmailRequest;
+import com.poc.kubeappswrapper.service.TransportWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,9 @@ public class EmailManager {
 
 	@Autowired
 	private MimeMessage mimeMessage;
+
+	@Autowired
+	private TransportWrapper transportWrapper;
 
 	@Value("${mail.from.address}")
 	private String fromEmail;
@@ -78,7 +82,7 @@ public class EmailManager {
 			String data = getEmailContent(emailRequest);
 			mimeMessage.setContent(data, "text/html; charset=utf-8"); // as "text/plain"
 			mimeMessage.setSentDate(new Date());
-			Transport.send(mimeMessage);
+			transportWrapper.send(mimeMessage);
 			return new ResponseEntity<>("Email Sent Success", HttpStatus.OK);
 		} catch (MessagingException | IOException | TemplateException e) {
 			log.error("Error in email sending :{}", e.getMessage());

@@ -1,14 +1,13 @@
 package com.poc.kubeappswrapper.kubeappswrapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.poc.kubeappswrapper.config.EmailConfig;
-import com.poc.kubeappswrapper.factory.AppFactory;
 import com.poc.kubeappswrapper.kubeapp.model.CreateInstalledPackageRequest;
 import com.poc.kubeappswrapper.model.CustomerDetails;
 import com.poc.kubeappswrapper.model.VaultSecreteRequest;
 import com.poc.kubeappswrapper.proxy.kubeapps.KubeAppManageProxy;
 import com.poc.kubeappswrapper.proxy.vault.VaultAppManageProxy;
 import com.poc.kubeappswrapper.repository.AppRepository;
+import com.poc.kubeappswrapper.service.TransportWrapper;
 import com.poc.kubeappswrapper.service.WorkflowRunner;
 import com.poc.kubeappswrapper.utility.Certutil;
 import com.poc.kubeappswrapper.workflow.Workflow;
@@ -33,18 +32,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.mail.internet.MimeMessage;
-import java.io.IOException;
 import java.net.URI;
 import java.security.KeyPair;
-import java.security.cert.X509Certificate;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.poc.kubeappswrapper.constant.AppNameConstant.DFT_BACKEND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -58,6 +52,9 @@ public class WorkflowTest {
 
     @MockBean
     DapsRegServiceClient dapsRegServiceClient;
+
+    @MockBean
+    TransportWrapper transportWrapper;
 
     @MockBean
     VaultAppManageProxy vaultAppManageProxy;
@@ -79,7 +76,7 @@ public class WorkflowTest {
     ObjectMapper objectMapper;
 
     @Test
-    public void workflowTest() throws IOException, ExecutionException, InterruptedException {
+    public void workflowTest() throws Exception {
         String TENANT_NAME = "Test-Tenant";
         String BPN_NUMBER = "BPN123456";
 
@@ -94,6 +91,7 @@ public class WorkflowTest {
         var customerDetails = CustomerDetails.builder()
                  .bpnNumber(BPN_NUMBER)
                  .tenantName(TENANT_NAME)
+                 .organizationName("ORGANIZATION")
                  .build();
         Workflow w = workflowRunner.runWorkflow(customerDetails, "token").completable().get();
         ArgumentCaptor<CreateInstalledPackageRequest> kubAppsProxyCaptor = ArgumentCaptor.forClass(CreateInstalledPackageRequest.class);
@@ -195,6 +193,13 @@ public class WorkflowTest {
             assertThat(dftFrontendKubAppsProxyParam).isNotNull();
             var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dftFrontendKubAppsProxyParam);
             System.out.println(dftFrontendStep.getName() + " = " + json);
+        }
+        //
+        {
+            ArgumentCaptor<MimeMessage> mailCaptor = ArgumentCaptor.forClass(MimeMessage.class);
+            Mockito.verify(transportWrapper, Mockito.atLeastOnce()).send(mailCaptor.capture());
+            var content = mailCaptor.getValue().getContent();
+            System.out.println(content);
         }
     }
 }
