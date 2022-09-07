@@ -29,6 +29,9 @@ public class PostgresEdcStep extends Task {
     @Getter
     private String jdbcUrl;
 
+    @Getter
+    private String name;
+
     @Override
     public void run() {
 
@@ -36,6 +39,7 @@ public class PostgresEdcStep extends Task {
         String tenantName = startStep.getCustomerDetails().getTenantName();
         String databasefor = tenantName + "_" + packagefor;
         jdbcUrl = "jdbc:postgresql://" + tenantName + packagefor + "postgresdb-postgresql:5432/" + databasefor;
+        name = (databasefor + POSTGRES_DB.name().toLowerCase()).replace("_", "");
 
         Map<String, String> inputData = new HashMap<>();
         inputData.putAll(Map.of(

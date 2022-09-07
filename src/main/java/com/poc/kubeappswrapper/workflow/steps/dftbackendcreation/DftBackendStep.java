@@ -49,9 +49,13 @@ public class DftBackendStep extends Task {
     @Getter
     private Map<String, String> configParams;
 
+    @Getter
+    private String name;
+
     @Override
     @SneakyThrows
     public void run() {
+        name = (startStep.getCustomerDetails().getTenantName() + DFT_BACKEND.name().toLowerCase()).replace("_", "");
         Map<String, String> inputData = new ConcurrentHashMap<>();
         inputData.putAll(startStep.getConfigParams());
 

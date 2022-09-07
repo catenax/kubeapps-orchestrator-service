@@ -29,11 +29,15 @@ public class DftDbCreationStep extends Task {
     @Getter
     private String jdbcUrl;
 
+    @Getter
+    private String name;
+
     @Override
     public void run() {
         String packagefor = "dft";
         String tenantName = startStep.getCustomerDetails().getTenantName();
         String databasefor = tenantName + "_" + packagefor;
+        name = (databasefor + POSTGRES_DB.name().toLowerCase()).replace("_", "");
         jdbcUrl = "jdbc:postgresql://" + tenantName + packagefor + "postgresdb-postgresql:5432/" + databasefor;
 
         Map<String, String> inputData = new HashMap<>();
