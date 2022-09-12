@@ -10,7 +10,9 @@ import static com.poc.kubeappswrapper.constant.AppNameConstant.EDC_DATAPLANE;
 import static com.poc.kubeappswrapper.constant.AppNameConstant.POSTGRES_DB;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -303,19 +305,28 @@ public class KubeAppsOrchitestratorService {
 
 		return inputConfiguration;
 	}
-	
-	private Map<String, String> extractResultMap(Map<String, String> outputMap) {
+	private Map<String, List> extractResultMap(Map<String, String> outputMap) {
 
-		Map<String, String> resultMap = new ConcurrentHashMap<>();
-		resultMap.put("dftfrontendurl", outputMap.get("dftfrontendurl"));
-		resultMap.put("dftbackendurl", outputMap.get("dftbackendurl"));
-		resultMap.put("controlplaneendpoint", outputMap.get("controlplaneendpoint"));
-		resultMap.put("controlplanedataendpoint", outputMap.get("controlplanedataendpoint"));
-		resultMap.put("dataplanepublicendpoint", outputMap.get("dataplanepublicendpoint"));
-		resultMap.put("edcapi-key", outputMap.get("edcapi-key"));
-		resultMap.put("edcapi-key-value", outputMap.get("edcapi-key-value"));
+		List<Map> processResult = new ArrayList<>();
+		Map<String, List> result = new ConcurrentHashMap<>();
 
-		return resultMap;
+		Map<String, String> dft = new ConcurrentHashMap<>();
+		dft.put("name", "dft");
+		dft.put("dftfrontendurl", outputMap.get("dftfrontendurl"));
+		dft.put("dftbackendurl", outputMap.get("dftbackendurl"));
+		processResult.add(dft);
+
+		Map<String, String> edc = new ConcurrentHashMap<>();
+		edc.put("name", "edc");
+		edc.put("controlplaneendpoint", outputMap.get("controlplaneendpoint"));
+		edc.put("controlplanedataendpoint", outputMap.get("controlplanedataendpoint"));
+		edc.put("dataplanepublicendpoint", outputMap.get("dataplanepublicendpoint"));
+		edc.put("edcapi-key", outputMap.get("edcapi-key"));
+		edc.put("edcapi-key-value", outputMap.get("edcapi-key-value"));
+		processResult.add(edc);
+
+		result.put("processResult", processResult);
+		return result;
 	}
 
 	private String buildDnsName(String targetNamespace) {
