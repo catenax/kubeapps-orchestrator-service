@@ -305,10 +305,9 @@ public class KubeAppsOrchitestratorService {
 
 		return inputConfiguration;
 	}
-	private Map<String, List> extractResultMap(Map<String, String> outputMap) {
+	private List<Map> extractResultMap(Map<String, String> outputMap) {
 
 		List<Map> processResult = new ArrayList<>();
-		Map<String, List> result = new ConcurrentHashMap<>();
 
 		Map<String, String> dft = new ConcurrentHashMap<>();
 		dft.put("name", "dft");
@@ -325,8 +324,7 @@ public class KubeAppsOrchitestratorService {
 		edc.put("edcapi-key-value", outputMap.get("edcapi-key-value"));
 		processResult.add(edc);
 
-		result.put("processResult", processResult);
-		return result;
+		return processResult;
 	}
 
 	private String buildDnsName(String targetNamespace) {
