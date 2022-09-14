@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.util.Date;
 import java.util.Map;
 
+import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Transport;
@@ -34,6 +35,9 @@ public class EmailManager {
 	@Value("${mail.from.address}")
 	private String fromEmail;
 
+	@Value("${mail.replyto.address}")
+	private String replyTo;
+
 	final Configuration configuration;
 
 	public EmailManager(Configuration configuration) {
@@ -48,9 +52,15 @@ public class EmailManager {
 					.build();
 
 			mimeMessage.setFrom(new InternetAddress(fromEmail));
+			if(replyTo != null && !replyTo.isEmpty()) {
+				mimeMessage.setReplyTo(new javax.mail.Address[]
+						{
+								new javax.mail.internet.InternetAddress(replyTo)
+						});
+			}
 			mimeMessage.setSubject(emailRequest.getSubject());
 
-			if (emailRequest.getToEmail() != null) {
+			if (emailRequest.getToEmail() != null && !emailRequest.getToEmail().isEmpty()) {
 				String[] split = emailRequest.getToEmail().toString().split(",");
 				InternetAddress[] addressTo = new InternetAddress[split.length];
 				int i = 0;
@@ -64,7 +74,7 @@ public class EmailManager {
 
 			InternetAddress[] addressCC = new InternetAddress[1];
 			int i = 0;
-			if (emailContent.containsKey("ccemail")) {
+			if (emailContent.containsKey("ccemail") && emailContent.get("ccemail") != null && !emailContent.get("ccemail").toString().isEmpty()) {
 				String[] split = emailContent.get("ccemail").toString().split(",");
 				addressCC = new InternetAddress[split.length + 1];
 				for (String string : split) {
