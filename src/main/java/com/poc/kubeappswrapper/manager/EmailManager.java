@@ -53,10 +53,12 @@ public class EmailManager {
 
 			mimeMessage.setFrom(new InternetAddress(fromEmail));
 			if(replyTo != null && !replyTo.isEmpty()) {
-				mimeMessage.setReplyTo(new javax.mail.Address[]
-						{
-								new javax.mail.internet.InternetAddress(replyTo)
-						});
+				String[] mailAddressTo = replyTo.split(",");
+				InternetAddress[] mailAddress_TO = new InternetAddress[mailAddressTo.length];
+				for (int i = 0; i < mailAddressTo.length; i++) {
+					mailAddress_TO[i] = new InternetAddress(mailAddressTo[i]);
+				}
+				mimeMessage.setReplyTo(mailAddress_TO);
 			}
 			mimeMessage.setSubject(emailRequest.getSubject());
 
