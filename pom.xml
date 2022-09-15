@@ -21,6 +21,7 @@
 		<org.mapstruct.processor.version>1.4.2.Final
 		</org.mapstruct.processor.version>
 		<keycloak.version>19.0.1</keycloak.version>
+		<keycloak.admin.version>10.0.0</keycloak.admin.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -106,7 +107,7 @@
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-admin-client</artifactId>
-			<version>10.0.0</version>
+			<version>${keycloak.admin.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
