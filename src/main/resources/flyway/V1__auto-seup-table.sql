@@ -40,12 +40,12 @@ VALUES('DFT_BACKEND', 'default', 'kubeapps', '{"server.port":"8080",
 
 "edc.enabled":"true",
 "edc.hostname":"internalcontrolplaneservicedata",
-"edc.apiKeyHeader":"edcapi-key",
-"edc.apiKey":"edcapi-key-value",
+"edc.apiKeyHeader":"edcApiKey",
+"edc.apiKey":"edcApiKeyValue",
 
-"dft.hostname":"dftbackendurl",
-"dft.apiKeyHeader":"dftbackendapiKeyHeader",
-"dft.apiKey":"dftbackendapikey",
+"dft.hostname":"dftBackEndUrl",
+"dft.apiKeyHeader":"dftBackEndApiKeyHeader",
+"dft.apiKey":"dftBackEndApiKey",
 "manufacturerId":"manufacturerId",
 
 "edc.consumer.hostname":"internalcontrolplaneservice",
@@ -62,8 +62,7 @@ VALUES('DFT_BACKEND', 'default', 'kubeapps', '{"server.port":"8080",
 }', NULL, 'orch-repo/dftbackend', '1.2.1', 'helm.packages', 'v1alpha1', '{"ingresses":[{"enabled": true, "hostname":"$\{dnsName\}", "className": "nginx", "endpoints":["default"], "tls":{"enabled":true, "tlsSecret": "backendsecret"}}], "configuration": {"properties": "$\{yamlValues\}"}}', 'PROPERTY');
 INSERT INTO app_tbl
 (app_name, context_cluster, context_namespace, expected_input_data, output_data, package_identifier, package_version, plugin_name, plugin_version, required_yaml_configuration, yaml_value_field_type)
-VALUES('DFT_FRONTEND', 'default', 'kubeapps', '{"REACT_APP_API_URL":"dftbackendurl",
-"REACT_APP_API_KEY":"dftbackendapikey",
+VALUES('DFT_FRONTEND', 'default', 'kubeapps', '{"REACT_APP_API_URL":"dftBackEndUrl",
 "REACT_APP_KEYCLOAK_URL":"dftkeycloakurl",
 "REACT_APP_KEYCLOAK_REALM":"dftcloakrealm",
 "REACT_APP_CLIENT_ID":"dftfrontendkeycloakclientid",
@@ -82,13 +81,13 @@ VALUES('EDC_CONTROLPLANE', 'default', 'kubeapps', '{"edc.receiver.http.endpoint"
 "edc.ids.catalog.id": "urn:catalog:default",
 "ids.webhook.address": "http://localhost:8282",
 
-"edc.api.control.auth.apikey.key": "edcapi-key",
-"edc.api.control.auth.apikey.value": "edcapi-key-value",
-"edc.api.auth.key": "edcapi-key-value",
+"edc.api.control.auth.apikey.key": "edcApiKey",
+"edc.api.control.auth.apikey.value": "edcApiKeyValue",
+"edc.api.auth.key": "edcApiKeyValue",
 "edc.hostname": "localhost",
 
 "edc.oauth.provider.audience": "idsc:IDS_CONNECTORS_ALL",
-"edc.ids.endpoint.audience": "http://localhost:8282/api/v1/ids",
+"edc.ids.endpoint.audience": "controlPlaneIdsEndpoint",
 "edc.oauth.token.url": "dapstokenurl",
 "edc.oauth.client.id": "dapsclientid",
 "edc.oauth.provider.jwks.url": "dapsjsksurl",
@@ -132,7 +131,7 @@ VALUES('EDC_CONTROLPLANE', 'default', 'kubeapps', '{"edc.receiver.http.endpoint"
 "edc.datasource.transferprocess.url": "edcdatabaseurl",
 "edc.datasource.transferprocess.user": "username",
 "edc.datasource.transferprocess.password": "password",
-"edc.transfer.proxy.endpoint":"dataplanepublicurl"
+"edc.transfer.proxy.endpoint":"dataPlanePublicUrl"
 }', NULL, 'edcrepo/edc-controlplane', '0.1.1', 'helm.packages', 'v1alpha1', '{"ingresses":[{"enabled": true,  "tls":{"enabled": true, "tlsSecret": "edccontrolplane"}, "hostname": "$\{dnsName\}", "className": "nginx", "endpoints":["ids", "data", "control", "default"]}], "configuration": {"properties": "$\{yamlValues\}"}}', 'PROPERTY');
 INSERT INTO app_tbl
 (app_name, context_cluster, context_namespace, expected_input_data, output_data, package_identifier, package_version, plugin_name, plugin_version, required_yaml_configuration, yaml_value_field_type)
@@ -140,7 +139,7 @@ VALUES('EDC_DATAPLANE', 'default', 'kubeapps', '{"edc.hostname":"localhost",
 "edc.vault.hashicorp.url":"vaulturl",
 "edc.vault.hashicorp.token":"vaulttoken",
 "edc.vault.hashicorp.timeout.seconds":"vaulttimeout",
-"edc.dataplane.token.validation.endpoint":"controlplanevalidationendpoint"}', NULL, 'edcrepo/edc-dataplane', '0.1.1', 'helm.packages', 'v1alpha1', '{"ingresses":[{"enabled": true, "tls":{"enabled": true, "tlsSecret": "edcdataplane"}, "hostname": "$\{dnsName\}", "className": "nginx", "endpoints":["public"]}], "configuration": {"properties": "$\{yamlValues\}"}}', 'PROPERTY');
+"edc.dataplane.token.validation.endpoint":"controlPlaneValidationEndpoint"}', NULL, 'edcrepo/edc-dataplane', '0.1.1', 'helm.packages', 'v1alpha1', '{"ingresses":[{"enabled": true, "tls":{"enabled": true, "tlsSecret": "edcdataplane"}, "hostname": "$\{dnsName\}", "className": "nginx", "endpoints":["public"]}], "configuration": {"properties": "$\{yamlValues\}"}}', 'PROPERTY');
 INSERT INTO app_tbl
 (app_name, context_cluster, context_namespace, expected_input_data, output_data, package_identifier, package_version, plugin_name, plugin_version, required_yaml_configuration, yaml_value_field_type)
 VALUES('POSTGRES_DB', 'default', 'kubeapps', '{"postgresPassword":"postgresPassword",

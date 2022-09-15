@@ -42,9 +42,10 @@ public class CertificateManager {
 
 		try {
 
-			String tenantName = triger.getAutosetupTenantName();
+			String packageName = tool.getPackageName();
+			String tenantName = customerDetails.getOrganizationName();
 			
-			log.info(tenantName + "- certificate creating");
+			log.info(tenantName +"-"+ packageName + "-certificate creating");
 
 			String bpnNumber=inputData.get("bpnNumber");
 			
@@ -65,7 +66,7 @@ public class CertificateManager {
 					Certutil.getAsString(certificateDetails.keyPair().getPrivate()));
 
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
-			log.info(tenantName + "- certificate created");
+			log.info(tenantName +"-"+  packageName + "-certificate created");
 
 		} catch (Exception ex) {
 

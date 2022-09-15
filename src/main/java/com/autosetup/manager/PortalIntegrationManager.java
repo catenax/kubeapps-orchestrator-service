@@ -18,7 +18,7 @@ public class PortalIntegrationManager {
 	public Map<String, String> getDigitalandKeyCloackDetails(Customer customerDetails,
 			Map<String, String> inputData) {
 
-		// String dftfrontendUrl = inputData.get("dftfrontendurl");
+		// String dftFrontEndUrl = inputData.get("dftFrontEndUrl");
 
 		// String digitaltwinandkeycloakdetails =
 		// portalIntegrationProxy.getDigitaltwinandkeycloakdetails(dftfrontendUrl);

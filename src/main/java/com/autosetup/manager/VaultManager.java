@@ -56,32 +56,37 @@ public class VaultManager {
 
 		try {
 
-			String tenantName = triger.getAutosetupTenantName();
+			String tenantNameNamespace = triger.getAutosetupTenantName();
+			String packageName = tool.getPackageName();
+			String orgName = customerDetails.getOrganizationName();
+			log.info(orgName +"-"+  packageName + "-Vault creating");
 
 			Map<String, String> tenantVaultSecret = new HashMap<>();
 			tenantVaultSecret.put("content", inputData.get("selfsigncertificate"));
-			uploadSecrete(tenantName, "daps-cert", tenantVaultSecret);
+			uploadSecrete(tenantNameNamespace, "daps-cert", tenantVaultSecret);
 
 			tenantVaultSecret = new HashMap<>();
 			tenantVaultSecret.put("content", inputData.get("selfsigncertificateprivatekey"));
-			uploadSecrete(tenantName, "certificate-private-key", tenantVaultSecret);
+			uploadSecrete(tenantNameNamespace, "certificate-private-key", tenantVaultSecret);
 			
 			String encryptionkeysalias = openSSLClientManager.executeCommand("openssl rand -base64 16");
 			tenantVaultSecret = new HashMap<>();
 			tenantVaultSecret.put("content", encryptionkeysalias);
-			uploadSecrete(tenantName, "encryptionkeys", tenantVaultSecret);
+			uploadSecrete(tenantNameNamespace, "encryptionkeys", tenantVaultSecret);
 
 			inputData.remove("selfsigncertificateprivatekey");
 			inputData.remove("selfsigncertificate");
 			
 			inputData.put("daps-cert", "daps-cert");
 			inputData.put("certificate-private-key", "certificate-private-key");
-			inputData.put("valuttenantpath", "/v1/secret/data/" + tenantName);
+			inputData.put("valuttenantpath", "/v1/secret/data/" + tenantNameNamespace);
 			inputData.put("vaulturl", valutURL);
 			inputData.put("vaulttoken", vaulttoken);
 			inputData.put("vaulttimeout", vaulttimeout);
 
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
+			log.info(orgName +"-"+  packageName + "-Vault created");
+
 
 		} catch (Exception ex) {
 
@@ -105,7 +110,6 @@ public class VaultManager {
 		String valutURLwithpath = valutURL + "/v1/secret/data/" + tenantName + "/data/" + secretePath;
 		VaultSecreteRequest vaultSecreteRequest = VaultSecreteRequest.builder().data(tenantVaultSecret).build();
 		URI url = new URI(valutURLwithpath);
-		log.info(tenantName + "- Vault secrete created");
 		vaultManagerProxy.uploadKeyandValue(url, vaultSecreteRequest);
 
 	}

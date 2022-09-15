@@ -91,7 +91,7 @@ public class ManualDFTPackageUpdateManager {
 				// Send an email
 				Map<String, Object> emailContent = new HashMap<>();
 				emailContent.put("orgname", customer.getOrganizationName());
-				emailContent.put("dftfrontendurl", map.get("dftfrontendurl"));
+				emailContent.put("dftFrontEndUrl", map.get("dftFrontEndUrl"));
 				emailContent.put("toemail", customer.getEmail());
 				emailContent.put("ccemail", portalEmail);
 

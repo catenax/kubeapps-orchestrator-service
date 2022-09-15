@@ -79,8 +79,10 @@ public class InputConfigurationManager {
 	}
 
 	private String buildDnsName(Customer customerDetails, String targetNamespace) {
-		targetNamespace = targetNamespace.substring(0, findIndexOfCharatcer(targetNamespace, 3));
-		return dnsOriginalName.replace("tenantname", targetNamespace);
+		targetNamespace = targetNamespace.substring(0, findIndexOfCharatcer(targetNamespace, 1));
+		String country = customerDetails.getCountry();
+		country = country.replaceAll("[^a-zA-Z0-9]", "");
+		return dnsOriginalName.replace("tenantname", targetNamespace+"-"+country.toLowerCase());
 	}
 
 	private String buildTargetNamespace(String orgName, String uuid) {

@@ -47,9 +47,9 @@ public class EDCControlplaneManager {
 			String dnsName = inputData.get("dnsName");
 			String dnsNameURLProtocol = inputData.get("dnsNameURLProtocol");
 
-			inputData.put("edcapi-key", "X-Api-Key");
-			inputData.put("edcapi-key-value", generateRandomPassword);
-			inputData.put("dataplanepublicurl",
+			inputData.put("edcApiKey", "X-Api-Key");
+			inputData.put("edcApiKeyValue", generateRandomPassword);
+			inputData.put("dataPlanePublicUrl",
 					dnsNameURLProtocol + "://" + tool.getLabel() + "-edcdataplane-edc-dataplane:8185/api/public");
 
 			String controlplaneurl = dnsNameURLProtocol + "://" + dnsName;
@@ -62,13 +62,17 @@ public class EDCControlplaneManager {
 			else
 				appManagement.updatePackage(EDC_CONTROLPLANE, packageName, inputData);
 
-			outputData.put("controlplanevalidationendpoint", dnsNameURLProtocol + "://" + packageName
+			
+			outputData.put("controlPlaneValidationEndpoint", dnsNameURLProtocol + "://" + packageName
 					+ "edccontrolplane-edc-controlplane:8182/validation/token");
 
-			outputData.put("controlplaneendpoint", controlplaneurl);
-			outputData.put("controlplanedataendpoint", controlplaneurl + "/data");
-			outputData.put("edcapi-key", "X-Api-Key");
-			outputData.put("edcapi-key-value", generateRandomPassword);
+			
+			outputData.put("controlPlaneEndpoint", controlplaneurl);
+			outputData.put("controlPlaneDataEndpoint", controlplaneurl + "/data");
+			outputData.put("edcApiKey", "X-Api-Key");
+			outputData.put("edcApiKeyValue", generateRandomPassword);
+			outputData.put("controlPlaneIdsEndpoint", controlplaneurl+"/api/v1/ids/data");
+			
 
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
 

@@ -231,8 +231,8 @@ public class AutoSetupOrchitestratorService {
 
 				emailContent.put("helloto", "Team");
 				emailContent.put("orgname", customer.getOrganizationName());
-				emailContent.put("dftfrontendurl", map.get("dftfrontendurl"));
-				emailContent.put("dftbackendurl", map.get("dftbackendurl"));
+				emailContent.put("dftFrontEndUrl", map.get("dftFrontEndUrl"));
+				emailContent.put("dftBackEndUrl", map.get("dftBackEndUrl"));
 				emailContent.put("toemail", portalEmail);
 
 				// End of email sending code
@@ -344,18 +344,18 @@ public class AutoSetupOrchitestratorService {
 		List<Map<String, String>> processResult = new ArrayList<>();
 
 		Map<String, String> dft = new ConcurrentHashMap<>();
-		dft.put("name", "dft");
-		dft.put("dftfrontendurl", outputMap.get("dftfrontendurl"));
-		dft.put("dftbackendurl", outputMap.get("dftbackendurl"));
+		dft.put("name", "DFT");
+		dft.put("dftFrontEndUrl", outputMap.get("dftFrontEndUrl"));
+		dft.put("dftBackEndUrl", outputMap.get("dftBackEndUrl"));
 		processResult.add(dft);
 
 		Map<String, String> edc = new ConcurrentHashMap<>();
-		edc.put("name", "edc");
-		edc.put("controlplaneendpoint", outputMap.get("controlplaneendpoint"));
-		edc.put("controlplanedataendpoint", outputMap.get("controlplanedataendpoint"));
-		edc.put("dataplanepublicendpoint", outputMap.get("dataplanepublicendpoint"));
-		edc.put("edcapi-key", outputMap.get("edcapi-key"));
-		edc.put("edcapi-key-value", outputMap.get("edcapi-key-value"));
+		edc.put("name", "EDC");
+		edc.put("controlPlaneEndpoint", outputMap.get("controlPlaneEndpoint"));
+		edc.put("controlPlaneDataEndpoint", outputMap.get("controlPlaneDataEndpoint"));
+		edc.put("dataPlanePublicEndpoint", outputMap.get("dataPlanePublicEndpoint"));
+		edc.put("edcApiKey", outputMap.get("edcApiKey"));
+		edc.put("edcApiKeyValue", outputMap.get("edcApiKeyValue"));
 		processResult.add(edc);
 
 		return processResult;

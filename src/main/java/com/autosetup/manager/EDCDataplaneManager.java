@@ -50,7 +50,7 @@ public class EDCDataplaneManager {
 				appManagement.updatePackage(EDC_DATAPLANE, packageName, inputData);
 
 			inputData.put("dataplaneendpoint", dataplaneurl);
-			inputData.put("dataplanepublicendpoint", dataplaneurl + "/public");
+			inputData.put("dataPlanePublicEndpoint", dataplaneurl + "/public");
 
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
 

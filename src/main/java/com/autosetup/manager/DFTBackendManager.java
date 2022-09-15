@@ -50,10 +50,11 @@ public class DFTBackendManager {
 			String dftfrontend = dnsNameURLProtocol + "://" + dnsName;
 
 			String generateRandomPassword = PasswordGenerator.generateRandomPassword(50);
-			inputData.put("dftbackendurl", backendurl);
-			inputData.put("dftbackendapikey", generateRandomPassword);
-			inputData.put("dftbackendapiKeyHeader", "API_KEY");
-			inputData.put("dftfrontendurl", dftfrontend);
+			
+			inputData.put("dftBackEndUrl", backendurl);
+			inputData.put("dftBackEndApiKey", generateRandomPassword);
+			inputData.put("dftBackEndApiKeyHeader", "API_KEY");
+			inputData.put("dftFrontEndUrl", dftfrontend);
 
 			Map<String, String> portalDetails = portalIntegrationManager.getDigitalandKeyCloackDetails(customerDetails,
 					inputData);
