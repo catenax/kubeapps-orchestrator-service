@@ -61,7 +61,7 @@ public class EmailManager {
 			mimeMessage.setSubject(emailRequest.getSubject());
 
 			if (emailRequest.getToEmail() != null && !emailRequest.getToEmail().isEmpty()) {
-				String[] split = emailRequest.getToEmail().toString().split(",");
+				String[] split = emailRequest.getToEmail().split(",");
 				InternetAddress[] addressTo = new InternetAddress[split.length];
 				int i = 0;
 				for (String string : split) {

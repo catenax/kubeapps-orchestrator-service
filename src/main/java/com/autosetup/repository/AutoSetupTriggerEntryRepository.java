@@ -6,8 +6,8 @@ import com.autosetup.entity.AutoSetupTriggerEntry;
 
 public interface AutoSetupTriggerEntryRepository extends JpaRepository<AutoSetupTriggerEntry, String> {
 
-	public AutoSetupTriggerEntry findAllByTriggerId(String triggerId);
+	AutoSetupTriggerEntry findAllByTriggerId(String triggerId);
 
-	public AutoSetupTriggerEntry findTop1ByOrganizationNameAndStatusIsNot(String organizationName, String status);
+	AutoSetupTriggerEntry findTop1ByOrganizationNameAndStatusIsNot(String organizationName, String status);
 
 }

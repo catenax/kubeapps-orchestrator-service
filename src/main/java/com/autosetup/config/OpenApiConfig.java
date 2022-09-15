@@ -30,14 +30,14 @@ public class OpenApiConfig {
 
 	@Bean
 	public GroupedOpenApi externalOpenApi() {
-		String paths[] = {"/internal/**"};
+		String[] paths = {"/internal/**"};
 		return GroupedOpenApi.builder().group("autosetup").pathsToExclude(paths)
 				.build();
 	}
 	
 	@Bean
 	public GroupedOpenApi internalOpenApi() {
-		String paths[] = {"/internal/**"};
+		String[] paths = {"/internal/**"};
 		return GroupedOpenApi.builder().group("internal").pathsToMatch(paths)
 				.build();
 	}

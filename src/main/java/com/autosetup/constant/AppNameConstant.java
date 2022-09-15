@@ -13,7 +13,7 @@ public enum AppNameConstant {
 	
 	DFT_FRONTEND,
 	
-	DFT_BACKEND;
+	DFT_BACKEND
 
 
 }

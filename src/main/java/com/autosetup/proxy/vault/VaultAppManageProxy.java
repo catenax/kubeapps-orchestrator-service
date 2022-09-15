@@ -12,6 +12,6 @@ import com.autosetup.model.VaultSecreteRequest;
 public interface VaultAppManageProxy {
 
 	@PostMapping
-	public String uploadKeyandValue(URI url, @RequestBody VaultSecreteRequest vaultSecreteRequest);
+    String uploadKeyandValue(URI url, @RequestBody VaultSecreteRequest vaultSecreteRequest);
 
 }

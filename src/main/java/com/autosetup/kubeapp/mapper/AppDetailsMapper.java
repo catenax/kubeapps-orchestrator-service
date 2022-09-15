@@ -8,6 +8,6 @@ import com.autosetup.model.AppDetailsRequest;
 @Mapper(componentModel = "spring")
 public interface AppDetailsMapper {
 
-	public AppDetails from(AppDetailsRequest appDetailsRequest);
+	AppDetails from(AppDetailsRequest appDetailsRequest);
 
 }

@@ -32,104 +32,103 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class DAPsManager {
 
-	private final DAPsAppManageProxy dapsAppManageProxy;
-	private final AutoSetupTriggerManager autoSetupTriggerManager;
+    private final DAPsAppManageProxy dapsAppManageProxy;
+    private final AutoSetupTriggerManager autoSetupTriggerManager;
 
-	@Value("${daps.clientid}")
-	private String clientId;
+    @Value("${daps.clientid}")
+    private String clientId;
 
-	@Value("${daps.clientsecret}")
-	private String clientSecret;
+    @Value("${daps.clientsecret}")
+    private String clientSecret;
 
-	@Value("${daps.url}")
-	private String dapsurl;
-	
-	@Value("${daps.token.url}")
-	private String dapstokenurl;
+    @Value("${daps.url}")
+    private String dapsurl;
 
-	@Value("${daps.jskurl}")
-	private String dapsjsksurl;
+    @Value("${daps.token.url}")
+    private String dapstokenurl;
 
-	public void deleteClientfromDAPs(String connectorclientId) {
+    @Value("${daps.jskurl}")
+    private String dapsjsksurl;
 
-		DAPsTokenResponse reponse = dapsAppManageProxy.readAuthToken("client_credentials", clientId, clientSecret,
-				"omejdn:admin");
+    public void deleteClientfromDAPs(String connectorclientId) {
 
-		Map<String, String> requestHeader = new HashMap<>();
-		requestHeader.put("Authorization", "Bearer " + reponse.getAccess_token());
+        DAPsTokenResponse reponse = dapsAppManageProxy.readAuthToken("client_credentials", clientId, clientSecret,
+                "omejdn:admin");
 
-		dapsAppManageProxy.deleteClient(connectorclientId, requestHeader);
+        Map<String, String> requestHeader = new HashMap<>();
+        requestHeader.put("Authorization", "Bearer " + reponse.getAccess_token());
 
-	}
+        dapsAppManageProxy.deleteClient(connectorclientId, requestHeader);
 
-	@Retryable(value = { ServiceException.class }, maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.backOffDelay}"))
-	public Map<String, String> registerClientInDAPs(Customer customerDetails, SelectedTools tool, Map<String, String> inputData,
-			AutoSetupTriggerEntry triger) {
-		AutoSetupTriggerDetails autoSetupTriggerDetails = AutoSetupTriggerDetails.builder()
-				.id(UUID.randomUUID().toString())
-				.step("DAPS")
-				.triggerIdforinsert(triger.getTriggerId())
-				.build();
-		try {
-			String tenantName = customerDetails.getOrganizationName();
-			log.info(tenantName + "- DAPS ceating");
-			
-			String bpnNumber = inputData.get("bpnNumber");
-			String role = inputData.get("role");
-			String connectorclientId = inputData.get("dapsclientid");
+    }
 
-			DAPsTokenResponse reponse = dapsAppManageProxy.readAuthToken("client_credentials", clientId, clientSecret,
-					"omejdn:admin");
+    @Retryable(value = { ServiceException.class }, maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.backOffDelay}"))
+    public Map<String, String> registerClientInDAPs(Customer customerDetails, SelectedTools tool, Map<String, String> inputData,
+                                                    AutoSetupTriggerEntry triger) {
+        AutoSetupTriggerDetails autoSetupTriggerDetails = AutoSetupTriggerDetails.builder()
+                .id(UUID.randomUUID().toString())
+                .step("DAPS")
+                .triggerIdforinsert(triger.getTriggerId())
+                .build();
+        try {
+            String tenantName = customerDetails.getOrganizationName();
+            log.info(tenantName + "- DAPS ceating");
 
-			List<String> scope = new ArrayList<>();
-			scope.add("idsc:IDS_CONNECTOR_ATTRIBUTES_ALL");
+            String bpnNumber = inputData.get("bpnNumber");
+            String role = inputData.get("role");
+            String connectorclientId = inputData.get("dapsclientid");
 
-			List<String> grant_types = new ArrayList<>();
-			grant_types.add("client_credentials");
+            DAPsTokenResponse reponse = dapsAppManageProxy.readAuthToken("client_credentials", clientId, clientSecret,
+                    "omejdn:admin");
 
-			List<Attribute> attributes = new ArrayList<>();
-			attributes.add(new Attribute("idsc", "IDS_CONNECTOR_ATTRIBUTES_ALL"));
-			attributes.add(new Attribute("@type", "ids:DatPayload"));
-			attributes.add(new Attribute("@context", "https://w3id.org/idsa/contexts/context.jsonld"));
-			attributes.add(new Attribute("securityProfile", "idsc:BASE_SECURITY_PROFILE"));
-			attributes.add(new Attribute("referringConnector", "http://www." + tenantName + ".com/" + bpnNumber));
-			attributes.add(new Attribute("role", role));
+            List<String> scope = new ArrayList<>();
+            scope.add("idsc:IDS_CONNECTOR_ATTRIBUTES_ALL");
 
-			DAPsClientRequest dapsClientRequest = DAPsClientRequest.builder().client_id(connectorclientId)
-					.name(tenantName).token_endpoint_auth_method("private_key_jwt").scope(scope)
-					.grant_types(grant_types).attributes(attributes).build();
+            List<String> grant_types = new ArrayList<>();
+            grant_types.add("client_credentials");
 
-			Map<String, String> requestHeader = new HashMap<>();
-			requestHeader.put("Authorization", "Bearer " + reponse.getAccess_token());
+            List<Attribute> attributes = new ArrayList<>();
+            attributes.add(new Attribute("idsc", "IDS_CONNECTOR_ATTRIBUTES_ALL"));
+            attributes.add(new Attribute("@type", "ids:DatPayload"));
+            attributes.add(new Attribute("@context", "https://w3id.org/idsa/contexts/context.jsonld"));
+            attributes.add(new Attribute("securityProfile", "idsc:BASE_SECURITY_PROFILE"));
+            attributes.add(new Attribute("referringConnector", "http://www." + tenantName + ".com/" + bpnNumber));
+            attributes.add(new Attribute("role", role));
 
-			dapsAppManageProxy.createClient(dapsClientRequest, requestHeader);
+            DAPsClientRequest dapsClientRequest = DAPsClientRequest.builder().client_id(connectorclientId)
+                    .name(tenantName).token_endpoint_auth_method("private_key_jwt").scope(scope)
+                    .grant_types(grant_types).attributes(attributes).build();
 
-			String certificateAsString = inputData.get("selfsigncertificate");
-			DAPsClientCertificateRequest dapsClientCertificate = DAPsClientCertificateRequest.builder()
-					.certificate(certificateAsString).build();
+            Map<String, String> requestHeader = new HashMap<>();
+            requestHeader.put("Authorization", "Bearer " + reponse.getAccess_token());
 
-			dapsAppManageProxy.uploadClientCertificate(connectorclientId, dapsClientCertificate, requestHeader);
+            dapsAppManageProxy.createClient(dapsClientRequest, requestHeader);
 
-			inputData.put("dapsurl", dapsurl);
-			inputData.put("dapstokenurl", dapstokenurl);
-			inputData.put("dapsjsksurl", dapsjsksurl);
+            String certificateAsString = inputData.get("selfsigncertificate");
+            DAPsClientCertificateRequest dapsClientCertificate = DAPsClientCertificateRequest.builder()
+                    .certificate(certificateAsString).build();
 
-			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
-			log.info(tenantName + "- DAPS created");
+            dapsAppManageProxy.uploadClientCertificate(connectorclientId, dapsClientCertificate, requestHeader);
 
-		} catch (Exception ex) {
+            inputData.put("dapsurl", dapsurl);
+            inputData.put("dapstokenurl", dapstokenurl);
+            inputData.put("dapsjsksurl", dapsjsksurl);
 
-			log.error("DapsManager failed retry attempt: : {}",
-					RetrySynchronizationManager.getContext().getRetryCount() + 1);
-			
-			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.FAILED.name());
-			autoSetupTriggerDetails.setRemark(ex.getMessage());
-			throw new ServiceException("DapsManager Oops! We have an exception - " + ex.getMessage());
+            autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
+            log.info(tenantName + "- DAPS created");
 
-		} finally {
-			autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails);
-		}
-		return inputData;
-	}
+        } catch (Exception ex) {
 
+            log.error("DapsManager failed retry attempt: : {}",
+                    RetrySynchronizationManager.getContext().getRetryCount() + 1);
+
+            autoSetupTriggerDetails.setStatus(TriggerStatusEnum.FAILED.name());
+            autoSetupTriggerDetails.setRemark(ex.getMessage());
+            throw new ServiceException("DapsManager Oops! We have an exception - " + ex.getMessage());
+
+        } finally {
+            autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails);
+        }
+        return inputData;
+    }
 }
