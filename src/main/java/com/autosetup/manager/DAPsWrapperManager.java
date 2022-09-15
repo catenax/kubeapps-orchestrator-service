@@ -32,11 +32,11 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class DAPsWrapperManager implements Serializable{
 
-	@Value("${dapswrapper.service.url}")
+	@Value("${dapswrapper.url}")
     private String dapsRegistrationUrl;
-    @Value("${dapswrapper.url}")
+    @Value("${dapswrapper.daps.url}")
     private String dapsurl;
-    @Value("${dapswrapper.jskurl}")
+    @Value("${dapswrapper.daps.jskurl}")
     private String dapsjsksurl;
     @Value("${dapswrapper.keycloak.auth-server-url}")
     private String serverUrl ;
