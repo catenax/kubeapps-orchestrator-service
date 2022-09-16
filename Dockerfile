@@ -12,6 +12,6 @@ WORKDIR target
 
 #RUN mv kubeapps-wrapper-0.0.1.jar orchestrator-service.jar 
 
-ENTRYPOINT ["java","-jar","kubeapps-wrapper-0.0.1.jar"]
+ENTRYPOINT ["java","-jar","auto-setup-0.0.1.jar"]
 
 EXPOSE 9999
