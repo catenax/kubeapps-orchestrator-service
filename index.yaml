@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  orchestrator:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2022-09-16T11:56:51.37702+05:30"
+    description: A Helm chart for Kubernetes
+    digest: 72886a17ab20cd4721785c4dbd6d98c9fdbb163907dfa211980deebcdcb5ba4f
+    name: orchestrator
+    type: application
+    urls:
+    - https://catenax.github.io/kubeapps-orchestrator-service/orchestrator-1.0.0.tgz
+    version: 1.0.0
+generated: "2022-09-16T11:56:51.375845+05:30"
