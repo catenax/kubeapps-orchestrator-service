@@ -13,7 +13,7 @@ spec:
       {{- include "orchestrator.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- with .Values.podAnnotations }}          
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -86,7 +86,7 @@ spec:
             - name: DAPSWRAPPER_KEYCLOAK_AUTH-SERVER-URL
               value: "https://keycloak.cx.dih-cloud.com"
             - name: DAPSWRAPPER_KEYCLOAK_REALM
-                value: "orchestrator"
+              value: "orchestrator"
             - name: KUBEAPP_URL
               valueFrom:
                 secretKeyRef:
