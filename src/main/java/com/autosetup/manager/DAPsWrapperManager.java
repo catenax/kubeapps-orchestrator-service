@@ -13,10 +13,7 @@ import com.autosetup.exception.ServiceException;
 import com.autosetup.model.Customer;
 import com.autosetup.model.SelectedTools;
 import lombok.extern.slf4j.Slf4j;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.OAuth2Constants;
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.KeycloakBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
@@ -48,6 +45,8 @@ public class DAPsWrapperManager implements Serializable{
     private String username ;
     @Value("${dapswrapper.keycloak.password}")
     private String password ;
+    @Value("$dapswrapper.keycloak.tokenuri}")
+    private String tokenURI;
     private final AutoSetupTriggerManager autoSetupTriggerManager;
 
     public DAPsWrapperManager(AutoSetupTriggerManager autoSetupTriggerManager) {
@@ -96,20 +95,21 @@ public class DAPsWrapperManager implements Serializable{
 
     public String getKeycloakToken() {
 
-        Keycloak keycloak = KeycloakBuilder.builder()
-                .serverUrl(serverUrl)
-                .grantType(OAuth2Constants.PASSWORD)
-                .realm(realm)
-                .clientId(client)
-                .username(username)
-                .password(password)
-                .resteasyClient(
-                        new ResteasyClientBuilder()
-                                .connectionPoolSize(10).build()
-                ).build();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        keycloak.tokenManager().getAccessToken();
-        return keycloak.tokenManager().getAccessTokenString();
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("grant_type", OAuth2Constants.PASSWORD);
+        body.add("client_id", client);
+        body.add("username", username);
+        body.add("password", password);
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        var result = restTemplate.postForEntity(tokenURI, requestEntity, String.class);
+        log.info("token : "+result.toString());
+        return result.toString();
 
     }
 
