@@ -91,7 +91,7 @@ public class ManualDFTPackageUpdateManager {
 
 				String packageName = element.getPackageName();
 
-				String controlService = "http://" + packageName + "edccontrolplane-edc-controlplane";
+				String controlService = "http://" + packageName + "-edccontrolplane-edc-controlplane";
 				inputConfiguration.put("internalcontrolplaneservicedata", controlService + ":8181/data");
 				inputConfiguration.put("internalcontrolplaneservice", controlService + ":8181");
 
