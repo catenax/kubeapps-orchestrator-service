@@ -20,7 +20,7 @@
 
 FROM openjdk:19-jdk-alpine3.16
 
-RUN apk update && apk add maven && apk add --upgrade maven && apk add openssl
+RUN apk update && apk add --upgrade openssl && apk add maven && apk add --upgrade maven
 
 WORKDIR /app
 
