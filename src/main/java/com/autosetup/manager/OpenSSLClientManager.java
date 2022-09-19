@@ -33,7 +33,7 @@ public class OpenSSLClientManager {
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		StringBuilder output = new StringBuilder();
 		// Run a command
-		processBuilder.command("bash", "-c", command);
+		processBuilder.command("sh", "-c", command);
 
 		try {
 			Process process = processBuilder.start();
