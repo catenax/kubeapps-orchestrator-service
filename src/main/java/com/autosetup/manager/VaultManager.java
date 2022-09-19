@@ -103,7 +103,10 @@ public class VaultManager {
 			inputData.put("vaulturl", valutURL);
 			inputData.put("vaulttoken", vaulttoken);
 			inputData.put("vaulttimeout", vaulttimeout);
-
+			inputData.put("encryptionkeys", "encryptionkeys");
+			inputData.put("certificate-data-plane-private-key", "certificate-private-key");
+			inputData.put("certificate-data-plane-public-key", "certificate-private-key");
+			
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
 			log.info(orgName +"-"+  packageName + "-Vault created");
 

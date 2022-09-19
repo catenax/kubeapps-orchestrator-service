@@ -67,12 +67,26 @@ public class EDCControlplaneManager {
 			String dnsName = inputData.get("dnsName");
 			String dnsNameURLProtocol = inputData.get("dnsNameURLProtocol");
 
-			inputData.put("edcApiKey", "X-Api-Key");
-			inputData.put("edcApiKeyValue", generateRandomPassword);
-			inputData.put("dataPlanePublicUrl",
-					dnsNameURLProtocol + "://" + tool.getLabel() + "-edcdataplane-edc-dataplane:8185/api/public");
-
 			String controlplaneurl = dnsNameURLProtocol + "://" + dnsName;
+
+			inputData.put("dataPlanePublicUrl",
+					dnsNameURLProtocol + "://" + packageName + "-edcdataplane-edc-dataplane:8185/api/public");
+			
+			String localControlplane = dnsNameURLProtocol + "://" + packageName
+					+ "-edccontrolplane-edc-controlplane:8182/validation/token";
+
+			outputData.put("controlPlaneValidationEndpoint", localControlplane);
+
+			outputData.put("controlPlaneEndpoint", controlplaneurl);
+			outputData.put("controlPlaneDataEndpoint", controlplaneurl + "/data");
+			outputData.put("edcApiKey", "X-Api-Key");
+			outputData.put("edcApiKeyValue", generateRandomPassword);
+			outputData.put("controlPlaneIdsEndpoint", controlplaneurl + "/api/v1/ids/data");
+
+			inputData.putAll(outputData);
+
+			String dftAddress = dnsNameURLProtocol + "://" + dnsName + "/dftbackend/api";
+			inputData.put("dftAddress", dftAddress);
 
 			String edcDb = "jdbc:postgresql://" + packageName + "-postgresdb-postgresql:5432/postgres";
 			inputData.put("edcdatabaseurl", edcDb);
@@ -81,18 +95,6 @@ public class EDCControlplaneManager {
 				appManagement.createPackage(EDC_CONTROLPLANE, packageName, inputData);
 			else
 				appManagement.updatePackage(EDC_CONTROLPLANE, packageName, inputData);
-
-			
-			outputData.put("controlPlaneValidationEndpoint", dnsNameURLProtocol + "://" + packageName
-					+ "edccontrolplane-edc-controlplane:8182/validation/token");
-
-			
-			outputData.put("controlPlaneEndpoint", controlplaneurl);
-			outputData.put("controlPlaneDataEndpoint", controlplaneurl + "/data");
-			outputData.put("edcApiKey", "X-Api-Key");
-			outputData.put("edcApiKeyValue", generateRandomPassword);
-			outputData.put("controlPlaneIdsEndpoint", controlplaneurl+"/api/v1/ids/data");
-			
 
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
 

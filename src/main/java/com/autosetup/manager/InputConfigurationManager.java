@@ -21,14 +21,12 @@
 package com.autosetup.manager;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.autosetup.entity.AutoSetupTriggerEntry;
-import com.autosetup.exception.ValidationException;
 import com.autosetup.model.Customer;
 
 import lombok.RequiredArgsConstructor;
@@ -62,12 +60,11 @@ public class InputConfigurationManager {
 		inputConfiguration.put("targetCluster", targetCluster);
 		inputConfiguration.put("targetNamespace", targetNamespace);
 
-		String bpnNumber = Optional.of(customerDetails.getProperties().get("bpnNumber"))
-				.orElseThrow(() -> new ValidationException("bpnNumber not present in request"));
+		String bpnNumber = customerDetails.getProperties().get("bpnNumber");
 
 		inputConfiguration.put("bpnNumber", bpnNumber);
 
-		if (customerDetails.getProperties().containsKey("role")) {
+		if (customerDetails.getProperties() !=null && customerDetails.getProperties().containsKey("role")) {
 			String role = customerDetails.getProperties().get("role");
 			inputConfiguration.put("role", role);
 		}

@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -105,7 +106,13 @@ public class AutoSetupOrchitestratorService {
 
 		String uuID = UUID.randomUUID().toString();
 
-		String organizationName = autoSetupRequest.getCustomer().getOrganizationName();
+		Customer customer = autoSetupRequest.getCustomer();
+		
+		Optional.of(customer.getProperties()).map(e -> e.get("bpnNumber"))
+				.orElseThrow(() -> new ValidationException("bpnNumber not present in request"));
+		
+		String organizationName = customer.getOrganizationName();
+		
 		AutoSetupTriggerEntry checkTrigger = autoSetupTriggerManager
 				.isAutoSetupAvailableforOrgnizationName(organizationName);
 
@@ -113,13 +120,14 @@ public class AutoSetupOrchitestratorService {
 			throw new ValidationException("Auto setup already exist for " + organizationName
 					+ ", use execution id to update it " + checkTrigger.getTriggerId());
 		}
+		
 
 		Runnable runnable = () -> {
 
 			packageNaming(autoSetupRequest);
 
 			Map<String, String> inputConfiguration = inputConfigurationManager
-					.prepareInputConfiguration(autoSetupRequest.getCustomer(), uuID);
+					.prepareInputConfiguration(customer, uuID);
 
 			String targetNamespace = inputConfiguration.get("targetNamespace");
 
@@ -171,7 +179,7 @@ public class AutoSetupOrchitestratorService {
 					}
 					try {
 						log.info("Waiting after deleteing all package for recreate");
-						Thread.sleep(3000);
+						Thread.sleep(15000);
 					} catch (InterruptedException e) {
 					}
 

@@ -64,6 +64,10 @@ public class DAPsWrapperManager {
 
 	@Value("${dapswrapper.daps.jskurl}")
 	private String dapsjsksurl;
+	
+	@Value("${dapswrapper.daps.token.url}")
+	private String dapstokenurl;
+	
 
 	@Value("${dapswrapper.keycloak.auth-server-url}")
 	private String serverUrl;
@@ -125,6 +129,7 @@ public class DAPsWrapperManager {
 
 			inputData.put("dapsurl", dapsurl);
 			inputData.put("dapsjsksurl", dapsjsksurl);
+			inputData.put("dapstokenurl", dapstokenurl);
 			
 			log.info(tenantName +"-"+  packageName + "-DAPS package created");
 

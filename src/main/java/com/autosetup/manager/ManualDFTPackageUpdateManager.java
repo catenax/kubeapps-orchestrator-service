@@ -83,7 +83,7 @@ public class ManualDFTPackageUpdateManager {
 			autosetupResult.forEach(mape -> {
 				inputConfiguration.putAll(mape);
 			});
-
+			
 			List<SelectedTools> dftToollist = autosetupRequest.getSelectedTools().stream()
 					.filter(e -> ToolType.DFT.equals(e.getTool())).toList();
 
@@ -91,18 +91,14 @@ public class ManualDFTPackageUpdateManager {
 
 				String packageName = element.getPackageName();
 
-				String controlService = "http://" + packageName + "-edccontrolplane-edc-controlplane";
-				inputConfiguration.put("internalcontrolplaneservicedata", controlService + ":8181/data");
-				inputConfiguration.put("internalcontrolplaneservice", controlService + ":8181");
-
 				appManagement.deletePackage(POSTGRES_DB, packageName, inputConfiguration);
 				appManagement.deletePackage(DFT_BACKEND, packageName, inputConfiguration);
 				appManagement.deletePackage(DFT_FRONTEND, packageName, inputConfiguration);
 
 				// Sleep thread to wait for existing package deletetion
-				log.info("Waiting after deleteing DFT packages");
+				log.info("Waiting after deleting DFT packages");
 
-				Thread.sleep(5000);
+				Thread.sleep(15000);
 
 				Customer customer = autosetupRequest.getCustomer();
 
