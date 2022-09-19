@@ -26,14 +26,17 @@ import java.io.InputStreamReader;
 
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class OpenSSLClientManager {
 
 	public String executeCommand(String command) {
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		StringBuilder output = new StringBuilder();
 		// Run a command
-		processBuilder.command("sh", "-c", command);
+		processBuilder.command("bash", "-c", command);
 
 		try {
 			Process process = processBuilder.start();
@@ -47,7 +50,7 @@ public class OpenSSLClientManager {
 			if (exitVal == 0) {
 				// log.info(output.toString());
 			} else {
-				// abnormal...
+				 log.error("Error in command:"+output.toString());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
