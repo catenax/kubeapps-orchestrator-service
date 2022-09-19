@@ -21,9 +21,9 @@
 #FROM openjdk:19-jdk-alpine3.16
 FROM maven:3.8.6-openjdk-18
 
-#RUN apk update && apk add maven && apk add --upgrade maven
+RUN apk update && apk add maven && apk add --upgrade maven
 
-RUN apt-get update -y && apt-get install -y nocache
+#RUN apt-get update -y && apt-get install -y nocache
 
 #RUN  && apk add --upgrade openssl
 WORKDIR /app
