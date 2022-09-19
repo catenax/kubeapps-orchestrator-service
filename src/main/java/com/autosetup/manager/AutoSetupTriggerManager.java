@@ -32,7 +32,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.autosetup.constant.AppActions;
-import com.autosetup.constant.TriggerStatusEnum;
 import com.autosetup.entity.AutoSetupTriggerDetails;
 import com.autosetup.entity.AutoSetupTriggerEntry;
 import com.autosetup.exception.NoDataFoundException;
@@ -133,8 +132,7 @@ public class AutoSetupTriggerManager {
 	}
 
 	public AutoSetupTriggerEntry isAutoSetupAvailableforOrgnizationName(String organizationName) {
-		return autoSetupTriggerEntryRepository.findTop1ByOrganizationNameAndStatusIsNot(organizationName,
-				TriggerStatusEnum.FAILED.name());
+		return autoSetupTriggerEntryRepository.findTop1ByOrganizationName(organizationName);
 	}
 
 }

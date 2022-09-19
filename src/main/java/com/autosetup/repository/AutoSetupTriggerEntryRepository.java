@@ -28,6 +28,6 @@ public interface AutoSetupTriggerEntryRepository extends JpaRepository<AutoSetup
 
 	AutoSetupTriggerEntry findAllByTriggerId(String triggerId);
 
-	AutoSetupTriggerEntry findTop1ByOrganizationNameAndStatusIsNot(String organizationName, String status);
+	AutoSetupTriggerEntry findTop1ByOrganizationName(String organizationName);
 
 }

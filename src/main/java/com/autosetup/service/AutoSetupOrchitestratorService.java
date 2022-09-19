@@ -28,7 +28,6 @@ import static com.autosetup.constant.AppNameConstant.DFT_FRONTEND;
 import static com.autosetup.constant.AppNameConstant.EDC_CONTROLPLANE;
 import static com.autosetup.constant.AppNameConstant.EDC_DATAPLANE;
 import static com.autosetup.constant.AppNameConstant.POSTGRES_DB;
-import static com.autosetup.constant.TriggerStatusEnum.FAILED;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -107,27 +106,26 @@ public class AutoSetupOrchitestratorService {
 		String uuID = UUID.randomUUID().toString();
 
 		Customer customer = autoSetupRequest.getCustomer();
-		
+
 		Optional.of(customer.getProperties()).map(e -> e.get("bpnNumber"))
 				.orElseThrow(() -> new ValidationException("bpnNumber not present in request"));
-		
+
 		String organizationName = customer.getOrganizationName();
-		
+
 		AutoSetupTriggerEntry checkTrigger = autoSetupTriggerManager
 				.isAutoSetupAvailableforOrgnizationName(organizationName);
 
-		if (checkTrigger != null && !DELETE.name().equals(checkTrigger.getTriggerType())) {
+		if (checkTrigger != null) {
 			throw new ValidationException("Auto setup already exist for " + organizationName
 					+ ", use execution id to update it " + checkTrigger.getTriggerId());
 		}
-		
 
 		Runnable runnable = () -> {
 
 			packageNaming(autoSetupRequest);
 
-			Map<String, String> inputConfiguration = inputConfigurationManager
-					.prepareInputConfiguration(customer, uuID);
+			Map<String, String> inputConfiguration = inputConfigurationManager.prepareInputConfiguration(customer,
+					uuID);
 
 			String targetNamespace = inputConfiguration.get("targetNamespace");
 
@@ -148,9 +146,14 @@ public class AutoSetupOrchitestratorService {
 
 	public String updatePackage(AutoSetupRequest autoSetupRequest, String triggerId) {
 
+		Customer customer = autoSetupRequest.getCustomer();
+
+		Optional.of(customer.getProperties()).map(e -> e.get("bpnNumber"))
+				.orElseThrow(() -> new ValidationException("bpnNumber not present in request"));
+
 		AutoSetupTriggerEntry trigger = autoSetupTriggerEntryRepository.findAllByTriggerId(triggerId);
 
-		if (trigger != null && !FAILED.name().equals(trigger.getStatus())) {
+		if (trigger != null) {
 
 			Map<String, String> inputConfiguration = inputConfigurationManager
 					.prepareInputConfiguration(autoSetupRequest.getCustomer(), triggerId);
@@ -168,12 +171,12 @@ public class AutoSetupOrchitestratorService {
 				if (checkNamespaceisExist(existingNamespace)) {
 
 					inputConfiguration.put("targetNamespace", existingNamespace);
-					
+
 					processDeleteTrigger(trigger, inputConfiguration);
 
 					inputConfiguration.put("targetNamespace", targetNamespace);
 					trigger.setAutosetupTenantName(targetNamespace);
-					
+
 					if (!existingNamespace.equals(targetNamespace) && !checkNamespaceisExist(targetNamespace)) {
 						kubeAppManageProxy.createNamespace(targetCluster, targetNamespace);
 					}
@@ -293,31 +296,37 @@ public class AutoSetupOrchitestratorService {
 
 	private void processDeleteTrigger(AutoSetupTriggerEntry trigger, Map<String, String> inputConfiguration) {
 
-		AutoSetupRequest autoSetupRequest = autoSetupRequestMapper.fromStr(trigger.getAutosetupRequest());
+		if (trigger != null && trigger.getAutosetupRequest() != null) {
+			AutoSetupRequest autoSetupRequest = autoSetupRequestMapper.fromStr(trigger.getAutosetupRequest());
 
-		List<SelectedTools> edcToollist = autoSetupRequest.getSelectedTools().stream()
-				.filter(e -> ToolType.EDC.equals(e.getTool())).toList();
+			if (autoSetupRequest.getSelectedTools() != null) {
+				List<SelectedTools> edcToollist = autoSetupRequest.getSelectedTools().stream()
+						.filter(e -> ToolType.EDC.equals(e.getTool())).toList();
 
-		edcToollist.forEach((tool) -> {
-			appManagement.deletePackage(POSTGRES_DB, tool.getPackageName(), inputConfiguration);
-			appManagement.deletePackage(EDC_CONTROLPLANE, tool.getPackageName(), inputConfiguration);
-			appManagement.deletePackage(EDC_DATAPLANE, tool.getPackageName(), inputConfiguration);
-		});
+				edcToollist.forEach((tool) -> {
+					appManagement.deletePackage(POSTGRES_DB, tool.getPackageName(), inputConfiguration);
+					appManagement.deletePackage(EDC_CONTROLPLANE, tool.getPackageName(), inputConfiguration);
+					appManagement.deletePackage(EDC_DATAPLANE, tool.getPackageName(), inputConfiguration);
+				});
 
-		List<SelectedTools> dftToollist = autoSetupRequest.getSelectedTools().stream()
-				.filter(e -> ToolType.DFT.equals(e.getTool())).toList();
+				List<SelectedTools> dftToollist = autoSetupRequest.getSelectedTools().stream()
+						.filter(e -> ToolType.DFT.equals(e.getTool())).toList();
 
-		for (SelectedTools tool : dftToollist) {
-			appManagement.deletePackage(POSTGRES_DB, tool.getPackageName(), inputConfiguration);
-			appManagement.deletePackage(DFT_BACKEND, tool.getPackageName(), inputConfiguration);
-			appManagement.deletePackage(DFT_FRONTEND, tool.getPackageName(), inputConfiguration);
-		}
+				dftToollist.forEach((tool) -> {
+					appManagement.deletePackage(POSTGRES_DB, tool.getPackageName(), inputConfiguration);
+					appManagement.deletePackage(DFT_BACKEND, tool.getPackageName(), inputConfiguration);
+					appManagement.deletePackage(DFT_FRONTEND, tool.getPackageName(), inputConfiguration);
+				});
 
-		trigger.setStatus(TriggerStatusEnum.SUCCESS.name());
+				trigger.setStatus(TriggerStatusEnum.SUCCESS.name());
 
-		autoSetupTriggerManager.saveTriggerUpdate(trigger);
+				autoSetupTriggerManager.saveTriggerUpdate(trigger);
 
-		log.info("All Packages deleted successfully!!!!");
+				log.info("All Packages deleted successfully!!!!");
+			} else
+				log.info("For Packages deletion autoSetupRequest.getSelectedTools is null");
+		} else
+			log.info("For Packages deletion the Autosetup Request is null");
 	}
 
 	@SneakyThrows

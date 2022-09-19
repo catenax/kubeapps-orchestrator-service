@@ -59,14 +59,14 @@ public class InputConfigurationManager {
 		inputConfiguration.put("dnsNameURLProtocol", dnsNameURLProtocol);
 		inputConfiguration.put("targetCluster", targetCluster);
 		inputConfiguration.put("targetNamespace", targetNamespace);
+		
+		if (customerDetails.getProperties() != null) {
+			inputConfiguration.put("bpnNumber", customerDetails.getProperties().get("bpnNumber"));
 
-		String bpnNumber = customerDetails.getProperties().get("bpnNumber");
-
-		inputConfiguration.put("bpnNumber", bpnNumber);
-
-		if (customerDetails.getProperties() !=null && customerDetails.getProperties().containsKey("role")) {
-			String role = customerDetails.getProperties().get("role");
-			inputConfiguration.put("role", role);
+			if (customerDetails.getProperties().containsKey("role")) {
+				String role = customerDetails.getProperties().get("role");
+				inputConfiguration.put("role", role);
+			}
 		}
 
 		return inputConfiguration;
@@ -89,7 +89,7 @@ public class InputConfigurationManager {
 	private int findIndexOfCharatcer(String str, int count) {
 		int index = 1;
 		while (count > 0) {
-			index = str.indexOf("-", index+1);
+			index = str.indexOf("-", index + 1);
 			count--;
 		}
 		return index;
@@ -99,7 +99,7 @@ public class InputConfigurationManager {
 		targetNamespace = targetNamespace.substring(0, findIndexOfCharatcer(targetNamespace, 1));
 		String country = customerDetails.getCountry();
 		country = country.replaceAll("[^a-zA-Z0-9]", "");
-		return dnsOriginalName.replace("tenantname", targetNamespace+"-"+country.toLowerCase());
+		return dnsOriginalName.replace("tenantname", targetNamespace + "-" + country.toLowerCase());
 	}
 
 	private String buildTargetNamespace(String orgName, String uuid) {
