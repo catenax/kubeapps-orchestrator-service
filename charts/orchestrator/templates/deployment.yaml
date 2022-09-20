@@ -116,13 +116,13 @@ spec:
             - name: PORTAL_URL
               value: "http://192.168.0.105/auth"
             - name: KEYCLOAK_REALM
-              value: "orchestrator"
+              value: "autosetup"
             - name: KEYCLOAK_AUTH-SERVER-URL
               value: "https://keycloak.cx.dih-cloud.com"
             - name: KEYCLOAK_SSL-REQUIRED
               value: "external"
             - name: KEYCLOAK_RESOURCES
-              value: "orchestratorservice"
+              value: "autosetup-service"
             - name: KEYCLOAK_SSL-REQUIRED
               value: "external"
             - name: KEYCLOAK_USE-RESOURCE-ROLE-MAPPINGS
