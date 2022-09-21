@@ -26,10 +26,15 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import com.autosetup.constant.TriggerStatusEnum;
+import com.autosetup.entity.AutoSetupTriggerDetails;
+import com.autosetup.entity.AutoSetupTriggerEntry;
+import com.autosetup.exception.ServiceException;
+import com.autosetup.model.Customer;
+import com.autosetup.model.SelectedTools;
+import lombok.extern.slf4j.Slf4j;
+
 import org.keycloak.OAuth2Constants;
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.KeycloakBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
@@ -57,34 +62,27 @@ import lombok.extern.slf4j.Slf4j;
 public class DAPsWrapperManager {
 
 	@Value("${dapswrapper.url}")
-	private String dapsRegistrationUrl;
-
-	@Value("${dapswrapper.daps.url}")
-	private String dapsurl;
-
-	@Value("${dapswrapper.daps.jskurl}")
-	private String dapsjsksurl;
-	
+    private String dapsRegistrationUrl;
+    @Value("${dapswrapper.daps.url}")
+    private String dapsurl;
+    @Value("${dapswrapper.daps.jskurl}")
+    private String dapsjsksurl;
+    @Value("${dapswrapper.keycloak.auth-server-url}")
+    private String serverUrl ;
+    @Value("${dapswrapper.keycloak.realm}")
+    private String realm ;
+    @Value("${dapswrapper.keycloak.resource}")
+    private String client ;
+    @Value("${dapswrapper.keycloak.username}")
+    private String username ;
+    @Value("${dapswrapper.keycloak.password}")
+    private String password ;
+    @Value("$dapswrapper.keycloak.tokenuri}")
+    private String tokenURI;
+    private final AutoSetupTriggerManager autoSetupTriggerManager;
 	@Value("${dapswrapper.daps.token.url}")
 	private String dapstokenurl;
-	
 
-	@Value("${dapswrapper.keycloak.auth-server-url}")
-	private String serverUrl;
-
-	@Value("${dapswrapper.keycloak.realm}")
-	private String realm;
-
-	@Value("${dapswrapper.keycloak.resource}")
-	private String client;
-
-	@Value("${dapswrapper.keycloak.username}")
-	private String username;
-
-	@Value("${dapswrapper.keycloak.password}")
-	private String password;
-
-	private final AutoSetupTriggerManager autoSetupTriggerManager;
 
 	public DAPsWrapperManager(AutoSetupTriggerManager autoSetupTriggerManager) {
 		this.autoSetupTriggerManager = autoSetupTriggerManager;
@@ -94,6 +92,7 @@ public class DAPsWrapperManager {
 			ServiceException.class }, maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.backOffDelay}"))
 	public Map<String, String> createClient(Customer customerDetails, SelectedTools tool, Map<String, String> inputData,
 			AutoSetupTriggerEntry triger) {
+
 
 		AutoSetupTriggerDetails autoSetupTriggerDetails = AutoSetupTriggerDetails.builder()
 				.id(UUID.randomUUID().toString()).step("DAPS").triggerIdforinsert(triger.getTriggerId()).build();
@@ -156,12 +155,19 @@ public class DAPsWrapperManager {
 
 	public String getKeycloakToken() {
 
-		Keycloak keycloak = KeycloakBuilder.builder().serverUrl(serverUrl).grantType(OAuth2Constants.PASSWORD)
-				.realm(realm).clientId(client).username(username).password(password)
-				.resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()).build();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-		keycloak.tokenManager().getAccessToken();
-		return keycloak.tokenManager().getAccessTokenString();
+		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+		body.add("grant_type", OAuth2Constants.PASSWORD);
+		body.add("client_id", client);
+		body.add("username", username);
+		body.add("password", password);
+
+		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+		RestTemplate restTemplate = new RestTemplate();
+		var result = restTemplate.postForEntity(tokenURI, requestEntity, String.class);
+		return result.toString();
 
 	}
 
