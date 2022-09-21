@@ -58,7 +58,7 @@ public class CertificateManager {
 
 		Map<String, String> outputData = new HashMap<>();
 		AutoSetupTriggerDetails autoSetupTriggerDetails = AutoSetupTriggerDetails.builder()
-				.id(UUID.randomUUID().toString()).step("CERTIFICATE").triggerIdforinsert(triger.getTriggerId()).build();
+				.id(UUID.randomUUID().toString()).step("CERTIFICATE").build();
 
 		try {
 
@@ -97,7 +97,7 @@ public class CertificateManager {
 			autoSetupTriggerDetails.setRemark(ex.getMessage());
 			throw new ServiceException("CertificateManager Oops! We have an exception - " + ex.getMessage());
 		} finally {
-			autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails);
+			autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails, triger);
 		}
 
 		return outputData;

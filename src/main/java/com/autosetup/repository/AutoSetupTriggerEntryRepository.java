@@ -21,11 +21,13 @@
 package com.autosetup.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.autosetup.entity.AutoSetupTriggerEntry;
 
 public interface AutoSetupTriggerEntryRepository extends JpaRepository<AutoSetupTriggerEntry, String> {
 
+	@Query(value = "SELECT * FROM auto_setup_trigger_tbl a WHERE a.trigger_id = ?1", nativeQuery = true)
 	AutoSetupTriggerEntry findAllByTriggerId(String triggerId);
 
 	AutoSetupTriggerEntry findTop1ByOrganizationName(String organizationName);

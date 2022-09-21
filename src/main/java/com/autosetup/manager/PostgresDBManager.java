@@ -58,7 +58,7 @@ public class PostgresDBManager {
 
 		AutoSetupTriggerDetails autoSetupTriggerDetails = AutoSetupTriggerDetails.builder()
 				.id(UUID.randomUUID().toString()).step(POSTGRES_DB.name() + "-" + packageName)
-				.triggerIdforinsert(triger.getTriggerId()).build();
+				.build();
 		try {
 
 			inputData.put("postgresPassword", "admin@123");
@@ -82,7 +82,7 @@ public class PostgresDBManager {
 			autoSetupTriggerDetails.setRemark(ex.getMessage());
 			throw new ServiceException("PostgresDBManager Oops! We have an exception - " + ex.getMessage());
 		} finally {
-			autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails);
+			autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails, triger);
 		}
 
 		return inputData;

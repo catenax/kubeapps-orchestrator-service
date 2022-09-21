@@ -50,32 +50,39 @@ import lombok.NoArgsConstructor;
 public class AutoSetupTriggerEntry {
 
 	@Id
+	@Column(name = "trigger_id")
 	private String triggerId;
 
+	@Column(name = "trigger_type")
 	private String triggerType;
 
+	@Column(name = "organization_name")
 	private String organizationName;
 
 	@JsonIgnore
+	@Column(name = "autosetup_tenant_name")
 	private String autosetupTenantName;
 
 	@OneToMany(targetEntity = AutoSetupTriggerDetails.class, cascade = CascadeType.ALL)
-	@JoinColumn(name = "trigger_id", referencedColumnName = "triggerId")
+	@JoinColumn(name = "trigger_id", referencedColumnName = "trigger_id")
 	private List<AutoSetupTriggerDetails> autosetupTriggerDetails;
 
-	@Column(name = "autosetup_request", columnDefinition = "LONGTEXT")
+	@Column(name = "autosetup_request", columnDefinition = "TEXT")
 	private String autosetupRequest;
 
-	@Column(name = "autosetup_result", columnDefinition = "LONGTEXT")
+	@Column(name = "autosetup_result", columnDefinition = "TEXT")
 	private String autosetupResult;
 
+	@Column(name = "created_timestamp")
 	private String createdTimestamp;
 
+	@Column(name = "modified_timestamp")
 	private String modifiedTimestamp;
 
+	@Column(name = "status")
 	private String status;
 
-	@Column(name = "remark", columnDefinition = "LONGTEXT")
+	@Column(name = "remark", columnDefinition = "TEXT")
 	private String remark;
 
 	public void addTriggerDetails(AutoSetupTriggerDetails autoSetupTriggerDetails) {

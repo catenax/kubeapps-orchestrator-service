@@ -26,14 +26,6 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
 
-import com.autosetup.constant.TriggerStatusEnum;
-import com.autosetup.entity.AutoSetupTriggerDetails;
-import com.autosetup.entity.AutoSetupTriggerEntry;
-import com.autosetup.exception.ServiceException;
-import com.autosetup.model.Customer;
-import com.autosetup.model.SelectedTools;
-import lombok.extern.slf4j.Slf4j;
-
 import org.keycloak.OAuth2Constants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -53,6 +45,7 @@ import com.autosetup.entity.AutoSetupTriggerDetails;
 import com.autosetup.entity.AutoSetupTriggerEntry;
 import com.autosetup.exception.ServiceException;
 import com.autosetup.model.Customer;
+import com.autosetup.model.DAPsTokenResponse;
 import com.autosetup.model.SelectedTools;
 
 import lombok.extern.slf4j.Slf4j;
@@ -67,23 +60,20 @@ public class DAPsWrapperManager {
     private String dapsurl;
     @Value("${dapswrapper.daps.jskurl}")
     private String dapsjsksurl;
-    @Value("${dapswrapper.keycloak.auth-server-url}")
-    private String serverUrl ;
-    @Value("${dapswrapper.keycloak.realm}")
-    private String realm ;
     @Value("${dapswrapper.keycloak.resource}")
     private String client ;
     @Value("${dapswrapper.keycloak.username}")
     private String username ;
     @Value("${dapswrapper.keycloak.password}")
     private String password ;
-    @Value("$dapswrapper.keycloak.tokenuri}")
+    @Value("${dapswrapper.keycloak.tokenuri}")
     private String tokenURI;
-    private final AutoSetupTriggerManager autoSetupTriggerManager;
 	@Value("${dapswrapper.daps.token.url}")
 	private String dapstokenurl;
 
 
+	private final AutoSetupTriggerManager autoSetupTriggerManager;
+	
 	public DAPsWrapperManager(AutoSetupTriggerManager autoSetupTriggerManager) {
 		this.autoSetupTriggerManager = autoSetupTriggerManager;
 	}
@@ -95,7 +85,7 @@ public class DAPsWrapperManager {
 
 
 		AutoSetupTriggerDetails autoSetupTriggerDetails = AutoSetupTriggerDetails.builder()
-				.id(UUID.randomUUID().toString()).step("DAPS").triggerIdforinsert(triger.getTriggerId()).build();
+				.id(UUID.randomUUID().toString()).step("DAPS").build();
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -131,7 +121,7 @@ public class DAPsWrapperManager {
 			inputData.put("dapstokenurl", dapstokenurl);
 			
 			log.info(tenantName +"-"+  packageName + "-DAPS package created");
-
+			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
 		} catch (Exception ex) {
 
 			log.error("DAPsWrapperManager failed retry attempt: : {}",
@@ -146,7 +136,7 @@ public class DAPsWrapperManager {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails);
+			autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails, triger);
 		}
 
 		return inputData;
@@ -166,8 +156,8 @@ public class DAPsWrapperManager {
 
 		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 		RestTemplate restTemplate = new RestTemplate();
-		var result = restTemplate.postForEntity(tokenURI, requestEntity, String.class);
-		return result.toString();
+		var result = restTemplate.postForEntity(tokenURI, requestEntity, DAPsTokenResponse.class);
+		return result.getBody().getAccess_token();
 
 	}
 

@@ -28,6 +28,7 @@ import static com.autosetup.constant.AppNameConstant.DFT_FRONTEND;
 import static com.autosetup.constant.AppNameConstant.EDC_CONTROLPLANE;
 import static com.autosetup.constant.AppNameConstant.EDC_DATAPLANE;
 import static com.autosetup.constant.AppNameConstant.POSTGRES_DB;
+import static com.autosetup.constant.TriggerStatusEnum.INPROGRESS;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -107,8 +108,13 @@ public class AutoSetupOrchitestratorService {
 
 		Customer customer = autoSetupRequest.getCustomer();
 
-		Optional.of(customer.getProperties()).map(e -> e.get("bpnNumber"))
-				.orElseThrow(() -> new ValidationException("bpnNumber not present in request"));
+		Optional.of(customer.getProperties()).map(e -> {
+
+			if (!e.get("bpnNumber").matches("[a-zA-Z0-9]+")) {
+				throw new ValidationException("bpnNumber should not contains special character");
+			}
+			return e.get("bpnNumber");
+		}).orElseThrow(() -> new ValidationException("bpnNumber not present in request"));
 
 		String organizationName = customer.getOrganizationName();
 
@@ -161,8 +167,10 @@ public class AutoSetupOrchitestratorService {
 			Runnable runnable = () -> {
 
 				trigger.setAutosetupResult("");
+				trigger.setTriggerType(DELETE.name());
+				trigger.setStatus(INPROGRESS.name());
 
-				autoSetupTriggerManager.updateTriggerAutoSetupAsInProgress(trigger, UPDATE);
+				autoSetupTriggerManager.saveTriggerUpdate(trigger);
 
 				String targetNamespace = inputConfiguration.get("targetNamespace");
 
@@ -218,9 +226,10 @@ public class AutoSetupOrchitestratorService {
 			Map<String, String> inputConfiguration = inputConfigurationManager.prepareInputFromDBObject(trigger);
 
 			trigger.setAutosetupResult("");
+			trigger.setTriggerType(DELETE.name());
+			trigger.setStatus(INPROGRESS.name());
 
-			AutoSetupTriggerEntry deleteTrigger = autoSetupTriggerManager.updateTriggerAutoSetupAsInProgress(trigger,
-					DELETE);
+			AutoSetupTriggerEntry deleteTrigger = autoSetupTriggerManager.saveTriggerUpdate(trigger);
 
 			Runnable runnable = () -> processDeleteTrigger(deleteTrigger, inputConfiguration);
 			new Thread(runnable).start();
@@ -344,6 +353,9 @@ public class AutoSetupOrchitestratorService {
 			Runnable runnable = () -> {
 
 				try {
+					trigger.setTriggerType(UPDATE.name());
+					trigger.setStatus(INPROGRESS.name());
+					autoSetupTriggerManager.saveTriggerUpdate(trigger);
 
 					Map<String, String> output = manualDFTPackageUpdateManager.manualPackageUpdate(autosetupRequest,
 							dftUpdateRequest, inputConfiguration, trigger);

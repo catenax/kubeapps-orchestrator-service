@@ -20,6 +20,7 @@
 
 package com.autosetup.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
@@ -39,30 +40,41 @@ import lombok.NoArgsConstructor;
 public class AppDetails {
 
 	@Id
+	@Column(name = "app_name")
 	private String appName;
 	
+	@Column(name = "context_cluster")
 	private String contextCluster;
 	
+	@Column(name = "context_namespace")
 	private String contextNamespace;
 	
+	@Column(name = "package_identifier")
 	private String packageIdentifier;
 	
+	@Column(name = "plugin_name")
 	private String pluginName;
 	
+	@Column(name = "plugin_version")
 	private String pluginVersion;
 	
+	@Column(name = "package_version")
 	private String packageVersion;
 	
 	@Lob 
+	@Column(name = "expected_input_data")
 	private String expectedInputData;
 	
 	@Lob 
+	@Column(name = "output_data")
 	private String outputData;
 	
 	@Lob 
+	@Column(name = "required_yaml_configuration")
 	private String requiredYamlConfiguration;
 	
 	@Lob 
+	@Column(name = "yaml_value_field_type")
 	private String yamlValueFieldType;
 	
 }

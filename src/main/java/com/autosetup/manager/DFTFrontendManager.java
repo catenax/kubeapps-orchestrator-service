@@ -55,7 +55,7 @@ public class DFTFrontendManager {
 			AutoSetupTriggerEntry triger) {
 
 		AutoSetupTriggerDetails autoSetupTriggerDetails = AutoSetupTriggerDetails.builder()
-				.id(UUID.randomUUID().toString()).step(DFT_FRONTEND.name()).triggerIdforinsert(triger.getTriggerId())
+				.id(UUID.randomUUID().toString()).step(DFT_FRONTEND.name())
 				.build();
 		try {
 			
@@ -77,7 +77,7 @@ public class DFTFrontendManager {
 			autoSetupTriggerDetails.setRemark(ex.getMessage());
 			throw new ServiceException("DftFrontendManager Oops! We have an exception - " + ex.getMessage());
 		} finally {
-			autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails);
+			autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails, triger);
 		}
 
 		return inputData;

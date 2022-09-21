@@ -26,7 +26,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -46,18 +45,22 @@ import lombok.NoArgsConstructor;
 public class AutoSetupTriggerDetails {
 
 	@Id
+	@Column(name = "id")
 	private String id;
 
-	@Transient
-	private String triggerIdforinsert;
-
+	@Column(name = "step")
 	private String step;
 
+	@Column(name = "status")
 	private String status;
+	
+	@Column(name = "action")
+	private String action;
 
-	@Column(name="remark",columnDefinition="LONGTEXT")
+	@Column(name="remark",columnDefinition="TEXT")
 	private String remark;
 	
+	@Column(name = "created_date")
 	private LocalDateTime createdDate;
 
 }

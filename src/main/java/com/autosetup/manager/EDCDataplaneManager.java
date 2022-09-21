@@ -55,7 +55,7 @@ public class EDCDataplaneManager {
 			Map<String, String> inputData, AutoSetupTriggerEntry triger) {
 
 		AutoSetupTriggerDetails autoSetupTriggerDetails = AutoSetupTriggerDetails.builder()
-				.id(UUID.randomUUID().toString()).step(EDC_DATAPLANE.name()).triggerIdforinsert(triger.getTriggerId())
+				.id(UUID.randomUUID().toString()).step(EDC_DATAPLANE.name())
 				.build();
 		try {
 			String packageName = tool.getPackageName();
@@ -84,7 +84,7 @@ public class EDCDataplaneManager {
 
 			throw new ServiceException("EDCDataplaneManager Oops! We have an exception - " + ex.getMessage());
 		} finally {
-			autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails);
+			autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails, triger);
 		}
 
 		return inputData;

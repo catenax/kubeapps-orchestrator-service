@@ -23,7 +23,6 @@ package com.autosetup.exception;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hibernate.service.spi.ServiceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +45,12 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
 
 	@ExceptionHandler(ServiceException.class)
 	public ResponseEntity<String> handleServiceException(ServiceException ex, WebRequest request) {
+
+		return new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<String> handlePSQLException(Exception ex, WebRequest request) {
 
 		return new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
