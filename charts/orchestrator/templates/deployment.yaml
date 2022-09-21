@@ -13,7 +13,7 @@ spec:
       {{- include "orchestrator.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- with .Values.podAnnotations }}          
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -60,31 +60,33 @@ spec:
                   key: vaultToken
             - name: VAULT_TIMEOUT
               value: "30"
-            - name: DAPS_URL
-              valueFrom:
-                secretKeyRef:
-                  name: daps-secrets
-                  key: dapsUrl
-            - name: DAPS_TOKEN_URL
+            - name: DAPSWRAPPER_DAPS_TOKEN_URL
               valueFrom:
                 secretKeyRef:
                   name: daps-secrets
                   key: dapsTokenUrl
-            - name: DAPS_JSKURL
+            - name: DAPSWRAPPER_DAPS_JSKURL
               valueFrom:
                 secretKeyRef:
                   name: daps-secrets
                   key: dapsJskUrl
-            - name: DAPS_CLIENTID
+            - name: DAPSWRAPPER_DAPS_URL
               valueFrom:
                 secretKeyRef:
                   name: daps-secrets
-                  key: dapsClientID
-            - name: DAPS_CLIENTSECRET
-              valueFrom:
-                secretKeyRef:
-                  name: daps-secrets
-                  key: dapsClientSecret
+                  key: dapsUrl
+            - name: DAPSWRAPPER_KEYCLOAK_USERNAME
+              value: "dapsuser"
+            - name: DAPSWRAPPER_KEYCLOAK_PASSWORD
+              value: "dapsuser"
+            - name: DAPSWRAPPER_KEYCLOAK_RESOURCE
+              value: "orchestratorservice"
+            - name: DAPSWRAPPER_URL
+              value: "http://drs.int.demo.catena-x.net/api/v1/daps"
+            - name: DAPSWRAPPER_KEYCLOAK_AUTH-SERVER-URL
+              value: "https://keycloak.cx.dih-cloud.com"
+            - name: DAPSWRAPPER_KEYCLOAK_REALM
+              value: "orchestrator"
             - name: KUBEAPP_URL
               valueFrom:
                 secretKeyRef:
@@ -110,17 +112,17 @@ spec:
             - name: RETRY_BACKOFFDELAY
               value: "500"
             - name: PORTAL.EMAIL.ADDRESS
-              value: "sachin.argade@t-systems.com"
+              value: "sachin.argade@t-systems.com,AJAY.RATURI@t-systems.com,Shivaraj.Patil@t-systems.com"
             - name: PORTAL_URL
               value: "http://192.168.0.105/auth"
             - name: KEYCLOAK_REALM
-              value: "orchestrator"
+              value: "autosetup"
             - name: KEYCLOAK_AUTH-SERVER-URL
               value: "https://keycloak.cx.dih-cloud.com"
             - name: KEYCLOAK_SSL-REQUIRED
               value: "external"
             - name: KEYCLOAK_RESOURCES
-              value: "orchestratorservice"
+              value: "autosetup-service"
             - name: KEYCLOAK_SSL-REQUIRED
               value: "external"
             - name: KEYCLOAK_USE-RESOURCE-ROLE-MAPPINGS
@@ -133,6 +135,8 @@ spec:
               value: "587"
             - name: MAIL_FROM_ADDRESS
               value: "Auto Setup technical team<tech@telekom.de>"
+            - name: MAIL_REPLYTO_ADDRESS
+              value: "sachin.argade@t-systems.com,ADITYA.GAJBHIYE@t-systems.com"
             - name: MAIL_SMTP_STARTTLS_ENABLE
               value: "true"
             - name: MAIL_SMTP_AUTH

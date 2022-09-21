@@ -1,3 +1,23 @@
+/********************************************************************************
+ * Copyright (c) 2022 T-Systems International GmbH
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
 package com.autosetup.manager;
 
 import static com.autosetup.constant.AppActions.CREATE;
@@ -63,7 +83,7 @@ public class ManualDFTPackageUpdateManager {
 			autosetupResult.forEach(mape -> {
 				inputConfiguration.putAll(mape);
 			});
-
+			
 			List<SelectedTools> dftToollist = autosetupRequest.getSelectedTools().stream()
 					.filter(e -> ToolType.DFT.equals(e.getTool())).toList();
 
@@ -71,18 +91,14 @@ public class ManualDFTPackageUpdateManager {
 
 				String packageName = element.getPackageName();
 
-				String controlService = "http://" + packageName + "edccontrolplane-edc-controlplane";
-				inputConfiguration.put("internalcontrolplaneservicedata", controlService + ":8181/data");
-				inputConfiguration.put("internalcontrolplaneservice", controlService + ":8181");
-
 				appManagement.deletePackage(POSTGRES_DB, packageName, inputConfiguration);
 				appManagement.deletePackage(DFT_BACKEND, packageName, inputConfiguration);
 				appManagement.deletePackage(DFT_FRONTEND, packageName, inputConfiguration);
 
 				// Sleep thread to wait for existing package deletetion
-				log.info("Waiting after deleteing DFT packages");
+				log.info("Waiting after deleting DFT packages");
 
-				Thread.sleep(5000);
+				Thread.sleep(15000);
 
 				Customer customer = autosetupRequest.getCustomer();
 
@@ -91,7 +107,7 @@ public class ManualDFTPackageUpdateManager {
 				// Send an email
 				Map<String, Object> emailContent = new HashMap<>();
 				emailContent.put("orgname", customer.getOrganizationName());
-				emailContent.put("dftfrontendurl", map.get("dftfrontendurl"));
+				emailContent.put("dftFrontEndUrl", map.get("dftFrontEndUrl"));
 				emailContent.put("toemail", customer.getEmail());
 				emailContent.put("ccemail", portalEmail);
 

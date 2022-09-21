@@ -1,3 +1,23 @@
+/********************************************************************************
+ * Copyright (c) 2022 T-Systems International GmbH
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
 package com.autosetup.service;
 
 import static com.autosetup.constant.AppActions.CREATE;
@@ -8,13 +28,13 @@ import static com.autosetup.constant.AppNameConstant.DFT_FRONTEND;
 import static com.autosetup.constant.AppNameConstant.EDC_CONTROLPLANE;
 import static com.autosetup.constant.AppNameConstant.EDC_DATAPLANE;
 import static com.autosetup.constant.AppNameConstant.POSTGRES_DB;
-import static com.autosetup.constant.TriggerStatusEnum.FAILED;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -85,11 +105,17 @@ public class AutoSetupOrchitestratorService {
 
 		String uuID = UUID.randomUUID().toString();
 
-		String organizationName = autoSetupRequest.getCustomer().getOrganizationName();
+		Customer customer = autoSetupRequest.getCustomer();
+
+		Optional.of(customer.getProperties()).map(e -> e.get("bpnNumber"))
+				.orElseThrow(() -> new ValidationException("bpnNumber not present in request"));
+
+		String organizationName = customer.getOrganizationName();
+
 		AutoSetupTriggerEntry checkTrigger = autoSetupTriggerManager
 				.isAutoSetupAvailableforOrgnizationName(organizationName);
 
-		if (checkTrigger != null && !DELETE.name().equals(checkTrigger.getTriggerType())) {
+		if (checkTrigger != null) {
 			throw new ValidationException("Auto setup already exist for " + organizationName
 					+ ", use execution id to update it " + checkTrigger.getTriggerId());
 		}
@@ -98,8 +124,8 @@ public class AutoSetupOrchitestratorService {
 
 			packageNaming(autoSetupRequest);
 
-			Map<String, String> inputConfiguration = inputConfigurationManager
-					.prepareInputConfiguration(autoSetupRequest.getCustomer(), uuID);
+			Map<String, String> inputConfiguration = inputConfigurationManager.prepareInputConfiguration(customer,
+					uuID);
 
 			String targetNamespace = inputConfiguration.get("targetNamespace");
 
@@ -120,9 +146,14 @@ public class AutoSetupOrchitestratorService {
 
 	public String updatePackage(AutoSetupRequest autoSetupRequest, String triggerId) {
 
+		Customer customer = autoSetupRequest.getCustomer();
+
+		Optional.of(customer.getProperties()).map(e -> e.get("bpnNumber"))
+				.orElseThrow(() -> new ValidationException("bpnNumber not present in request"));
+
 		AutoSetupTriggerEntry trigger = autoSetupTriggerEntryRepository.findAllByTriggerId(triggerId);
 
-		if (trigger != null && !FAILED.name().equals(trigger.getStatus())) {
+		if (trigger != null) {
 
 			Map<String, String> inputConfiguration = inputConfigurationManager
 					.prepareInputConfiguration(autoSetupRequest.getCustomer(), triggerId);
@@ -140,18 +171,18 @@ public class AutoSetupOrchitestratorService {
 				if (checkNamespaceisExist(existingNamespace)) {
 
 					inputConfiguration.put("targetNamespace", existingNamespace);
-					
+
 					processDeleteTrigger(trigger, inputConfiguration);
 
 					inputConfiguration.put("targetNamespace", targetNamespace);
 					trigger.setAutosetupTenantName(targetNamespace);
-					
+
 					if (!existingNamespace.equals(targetNamespace) && !checkNamespaceisExist(targetNamespace)) {
 						kubeAppManageProxy.createNamespace(targetCluster, targetNamespace);
 					}
 					try {
 						log.info("Waiting after deleteing all package for recreate");
-						Thread.sleep(3000);
+						Thread.sleep(15000);
 					} catch (InterruptedException e) {
 					}
 
@@ -231,8 +262,8 @@ public class AutoSetupOrchitestratorService {
 
 				emailContent.put("helloto", "Team");
 				emailContent.put("orgname", customer.getOrganizationName());
-				emailContent.put("dftfrontendurl", map.get("dftfrontendurl"));
-				emailContent.put("dftbackendurl", map.get("dftbackendurl"));
+				emailContent.put("dftFrontEndUrl", map.get("dftFrontEndUrl"));
+				emailContent.put("dftBackEndUrl", map.get("dftBackEndUrl"));
 				emailContent.put("toemail", portalEmail);
 
 				// End of email sending code
@@ -265,31 +296,37 @@ public class AutoSetupOrchitestratorService {
 
 	private void processDeleteTrigger(AutoSetupTriggerEntry trigger, Map<String, String> inputConfiguration) {
 
-		AutoSetupRequest autoSetupRequest = autoSetupRequestMapper.fromStr(trigger.getAutosetupRequest());
+		if (trigger != null && trigger.getAutosetupRequest() != null) {
+			AutoSetupRequest autoSetupRequest = autoSetupRequestMapper.fromStr(trigger.getAutosetupRequest());
 
-		List<SelectedTools> edcToollist = autoSetupRequest.getSelectedTools().stream()
-				.filter(e -> ToolType.EDC.equals(e.getTool())).toList();
+			if (autoSetupRequest.getSelectedTools() != null) {
+				List<SelectedTools> edcToollist = autoSetupRequest.getSelectedTools().stream()
+						.filter(e -> ToolType.EDC.equals(e.getTool())).toList();
 
-		edcToollist.forEach((tool) -> {
-			appManagement.deletePackage(POSTGRES_DB, tool.getPackageName(), inputConfiguration);
-			appManagement.deletePackage(EDC_CONTROLPLANE, tool.getPackageName(), inputConfiguration);
-			appManagement.deletePackage(EDC_DATAPLANE, tool.getPackageName(), inputConfiguration);
-		});
+				edcToollist.forEach((tool) -> {
+					appManagement.deletePackage(POSTGRES_DB, tool.getPackageName(), inputConfiguration);
+					appManagement.deletePackage(EDC_CONTROLPLANE, tool.getPackageName(), inputConfiguration);
+					appManagement.deletePackage(EDC_DATAPLANE, tool.getPackageName(), inputConfiguration);
+				});
 
-		List<SelectedTools> dftToollist = autoSetupRequest.getSelectedTools().stream()
-				.filter(e -> ToolType.DFT.equals(e.getTool())).toList();
+				List<SelectedTools> dftToollist = autoSetupRequest.getSelectedTools().stream()
+						.filter(e -> ToolType.DFT.equals(e.getTool())).toList();
 
-		for (SelectedTools tool : dftToollist) {
-			appManagement.deletePackage(POSTGRES_DB, tool.getPackageName(), inputConfiguration);
-			appManagement.deletePackage(DFT_BACKEND, tool.getPackageName(), inputConfiguration);
-			appManagement.deletePackage(DFT_FRONTEND, tool.getPackageName(), inputConfiguration);
-		}
+				dftToollist.forEach((tool) -> {
+					appManagement.deletePackage(POSTGRES_DB, tool.getPackageName(), inputConfiguration);
+					appManagement.deletePackage(DFT_BACKEND, tool.getPackageName(), inputConfiguration);
+					appManagement.deletePackage(DFT_FRONTEND, tool.getPackageName(), inputConfiguration);
+				});
 
-		trigger.setStatus(TriggerStatusEnum.SUCCESS.name());
+				trigger.setStatus(TriggerStatusEnum.SUCCESS.name());
 
-		autoSetupTriggerManager.saveTriggerUpdate(trigger);
+				autoSetupTriggerManager.saveTriggerUpdate(trigger);
 
-		log.info("All Packages deleted successfully!!!!");
+				log.info("All Packages deleted successfully!!!!");
+			} else
+				log.info("For Packages deletion autoSetupRequest.getSelectedTools is null");
+		} else
+			log.info("For Packages deletion the Autosetup Request is null");
 	}
 
 	@SneakyThrows
@@ -344,18 +381,18 @@ public class AutoSetupOrchitestratorService {
 		List<Map<String, String>> processResult = new ArrayList<>();
 
 		Map<String, String> dft = new ConcurrentHashMap<>();
-		dft.put("name", "dft");
-		dft.put("dftfrontendurl", outputMap.get("dftfrontendurl"));
-		dft.put("dftbackendurl", outputMap.get("dftbackendurl"));
+		dft.put("name", "DFT");
+		dft.put("dftFrontEndUrl", outputMap.get("dftFrontEndUrl"));
+		dft.put("dftBackEndUrl", outputMap.get("dftBackEndUrl"));
 		processResult.add(dft);
 
 		Map<String, String> edc = new ConcurrentHashMap<>();
-		edc.put("name", "edc");
-		edc.put("controlplaneendpoint", outputMap.get("controlplaneendpoint"));
-		edc.put("controlplanedataendpoint", outputMap.get("controlplanedataendpoint"));
-		edc.put("dataplanepublicendpoint", outputMap.get("dataplanepublicendpoint"));
-		edc.put("edcapi-key", outputMap.get("edcapi-key"));
-		edc.put("edcapi-key-value", outputMap.get("edcapi-key-value"));
+		edc.put("name", "EDC");
+		edc.put("controlPlaneEndpoint", outputMap.get("controlPlaneEndpoint"));
+		edc.put("controlPlaneDataEndpoint", outputMap.get("controlPlaneDataEndpoint"));
+		edc.put("dataPlanePublicEndpoint", outputMap.get("dataPlanePublicEndpoint"));
+		edc.put("edcApiKey", outputMap.get("edcApiKey"));
+		edc.put("edcApiKeyValue", outputMap.get("edcApiKeyValue"));
 		processResult.add(edc);
 
 		return processResult;

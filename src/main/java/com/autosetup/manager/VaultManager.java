@@ -1,3 +1,23 @@
+/********************************************************************************
+ * Copyright (c) 2022 T-Systems International GmbH
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
 package com.autosetup.manager;
 
 import java.net.URI;
@@ -56,32 +76,40 @@ public class VaultManager {
 
 		try {
 
-			String tenantName = triger.getAutosetupTenantName();
+			String tenantNameNamespace = triger.getAutosetupTenantName();
+			String packageName = tool.getPackageName();
+			String orgName = customerDetails.getOrganizationName();
+			log.info(orgName +"-"+  packageName + "-Vault creating");
 
 			Map<String, String> tenantVaultSecret = new HashMap<>();
 			tenantVaultSecret.put("content", inputData.get("selfsigncertificate"));
-			uploadSecrete(tenantName, "daps-cert", tenantVaultSecret);
+			uploadSecrete(tenantNameNamespace, "daps-cert", tenantVaultSecret);
 
 			tenantVaultSecret = new HashMap<>();
 			tenantVaultSecret.put("content", inputData.get("selfsigncertificateprivatekey"));
-			uploadSecrete(tenantName, "certificate-private-key", tenantVaultSecret);
+			uploadSecrete(tenantNameNamespace, "certificate-private-key", tenantVaultSecret);
 			
 			String encryptionkeysalias = openSSLClientManager.executeCommand("openssl rand -base64 16");
 			tenantVaultSecret = new HashMap<>();
 			tenantVaultSecret.put("content", encryptionkeysalias);
-			uploadSecrete(tenantName, "encryptionkeys", tenantVaultSecret);
+			uploadSecrete(tenantNameNamespace, "encryptionkeys", tenantVaultSecret);
 
 			inputData.remove("selfsigncertificateprivatekey");
 			inputData.remove("selfsigncertificate");
 			
 			inputData.put("daps-cert", "daps-cert");
 			inputData.put("certificate-private-key", "certificate-private-key");
-			inputData.put("valuttenantpath", "/v1/secret/data/" + tenantName);
+			inputData.put("valuttenantpath", "/v1/secret/data/" + tenantNameNamespace);
 			inputData.put("vaulturl", valutURL);
 			inputData.put("vaulttoken", vaulttoken);
 			inputData.put("vaulttimeout", vaulttimeout);
-
+			inputData.put("encryptionkeys", "encryptionkeys");
+			inputData.put("certificate-data-plane-private-key", "certificate-private-key");
+			inputData.put("certificate-data-plane-public-key", "certificate-private-key");
+			
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
+			log.info(orgName +"-"+  packageName + "-Vault created");
+
 
 		} catch (Exception ex) {
 
@@ -105,7 +133,6 @@ public class VaultManager {
 		String valutURLwithpath = valutURL + "/v1/secret/data/" + tenantName + "/data/" + secretePath;
 		VaultSecreteRequest vaultSecreteRequest = VaultSecreteRequest.builder().data(tenantVaultSecret).build();
 		URI url = new URI(valutURLwithpath);
-		log.info(tenantName + "- Vault secrete created");
 		vaultManagerProxy.uploadKeyandValue(url, vaultSecreteRequest);
 
 	}

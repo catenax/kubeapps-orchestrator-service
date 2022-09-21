@@ -1,3 +1,23 @@
+/********************************************************************************
+ * Copyright (c) 2022 T-Systems International GmbH
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
 package com.autosetup.manager;
 
 import static com.autosetup.constant.AppNameConstant.EDC_CONTROLPLANE;
@@ -47,12 +67,26 @@ public class EDCControlplaneManager {
 			String dnsName = inputData.get("dnsName");
 			String dnsNameURLProtocol = inputData.get("dnsNameURLProtocol");
 
-			inputData.put("edcapi-key", "X-Api-Key");
-			inputData.put("edcapi-key-value", generateRandomPassword);
-			inputData.put("dataplanepublicurl",
-					dnsNameURLProtocol + "://" + tool.getLabel() + "-edcdataplane-edc-dataplane:8185/api/public");
-
 			String controlplaneurl = dnsNameURLProtocol + "://" + dnsName;
+
+			inputData.put("dataPlanePublicUrl",
+					dnsNameURLProtocol + "://" + packageName + "-edcdataplane-edc-dataplane:8185/api/public");
+			
+			String localControlplane = dnsNameURLProtocol + "://" + packageName
+					+ "-edccontrolplane-edc-controlplane:8182/validation/token";
+
+			outputData.put("controlPlaneValidationEndpoint", localControlplane);
+
+			outputData.put("controlPlaneEndpoint", controlplaneurl);
+			outputData.put("controlPlaneDataEndpoint", controlplaneurl + "/data");
+			outputData.put("edcApiKey", "X-Api-Key");
+			outputData.put("edcApiKeyValue", generateRandomPassword);
+			outputData.put("controlPlaneIdsEndpoint", controlplaneurl + "/api/v1/ids/data");
+
+			inputData.putAll(outputData);
+
+			String dftAddress = dnsNameURLProtocol + "://" + dnsName + "/dftbackend/api";
+			inputData.put("dftAddress", dftAddress);
 
 			String edcDb = "jdbc:postgresql://" + packageName + "-postgresdb-postgresql:5432/postgres";
 			inputData.put("edcdatabaseurl", edcDb);
@@ -61,14 +95,6 @@ public class EDCControlplaneManager {
 				appManagement.createPackage(EDC_CONTROLPLANE, packageName, inputData);
 			else
 				appManagement.updatePackage(EDC_CONTROLPLANE, packageName, inputData);
-
-			outputData.put("controlplanevalidationendpoint", dnsNameURLProtocol + "://" + packageName
-					+ "edccontrolplane-edc-controlplane:8182/validation/token");
-
-			outputData.put("controlplaneendpoint", controlplaneurl);
-			outputData.put("controlplanedataendpoint", controlplaneurl + "/data");
-			outputData.put("edcapi-key", "X-Api-Key");
-			outputData.put("edcapi-key-value", generateRandomPassword);
 
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
 
