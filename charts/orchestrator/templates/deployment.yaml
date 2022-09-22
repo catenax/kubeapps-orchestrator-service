@@ -100,7 +100,7 @@ spec:
                   name: kubeapps-secrets
                   key: kubeappsToken
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://product-dft-backend-postgres:5432/orchDB"
+              value: "jdbc:postgresql://orch-postgresdb-postgresql:5432/orchdb"
             - name: TARGET_NAMESPACE
               value: "kubeapps"
             - name: TARGET_CLUSTER
