@@ -98,7 +98,7 @@ spec:
                   name: kubeapps-secrets
                   key: kubeappsToken
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:mysql://mysql:3306/orchDB?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true"
+              value: "jdbc:postgresql://product-dft-backend-postgres:5432/orchDB"
             - name: TARGET_NAMESPACE
               value: "kubeapps"
             - name: TARGET_CLUSTER
