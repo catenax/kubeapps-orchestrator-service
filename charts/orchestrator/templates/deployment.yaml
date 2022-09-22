@@ -87,6 +87,8 @@ spec:
               value: "https://keycloak.cx.dih-cloud.com"
             - name: DAPSWRAPPER_KEYCLOAK_REALM
               value: "orchestrator"
+            - name: DAPSWRAPPER_KEYCLOAK_TOKENURI
+              value: "https://keycloak.cx.dih-cloud.com/realms/orchestrator/protocol/openid-connect/token"
             - name: KUBEAPP_URL
               valueFrom:
                 secretKeyRef:
@@ -121,6 +123,7 @@ spec:
               value: "https://keycloak.cx.dih-cloud.com"
             - name: KEYCLOAK_SSL-REQUIRED
               value: "external"
+              
             - name: KEYCLOAK_RESOURCES
               value: "autosetup-service"
             - name: KEYCLOAK_SSL-REQUIRED
