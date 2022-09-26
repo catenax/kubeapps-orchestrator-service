@@ -58,6 +58,12 @@ public class AutoSetupTriggerEntry {
 
 	@Column(name = "organization_name")
 	private String organizationName;
+	
+	@Column(name = "subscription_id")
+	private String subscriptionId;
+	
+	@Column(name = "service_id")
+	private String serviceId;
 
 	@JsonIgnore
 	@Column(name = "autosetup_tenant_name")

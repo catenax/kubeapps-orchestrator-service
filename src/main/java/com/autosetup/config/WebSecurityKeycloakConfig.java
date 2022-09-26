@@ -52,13 +52,15 @@ public class WebSecurityKeycloakConfig extends KeycloakWebSecurityConfigurerAdap
 	protected void configure(HttpSecurity http) throws Exception {
 		super.configure(http);
 
-		http.csrf().disable().authorizeRequests()
+		http.csrf().disable().cors().disable().authorizeRequests()
 				.antMatchers(
 						"/v3/api-docs/*",
 						"/api-docs",
 						"/api-docs/*",
 						"/swagger-ui/*")
-				.permitAll().anyRequest().authenticated();
+				.permitAll()
+				.antMatchers("/internal").hasAnyRole("admin")
+				.anyRequest().authenticated();
 
 	}
 

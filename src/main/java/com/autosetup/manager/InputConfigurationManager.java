@@ -59,12 +59,12 @@ public class InputConfigurationManager {
 		inputConfiguration.put("dnsNameURLProtocol", dnsNameURLProtocol);
 		inputConfiguration.put("targetCluster", targetCluster);
 		inputConfiguration.put("targetNamespace", targetNamespace);
-		
-		if (customerDetails.getProperties() != null) {
-			inputConfiguration.put("bpnNumber", customerDetails.getProperties().get("bpnNumber"));
 
-			if (customerDetails.getProperties().containsKey("role")) {
-				String role = customerDetails.getProperties().get("role");
+		if (customerDetails.getProperties() != null) {
+			inputConfiguration.put("bpnNumber", customerDetails.getProperties().getBpnNumber());
+
+			if (customerDetails.getProperties().getRole() != null) {
+				String role = customerDetails.getProperties().getRole();
 				inputConfiguration.put("role", role);
 			}
 		}

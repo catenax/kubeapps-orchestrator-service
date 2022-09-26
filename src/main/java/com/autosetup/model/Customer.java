@@ -20,8 +20,7 @@
 
 package com.autosetup.model;
 
-import java.util.Map;
-
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -58,7 +57,8 @@ public class Customer {
 
 	private String tanNumber;
 	
-	private Map<String,String> properties;
+	@Valid
+	private CustomProperties properties;
 
 	private String registrationNumber;
 

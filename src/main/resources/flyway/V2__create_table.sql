@@ -8,6 +8,8 @@ CREATE TABLE auto_setup_trigger_tbl (
 	created_timestamp varchar(255) NULL,
 	modified_timestamp varchar(255) NULL,
 	organization_name varchar(255) NULL,
+	subscription_id varchar(255) NULL,
+	service_id varchar(255) NULL,
 	remark text NULL,
 	status varchar(255) NULL,
 	trigger_type varchar(255) NULL,

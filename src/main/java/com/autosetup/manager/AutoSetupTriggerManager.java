@@ -40,6 +40,7 @@ import com.autosetup.kubeapp.mapper.AutoSetupTriggerMapper;
 import com.autosetup.model.AutoSetupRequest;
 import com.autosetup.model.AutoSetupResponse;
 import com.autosetup.model.AutoSetupTriggerResponse;
+import com.autosetup.model.Customer;
 import com.autosetup.repository.AutoSetupTriggerEntryRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -56,8 +57,11 @@ public class AutoSetupTriggerManager {
 	public AutoSetupTriggerEntry createTrigger(AutoSetupRequest autoSetupRequest, AppActions action, String triggerId,
 			String tenantNamespace) {
 		LocalDateTime now = LocalDateTime.now();
+		Customer customer = autoSetupRequest.getCustomer();
 		AutoSetupTriggerEntry autoSetupTriggerEntry = AutoSetupTriggerEntry.builder()
-				.organizationName(autoSetupRequest.getCustomer().getOrganizationName())
+				.organizationName(customer.getOrganizationName())
+				.subscriptionId(customer.getProperties().getSubscriptionId())
+				.serviceId(customer.getProperties().getServiceId())
 				.autosetupRequest(customerDetailsMapper.fromCustomer(autoSetupRequest)).triggerId(triggerId)
 				.triggerType(action.name()).createdTimestamp(now.toString()).modifiedTimestamp(now.toString())
 				.status(INPROGRESS.name()).autosetupTenantName(tenantNamespace).build();

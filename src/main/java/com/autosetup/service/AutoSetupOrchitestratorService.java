@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -108,14 +107,6 @@ public class AutoSetupOrchitestratorService {
 
 		Customer customer = autoSetupRequest.getCustomer();
 
-		Optional.of(customer.getProperties()).map(e -> {
-
-			if (!e.get("bpnNumber").matches("[a-zA-Z0-9]+")) {
-				throw new ValidationException("bpnNumber should not contains special character");
-			}
-			return e.get("bpnNumber");
-		}).orElseThrow(() -> new ValidationException("bpnNumber not present in request"));
-
 		String organizationName = customer.getOrganizationName();
 
 		AutoSetupTriggerEntry checkTrigger = autoSetupTriggerManager
@@ -150,12 +141,8 @@ public class AutoSetupOrchitestratorService {
 		return uuID;
 	}
 
+
 	public String updatePackage(AutoSetupRequest autoSetupRequest, String triggerId) {
-
-		Customer customer = autoSetupRequest.getCustomer();
-
-		Optional.of(customer.getProperties()).map(e -> e.get("bpnNumber"))
-				.orElseThrow(() -> new ValidationException("bpnNumber not present in request"));
 
 		AutoSetupTriggerEntry trigger = autoSetupTriggerEntryRepository.findAllByTriggerId(triggerId);
 
