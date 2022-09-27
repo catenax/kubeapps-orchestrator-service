@@ -28,13 +28,13 @@ import static com.autosetup.constant.AppNameConstant.DFT_FRONTEND;
 import static com.autosetup.constant.AppNameConstant.EDC_CONTROLPLANE;
 import static com.autosetup.constant.AppNameConstant.EDC_DATAPLANE;
 import static com.autosetup.constant.AppNameConstant.POSTGRES_DB;
+import static com.autosetup.constant.TriggerStatusEnum.INPROGRESS;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -111,8 +111,6 @@ public class AutoSetupOrchitestratorService {
 
 		Customer customer = autoSetupRequest.getCustomer();
 
-		checkIfBpnIsPresent(customer);
-
 		String organizationName = customer.getOrganizationName();
 
 		AutoSetupTriggerEntry checkTrigger = autoSetupTriggerManager
@@ -147,11 +145,10 @@ public class AutoSetupOrchitestratorService {
 		return uuID;
 	}
 
+
 	public String updatePackage(AutoSetupRequest autoSetupRequest, String triggerId) {
 
 		Customer customer = autoSetupRequest.getCustomer();
-
-		checkIfBpnIsPresent(customer);
 
 		AutoSetupTriggerEntry trigger = autoSetupTriggerEntryRepository.findAllByTriggerId(triggerId);
 
@@ -163,8 +160,10 @@ public class AutoSetupOrchitestratorService {
 			Runnable runnable = () -> {
 
 				trigger.setAutosetupResult("");
+				trigger.setTriggerType(DELETE.name());
+				trigger.setStatus(INPROGRESS.name());
 
-				autoSetupTriggerManager.updateTriggerAutoSetupAsInProgress(trigger, UPDATE);
+				autoSetupTriggerManager.saveTriggerUpdate(trigger);
 
 				String targetNamespace = inputConfiguration.get(TARGET_NAMESPACE);
 
@@ -213,12 +212,6 @@ public class AutoSetupOrchitestratorService {
 		return triggerId;
 	}
 
-	private void checkIfBpnIsPresent(Customer customer) {
-		if (customer.getProperties() != null && !customer.getProperties().containsKey("bpnNumber")) {
-			throw new ValidationException("bpnNumber not present in request");
-		}
-	}
-
 	public String deletePackage(String triggerId) {
 
 		AutoSetupTriggerEntry trigger = autoSetupTriggerEntryRepository.findAllByTriggerId(triggerId);
@@ -228,9 +221,10 @@ public class AutoSetupOrchitestratorService {
 			Map<String, String> inputConfiguration = inputConfigurationManager.prepareInputFromDBObject(trigger);
 
 			trigger.setAutosetupResult("");
+			trigger.setTriggerType(DELETE.name());
+			trigger.setStatus(INPROGRESS.name());
 
-			AutoSetupTriggerEntry deleteTrigger = autoSetupTriggerManager.updateTriggerAutoSetupAsInProgress(trigger,
-					DELETE);
+			AutoSetupTriggerEntry deleteTrigger = autoSetupTriggerManager.saveTriggerUpdate(trigger);
 
 			Runnable runnable = () -> processDeleteTrigger(deleteTrigger, inputConfiguration);
 			new Thread(runnable).start();
@@ -354,6 +348,9 @@ public class AutoSetupOrchitestratorService {
 			Runnable runnable = () -> {
 
 				try {
+					trigger.setTriggerType(UPDATE.name());
+					trigger.setStatus(INPROGRESS.name());
+					autoSetupTriggerManager.saveTriggerUpdate(trigger);
 
 					Map<String, String> output = manualDFTPackageUpdateManager.manualPackageUpdate(autosetupRequest,
 							dftUpdateRequest, inputConfiguration, trigger);

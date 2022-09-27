@@ -61,10 +61,10 @@ public class InputConfigurationManager {
 		inputConfiguration.put("targetNamespace", targetNamespaceString);
 		
 		if (customerDetails.getProperties() != null) {
-			inputConfiguration.put("bpnNumber", customerDetails.getProperties().get("bpnNumber"));
+			inputConfiguration.put("bpnNumber", customerDetails.getProperties().getBpnNumber());
 
-			if (customerDetails.getProperties().containsKey("role")) {
-				String role = customerDetails.getProperties().get("role");
+			if (customerDetails.getProperties().getRole() != null) {
+				String role = customerDetails.getProperties().getRole();
 				inputConfiguration.put("role", role);
 			}
 		}

@@ -87,6 +87,8 @@ spec:
               value: "https://keycloak.cx.dih-cloud.com"
             - name: DAPSWRAPPER_KEYCLOAK_REALM
               value: "orchestrator"
+            - name: DAPSWRAPPER_KEYCLOAK_TOKENURI
+              value: "https://keycloak.cx.dih-cloud.com/realms/orchestrator/protocol/openid-connect/token"
             - name: KUBEAPP_URL
               valueFrom:
                 secretKeyRef:
@@ -98,7 +100,7 @@ spec:
                   name: kubeapps-secrets
                   key: kubeappsToken
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:mysql://mysql:3306/orchDB?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true"
+              value: "jdbc:postgresql://orch-postgresdb-postgresql:5432/orchdb"
             - name: TARGET_NAMESPACE
               value: "kubeapps"
             - name: TARGET_CLUSTER
@@ -121,6 +123,7 @@ spec:
               value: "https://keycloak.cx.dih-cloud.com"
             - name: KEYCLOAK_SSL-REQUIRED
               value: "external"
+              
             - name: KEYCLOAK_RESOURCES
               value: "autosetup-service"
             - name: KEYCLOAK_SSL-REQUIRED

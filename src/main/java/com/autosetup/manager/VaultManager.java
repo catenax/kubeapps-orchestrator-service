@@ -77,7 +77,7 @@ public class VaultManager {
 			AutoSetupTriggerEntry triger) {
 
 		AutoSetupTriggerDetails autoSetupTriggerDetails = AutoSetupTriggerDetails.builder()
-				.id(UUID.randomUUID().toString()).step("VAULT").triggerIdforinsert(triger.getTriggerId()).build();
+				.id(UUID.randomUUID().toString()).step("VAULT").build();
 
 		try {
 
@@ -126,7 +126,7 @@ public class VaultManager {
 			throw new ServiceException("VaultManager Oops! We have an exception - " + ex.getMessage());
 
 		} finally {
-			autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails);
+			autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails, triger);
 		}
 
 		return inputData;

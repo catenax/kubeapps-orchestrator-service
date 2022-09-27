@@ -18,20 +18,21 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-CREATE TABLE `app_tbl` (
-  `app_name` varchar(255) NOT NULL,
-  `context_cluster` varchar(255) DEFAULT NULL,
-  `context_namespace` varchar(255) DEFAULT NULL,
-  `expected_input_data` longtext,
-  `output_data` longtext,
-  `package_identifier` varchar(255) DEFAULT NULL,
-  `package_version` varchar(255) DEFAULT NULL,
-  `plugin_name` varchar(255) DEFAULT NULL,
-  `plugin_version` varchar(255) DEFAULT NULL,
-  `required_yaml_configuration` longtext,
-  `yaml_value_field_type` longtext,
-  PRIMARY KEY (`app_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE app_tbl (
+  app_name varchar(255) NOT NULL,
+  context_cluster varchar(255) DEFAULT NULL,
+  context_namespace varchar(255) DEFAULT NULL,
+  expected_input_data text,
+  output_data text,
+  package_identifier varchar(255) DEFAULT NULL,
+  package_version varchar(255) DEFAULT NULL,
+  plugin_name varchar(255) DEFAULT NULL,
+  plugin_version varchar(255) DEFAULT NULL,
+  required_yaml_configuration text,
+  yaml_value_field_type text,
+  PRIMARY KEY (app_name)
+);
+CREATE INDEX app_tbl_s_idx ON public.app_tbl USING btree (app_name);
 
 INSERT INTO app_tbl
 (app_name, context_cluster, context_namespace, expected_input_data, output_data, package_identifier, package_version, plugin_name, plugin_version, required_yaml_configuration, yaml_value_field_type)
@@ -110,7 +111,7 @@ keycloak.resource=$\{dftbackendkeycloakclientid\}
 keycloak.use-resource-role-mappings=true
 
 keycloak.bearer-only=true
-', NULL, 'orch-repo/dftbackend', '1.3.4', 'helm.packages', 'v1alpha1', '{"ingresses":[{"enabled": true, "hostname":"$\{dnsName\}",  "annotations": {}, "className": "nginx", "endpoints":["default"], "tls":{"enabled":true, "secretName":"dftbackend"}, "certManager":{"clusterIssuer":"letsencrypt-prod"}}], "configuration": {"properties": "$\{yamlValues\}"}}', 'PROPERTY');
+', NULL, 'orch-repo/dftbackend', '1.3.6', 'helm.packages', 'v1alpha1', '{"ingresses":[{"enabled": true, "hostname":"$\{dnsName\}",  "annotations": {}, "className": "nginx", "endpoints":["default"], "tls":{"enabled":true, "secretName":"dftbackend"}, "certManager":{"clusterIssuer":"letsencrypt-prod"}}], "configuration": {"properties": "$\{yamlValues\}"}}', 'PROPERTY');
 INSERT INTO app_tbl
 (app_name, context_cluster, context_namespace, expected_input_data, output_data, package_identifier, package_version, plugin_name, plugin_version, required_yaml_configuration, yaml_value_field_type)
 VALUES('DFT_FRONTEND', 'default', 'kubeapps', 'REACT_APP_API_URL=$\{dftBackEndUrl\}
@@ -245,4 +246,7 @@ INSERT INTO app_tbl
 VALUES('POSTGRES_DB', 'default', 'kubeapps', '{"postgresPassword":"$\{postgresPassword\}",
 "username":"$\{username\}",
 "password":"$\{password\}",
-"database":"$\{database\}"}', NULL, 'bitnami/postgresql', '11.8.1', 'helm.packages', 'v1alpha1', '{"primary":{"persistence":{"size" :"1Gi"}}, "global": {"postgresql" : {"auth" :$\{yamlValues\}}}}', 'JSON');
+"database":"$\{database\}"}', NULL, 'bitnami/postgresql', '11.8.1', 'helm.packages', 'v1alpha1', '{"persistence":{"size" :"1Gi"}, "global": {"postgresql" : {"auth" :$\{yamlValues\}}}}', 'JSON');
+
+
+update app_tbl set expected_input_data= replace(replace(expected_input_data,'\{','{'),'\}','}'), required_yaml_configuration=replace(replace(required_yaml_configuration,'\{','{'),'\}','}');

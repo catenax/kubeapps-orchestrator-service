@@ -58,7 +58,7 @@ public class DFTBackendManager {
 			Map<String, String> inputData, AutoSetupTriggerEntry triger) {
 
 		AutoSetupTriggerDetails autoSetupTriggerDetails = AutoSetupTriggerDetails.builder()
-				.id(UUID.randomUUID().toString()).step(DFT_BACKEND.name()).triggerIdforinsert(triger.getTriggerId())
+				.id(UUID.randomUUID().toString()).step(DFT_BACKEND.name())
 				.build();
 		try {
 			String dnsName = inputData.get("dnsName");
@@ -100,7 +100,7 @@ public class DFTBackendManager {
 			autoSetupTriggerDetails.setRemark(ex.getMessage());
 			throw new ServiceException("DftBackendManager Oops! We have an exception - " + ex.getMessage());
 		} finally {
-			autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails);
+			autoSetupTriggerManager.saveTriggerDetails(autoSetupTriggerDetails, triger);
 		}
 		return inputData;
 	}

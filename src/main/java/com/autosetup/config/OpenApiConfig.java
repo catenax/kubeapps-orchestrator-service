@@ -20,34 +20,33 @@
 
 package com.autosetup.config;
 
+import java.util.Arrays;
+
 import org.springdoc.core.GroupedOpenApi;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.annotations.servers.Server;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.OAuthFlow;
+import io.swagger.v3.oas.models.security.OAuthFlows;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 
-@OpenAPIDefinition(
-        info = @Info(
-                title = "Auto Setup API information",
-                description = "" +
-                        "This Service handles all auto setup related operations",
-                version = "1.0"
-        ),
-        servers = @Server(url = "https://orchestrator.cx.dih-cloud.com")
-)
-@SecurityScheme(
-        name = "bearerAuth",
-        type = SecuritySchemeType.HTTP,
-        bearerFormat = "JWT",
-        scheme = "bearer"
-)
+
+
 @Configuration
 public class OpenApiConfig {
 
+	@Value("${keycloak.auth-server-url}")
+	private String autURL;
+	
+	@Value("${keycloak.realm}")
+	private String realm;
+	
+	
 	@Bean
 	public GroupedOpenApi externalOpenApi() {
 		String[] paths = {"/internal/**"};
@@ -62,4 +61,28 @@ public class OpenApiConfig {
 				.build();
 	}
 
+	@Bean
+	public OpenAPI customOpenAPI() {
+		return new OpenAPI()
+				.components(new Components()
+								.addSecuritySchemes("Authentication", new SecurityScheme()
+										.type(SecurityScheme.Type.OAUTH2)
+										.bearerFormat("jwt")
+							            .in(SecurityScheme.In.HEADER)
+							            .name("Authorization")
+										.flows(new OAuthFlows()
+												.authorizationCode(
+														new OAuthFlow()
+														.authorizationUrl(autURL+"/realms/"+realm+"/protocol/openid-connect/auth")
+														.tokenUrl(autURL+"/realms/"+realm+"/protocol/openid-connect/token")
+													)
+												 )
+										)
+								)
+				.security(Arrays.asList(new SecurityRequirement().addList("Authentication")))
+				.info(new Info()
+						.title("Auto Setup API information")
+						.description("This Service handles all auto setup related operations")
+						.version("1.0"));
+	}
 }
