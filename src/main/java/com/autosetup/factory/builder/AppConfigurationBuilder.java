@@ -41,7 +41,7 @@ public class AppConfigurationBuilder {
 		// Initialize StringSubstitutor instance with value map
 		StringSubstitutor stringSubstitutor1 = new StringSubstitutor(inputProperties);
 		String sb=stringSubstitutor1.replace(appDetails.getExpectedInputData());
-		dyanamicYamlValues.put("yamlValues", sb.toString());
+		dyanamicYamlValues.put("yamlValues", sb);
 		dyanamicYamlValues.put("dnsName", inputProperties.get("dnsName"));
 		
 		

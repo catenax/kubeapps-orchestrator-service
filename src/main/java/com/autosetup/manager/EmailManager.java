@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 import com.autosetup.exception.ServiceException;
 import com.autosetup.exception.ValidationException;
 import com.autosetup.model.EmailRequest;
+import com.autosetup.utility.LogUtil;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
@@ -46,6 +47,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class EmailManager {
+	
+	public static final String CC_EMAIL= "ccemail";
 
 	@Autowired
 	private MimeMessage mimeMessage;
@@ -72,41 +75,34 @@ public class EmailManager {
 			mimeMessage.setFrom(new InternetAddress(fromEmail));
 			if (replyTo != null && !replyTo.isEmpty()) {
 				String[] mailAddressTo = replyTo.split(",");
-				InternetAddress[] mailAddress_TO = new InternetAddress[mailAddressTo.length];
+				InternetAddress[] mailAddressTO = new InternetAddress[mailAddressTo.length];
 				for (int i = 0; i < mailAddressTo.length; i++) {
-					mailAddress_TO[i] = new InternetAddress(mailAddressTo[i]);
+					mailAddressTO[i] = new InternetAddress(mailAddressTo[i]);
 				}
-				mimeMessage.setReplyTo(mailAddress_TO);
+				mimeMessage.setReplyTo(mailAddressTO);
 			}
 			mimeMessage.setSubject(emailRequest.getSubject());
 
 			if (emailRequest.getToEmail() != null && !emailRequest.getToEmail().isEmpty()) {
 				String[] split = emailRequest.getToEmail().split(",");
-				InternetAddress[] addressTo = new InternetAddress[split.length];
-				int i = 0;
 				for (String string : split) {
-					addressTo[i] = new InternetAddress(string);
-					i++;
+					mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(LogUtil.encode(string)));
 				}
-				mimeMessage.setRecipients(Message.RecipientType.TO, addressTo);
 			} else {
 				throw new ValidationException("To email is null");
 			}
 
 			InternetAddress[] addressCC = new InternetAddress[1];
 			int i = 0;
-			if (emailContent.containsKey("ccemail") && emailContent.get("ccemail") != null
-					&& !emailContent.get("ccemail").toString().isEmpty()) {
-				String[] split = emailContent.get("ccemail").toString().split(",");
+			if (emailContent.containsKey(CC_EMAIL) && emailContent.get(CC_EMAIL) != null
+					&& !emailContent.get(CC_EMAIL).toString().isEmpty()) {
+				String[] split = emailContent.get(CC_EMAIL).toString().split(",");
 				addressCC = new InternetAddress[split.length + 1];
 				for (String string : split) {
-					addressCC[i] = new InternetAddress(string);
-					i++;
+					mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(LogUtil.encode(string)));
 				}
 			}
 			addressCC[i] = new InternetAddress(fromEmail);
-
-			mimeMessage.setRecipients(Message.RecipientType.CC, addressCC);
 
 			String data = getEmailContent(emailRequest);
 			mimeMessage.setContent(data, "text/html; charset=utf-8"); // as "text/plain"

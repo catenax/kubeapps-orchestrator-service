@@ -25,7 +25,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class Version {
+public class VersionNumber {
 
 	private String version;
 

@@ -51,7 +51,7 @@ public abstract class AutoSetupTriggerMapper {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			if (jsonStr != null && !jsonStr.isEmpty())
-				return (List<Map<String, String>>) mapper.readValue(jsonStr, List.class);
+				return mapper.readValue(jsonStr, List.class);
 			else
 				return List.of();
 		} catch (Exception e) {
@@ -62,10 +62,10 @@ public abstract class AutoSetupTriggerMapper {
 	}
 
 	@SneakyThrows
-	public String fromMaptoStr(List<Map<String, String>> Listmap) {
+	public String fromMaptoStr(List<Map<String, String>> listmap) {
 		try {
-			if (Listmap != null && !Listmap.isEmpty())
-				return new ObjectMapper().writeValueAsString(Listmap);
+			if (listmap != null && !listmap.isEmpty())
+				return new ObjectMapper().writeValueAsString(listmap);
 		} catch (Exception e) {
 			log.error("Error in read value of autosetup field result" + e.getMessage());
 		}

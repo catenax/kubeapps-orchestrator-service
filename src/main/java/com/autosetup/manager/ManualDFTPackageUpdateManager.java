@@ -80,9 +80,7 @@ public class ManualDFTPackageUpdateManager {
 			List<Map<String, String>> autosetupResult = autoSetupTriggerMapper
 					.fromJsonStrToMap(trigger.getAutosetupResult());
 
-			autosetupResult.forEach(mape -> {
-				inputConfiguration.putAll(mape);
-			});
+			autosetupResult.forEach(inputConfiguration::putAll);
 			
 			List<SelectedTools> dftToollist = autosetupRequest.getSelectedTools().stream()
 					.filter(e -> ToolType.DFT.equals(e.getTool())).toList();
@@ -119,8 +117,9 @@ public class ManualDFTPackageUpdateManager {
 			}
 
 		} catch (Exception e) {
-
+			Thread.currentThread().interrupt();
 			throw new ServiceException("ManualDFT PackageUpdate Oops! We have an exception - " + e.getMessage());
+
 		}
 		return map;
 	}

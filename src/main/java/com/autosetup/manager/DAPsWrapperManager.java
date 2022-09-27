@@ -32,6 +32,8 @@ import com.autosetup.entity.AutoSetupTriggerEntry;
 import com.autosetup.exception.ServiceException;
 import com.autosetup.model.Customer;
 import com.autosetup.model.SelectedTools;
+import com.autosetup.utility.LogUtil;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.keycloak.OAuth2Constants;
@@ -47,15 +49,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
-import com.autosetup.constant.TriggerStatusEnum;
-import com.autosetup.entity.AutoSetupTriggerDetails;
-import com.autosetup.entity.AutoSetupTriggerEntry;
-import com.autosetup.exception.ServiceException;
-import com.autosetup.model.Customer;
-import com.autosetup.model.SelectedTools;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -105,7 +98,7 @@ public class DAPsWrapperManager {
 			String packageName = tool.getPackageName();
 			String tenantName = customerDetails.getOrganizationName();
 			
-			log.info(tenantName +"-"+  packageName + "-DAPS package creating");
+			log.info(LogUtil.encode(tenantName) +"-"+ LogUtil.encode(packageName) + "-DAPS package creating");
 			
 			file = getTestFile(inputData.get("selfsigncertificate"));
 
@@ -130,7 +123,7 @@ public class DAPsWrapperManager {
 			inputData.put("dapsjsksurl", dapsjsksurl);
 			inputData.put("dapstokenurl", dapstokenurl);
 			
-			log.info(tenantName +"-"+  packageName + "-DAPS package created");
+			log.info(LogUtil.encode(tenantName) +"-"+  LogUtil.encode(packageName) + "-DAPS package created");
 
 		} catch (Exception ex) {
 

@@ -76,8 +76,7 @@ public class DFTBackendManager {
 			inputData.put("dftBackEndApiKeyHeader", "API_KEY");
 			inputData.put("dftFrontEndUrl", dftfrontend);
 
-			Map<String, String> portalDetails = portalIntegrationManager.getDigitalandKeyCloackDetails(customerDetails,
-					inputData);
+			Map<String, String> portalDetails = portalIntegrationManager.getDigitalandKeyCloackDetails(inputData);
 			inputData.putAll(portalDetails);
 
 			String packageName = tool.getPackageName();

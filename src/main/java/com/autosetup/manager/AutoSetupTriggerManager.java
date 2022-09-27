@@ -102,12 +102,12 @@ public class AutoSetupTriggerManager {
 
 	public List<AutoSetupTriggerResponse> getAllTriggers() {
 		return Optional.of(autoSetupTriggerEntryRepository.findAll()).orElseGet(ArrayList::new).stream()
-				.map((obj) -> autoSetupTriggerMapper.fromEntitytoCustom(obj)).toList();
+				.map(autoSetupTriggerMapper::fromEntitytoCustom).toList();
 	}
 
 	public AutoSetupTriggerResponse getTriggerDetails(String triggerId) {
 		return autoSetupTriggerEntryRepository.findById(triggerId)
-				.map((obj) -> autoSetupTriggerMapper.fromEntitytoCustom(obj))
+				.map(autoSetupTriggerMapper::fromEntitytoCustom)
 				.orElseThrow(() -> new NoDataFoundException("No data found for " + triggerId));
 
 	}

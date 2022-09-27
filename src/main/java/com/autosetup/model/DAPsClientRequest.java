@@ -29,11 +29,11 @@ import lombok.Data;
 @Builder
 public class DAPsClientRequest {
 
-	private String client_id;
+	private String clientId;
 	private String name;
-	private String token_endpoint_auth_method;
+	private String tokenEndpointAuthMethod;
 	private List<String> scope;
-	private List<String> grant_types;
+	private List<String> grantTypes;
 	private List<Attribute> attributes;
 	
 }
