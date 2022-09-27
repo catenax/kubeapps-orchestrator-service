@@ -72,6 +72,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class AutoSetupOrchitestratorService {
 
+	public static final String TARGET_NAMESPACE = "targetNamespace";
+	public static final String DFT_FRONTEND_URL = "dftFrontEndUrl";
+	public static final String DFT_BACKEND_URL = "dftBackEndUrl";
+
 	private final KubeAppManageProxy kubeAppManageProxy;
 	private final KubeAppsPackageManagement appManagement;
 	private final AutoSetupTriggerManager autoSetupTriggerManager;
@@ -124,7 +128,7 @@ public class AutoSetupOrchitestratorService {
 			Map<String, String> inputConfiguration = inputConfigurationManager.prepareInputConfiguration(customer,
 					uuID);
 
-			String targetNamespace = inputConfiguration.get("targetNamespace");
+			String targetNamespace = inputConfiguration.get(TARGET_NAMESPACE);
 
 			AutoSetupTriggerEntry trigger = autoSetupTriggerManager.createTrigger(autoSetupRequest, CREATE, uuID,
 					targetNamespace);
@@ -159,17 +163,17 @@ public class AutoSetupOrchitestratorService {
 
 				autoSetupTriggerManager.saveTriggerUpdate(trigger);
 
-				String targetNamespace = inputConfiguration.get("targetNamespace");
+				String targetNamespace = inputConfiguration.get(TARGET_NAMESPACE);
 
 				String existingNamespace = trigger.getAutosetupTenantName();
 
 				if (checkNamespaceisExist(existingNamespace)) {
 
-					inputConfiguration.put("targetNamespace", existingNamespace);
+					inputConfiguration.put(TARGET_NAMESPACE, existingNamespace);
 
 					processDeleteTrigger(trigger, inputConfiguration);
 
-					inputConfiguration.put("targetNamespace", targetNamespace);
+					inputConfiguration.put(TARGET_NAMESPACE, targetNamespace);
 					trigger.setAutosetupTenantName(targetNamespace);
 
 					if (!existingNamespace.equals(targetNamespace) && !checkNamespaceisExist(targetNamespace)) {
@@ -179,6 +183,8 @@ public class AutoSetupOrchitestratorService {
 						log.info("Waiting after deleteing all package for recreate");
 						Thread.sleep(15000);
 					} catch (InterruptedException e) {
+						e.printStackTrace();
+						Thread.currentThread().interrupt();
 					}
 
 				} else {
@@ -239,7 +245,7 @@ public class AutoSetupOrchitestratorService {
 			List<SelectedTools> edcToollist = autoSetupRequest.getSelectedTools().stream()
 					.filter(e -> ToolType.EDC.equals(e.getTool())).toList();
 
-			edcToollist.forEach((tool) -> {
+			edcToollist.forEach(tool -> {
 				Map<String, String> edcOutput = edcConnectorWorkFlow.getWorkFlow(autoSetupRequest.getCustomer(), tool,
 						action, inputConfiguration, trigger);
 				inputConfiguration.putAll(edcOutput);
@@ -258,8 +264,8 @@ public class AutoSetupOrchitestratorService {
 
 				emailContent.put("helloto", "Team");
 				emailContent.put("orgname", customer.getOrganizationName());
-				emailContent.put("dftFrontEndUrl", map.get("dftFrontEndUrl"));
-				emailContent.put("dftBackEndUrl", map.get("dftBackEndUrl"));
+				emailContent.put(DFT_FRONTEND_URL, map.get(DFT_FRONTEND_URL));
+				emailContent.put(DFT_BACKEND_URL, map.get(DFT_BACKEND_URL));
 				emailContent.put("toemail", portalEmail);
 
 				// End of email sending code
@@ -299,7 +305,7 @@ public class AutoSetupOrchitestratorService {
 				List<SelectedTools> edcToollist = autoSetupRequest.getSelectedTools().stream()
 						.filter(e -> ToolType.EDC.equals(e.getTool())).toList();
 
-				edcToollist.forEach((tool) -> {
+				edcToollist.forEach(tool -> {
 					appManagement.deletePackage(POSTGRES_DB, tool.getPackageName(), inputConfiguration);
 					appManagement.deletePackage(EDC_CONTROLPLANE, tool.getPackageName(), inputConfiguration);
 					appManagement.deletePackage(EDC_DATAPLANE, tool.getPackageName(), inputConfiguration);
@@ -308,7 +314,7 @@ public class AutoSetupOrchitestratorService {
 				List<SelectedTools> dftToollist = autoSetupRequest.getSelectedTools().stream()
 						.filter(e -> ToolType.DFT.equals(e.getTool())).toList();
 
-				dftToollist.forEach((tool) -> {
+				dftToollist.forEach(tool -> {
 					appManagement.deletePackage(POSTGRES_DB, tool.getPackageName(), inputConfiguration);
 					appManagement.deletePackage(DFT_BACKEND, tool.getPackageName(), inputConfiguration);
 					appManagement.deletePackage(DFT_FRONTEND, tool.getPackageName(), inputConfiguration);
@@ -381,8 +387,8 @@ public class AutoSetupOrchitestratorService {
 
 		Map<String, String> dft = new ConcurrentHashMap<>();
 		dft.put("name", "DFT");
-		dft.put("dftFrontEndUrl", outputMap.get("dftFrontEndUrl"));
-		dft.put("dftBackEndUrl", outputMap.get("dftBackEndUrl"));
+		dft.put(DFT_FRONTEND_URL, outputMap.get(DFT_FRONTEND_URL));
+		dft.put(DFT_BACKEND_URL, outputMap.get(DFT_BACKEND_URL));
 		processResult.add(dft);
 
 		Map<String, String> edc = new ConcurrentHashMap<>();

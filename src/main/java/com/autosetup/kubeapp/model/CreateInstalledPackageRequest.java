@@ -34,6 +34,6 @@ public class CreateInstalledPackageRequest {
 	private Context targetContext;
 	private String name;
 	private String values;
-	private Version pkgVersionReference;
+	private VersionNumber pkgVersionReference;
 	private ReconciliationOptions reconciliationOptions;
 }

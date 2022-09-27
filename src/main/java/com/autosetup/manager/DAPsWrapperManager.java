@@ -20,6 +20,7 @@
 
 package com.autosetup.manager;
 
+import com.autosetup.utility.LogUtil;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -95,7 +96,7 @@ public class DAPsWrapperManager {
 			String packageName = tool.getPackageName();
 			String tenantName = customerDetails.getOrganizationName();
 			
-			log.info(tenantName +"-"+  packageName + "-DAPS package creating");
+			log.info(LogUtil.encode(tenantName) +"-"+  LogUtil.encode(packageName) + "-DAPS package creating");
 			
 			file = getTestFile(inputData.get("selfsigncertificate"));
 
@@ -120,7 +121,7 @@ public class DAPsWrapperManager {
 			inputData.put("dapsjsksurl", dapsjsksurl);
 			inputData.put("dapstokenurl", dapstokenurl);
 			
-			log.info(tenantName +"-"+  packageName + "-DAPS package created");
+			log.info(LogUtil.encode(tenantName) +"-"+  LogUtil.encode(packageName) + "-DAPS package created");
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
 		} catch (Exception ex) {
 
@@ -157,7 +158,7 @@ public class DAPsWrapperManager {
 		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 		RestTemplate restTemplate = new RestTemplate();
 		var result = restTemplate.postForEntity(tokenURI, requestEntity, DAPsTokenResponse.class);
-		return result.getBody().getAccess_token();
+		return result.getBody().getAccessToken();
 
 	}
 

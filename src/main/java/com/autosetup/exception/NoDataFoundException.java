@@ -20,6 +20,8 @@
 
 package com.autosetup.exception;
 
+import com.autosetup.utility.LogUtil;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -32,6 +34,6 @@ public class NoDataFoundException extends RuntimeException {
 
 	public NoDataFoundException(String exceptionstr) {
 		super(exceptionstr);
-		log.error(exceptionstr);
+		log.error(LogUtil.encode(exceptionstr));
 	}
 }

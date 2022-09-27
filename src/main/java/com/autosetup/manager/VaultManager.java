@@ -40,6 +40,7 @@ import com.autosetup.model.Customer;
 import com.autosetup.model.SelectedTools;
 import com.autosetup.model.VaultSecreteRequest;
 import com.autosetup.proxy.vault.VaultAppManageProxy;
+import com.autosetup.utility.LogUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -50,6 +51,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class VaultManager {
 
+	public static final String ENCRYPTIONKEYS = "encryptionkeys";
+	public static final String CONTENT = "content";
+	public static final String DAPS_CERT = "daps-cert";
+	public static final String CERTIFICATE_PRIVATE_KEY = "certificate-private-key";
 	private final VaultAppManageProxy vaultManagerProxy;
 	private final AutoSetupTriggerManager autoSetupTriggerManager;
 	private final OpenSSLClientManager openSSLClientManager;
@@ -79,36 +84,36 @@ public class VaultManager {
 			String tenantNameNamespace = triger.getAutosetupTenantName();
 			String packageName = tool.getPackageName();
 			String orgName = customerDetails.getOrganizationName();
-			log.info(orgName +"-"+  packageName + "-Vault creating");
+			log.info(LogUtil.encode(orgName) + "-" + LogUtil.encode(packageName) + "-Vault creating");
 
 			Map<String, String> tenantVaultSecret = new HashMap<>();
-			tenantVaultSecret.put("content", inputData.get("selfsigncertificate"));
-			uploadSecrete(tenantNameNamespace, "daps-cert", tenantVaultSecret);
+			tenantVaultSecret.put(CONTENT, inputData.get("selfsigncertificate"));
+			uploadSecrete(tenantNameNamespace, DAPS_CERT, tenantVaultSecret);
 
 			tenantVaultSecret = new HashMap<>();
-			tenantVaultSecret.put("content", inputData.get("selfsigncertificateprivatekey"));
-			uploadSecrete(tenantNameNamespace, "certificate-private-key", tenantVaultSecret);
+			tenantVaultSecret.put(CONTENT, inputData.get("selfsigncertificateprivatekey"));
+			uploadSecrete(tenantNameNamespace, CERTIFICATE_PRIVATE_KEY, tenantVaultSecret);
 			
 			String encryptionkeysalias = openSSLClientManager.executeCommand("openssl rand -base64 16");
 			tenantVaultSecret = new HashMap<>();
-			tenantVaultSecret.put("content", encryptionkeysalias);
-			uploadSecrete(tenantNameNamespace, "encryptionkeys", tenantVaultSecret);
+			tenantVaultSecret.put(CONTENT, encryptionkeysalias);
+			uploadSecrete(tenantNameNamespace, ENCRYPTIONKEYS, tenantVaultSecret);
 
 			inputData.remove("selfsigncertificateprivatekey");
 			inputData.remove("selfsigncertificate");
 			
-			inputData.put("daps-cert", "daps-cert");
-			inputData.put("certificate-private-key", "certificate-private-key");
+			inputData.put(DAPS_CERT, DAPS_CERT);
+			inputData.put(CERTIFICATE_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY);
 			inputData.put("valuttenantpath", "/v1/secret/data/" + tenantNameNamespace);
 			inputData.put("vaulturl", valutURL);
 			inputData.put("vaulttoken", vaulttoken);
 			inputData.put("vaulttimeout", vaulttimeout);
-			inputData.put("encryptionkeys", "encryptionkeys");
-			inputData.put("certificate-data-plane-private-key", "certificate-private-key");
-			inputData.put("certificate-data-plane-public-key", "certificate-private-key");
+			inputData.put(ENCRYPTIONKEYS, ENCRYPTIONKEYS);
+			inputData.put("certificate-data-plane-private-key", CERTIFICATE_PRIVATE_KEY);
+			inputData.put("certificate-data-plane-public-key", CERTIFICATE_PRIVATE_KEY);
 			
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
-			log.info(orgName +"-"+  packageName + "-Vault created");
+			log.info(LogUtil.encode(orgName) +"-"+  LogUtil.encode(packageName) + "-Vault created");
 
 
 		} catch (Exception ex) {

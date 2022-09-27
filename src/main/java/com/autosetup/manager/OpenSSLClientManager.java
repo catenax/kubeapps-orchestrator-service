@@ -20,6 +20,7 @@
 
 package com.autosetup.manager;
 
+import com.autosetup.utility.LogUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,25 +38,30 @@ public class OpenSSLClientManager {
 		StringBuilder output = new StringBuilder();
 		// Run a command
 		processBuilder.command("bash", "-c", command);
-
+		Process process = null;
 		try {
-			Process process = processBuilder.start();
-
-			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-			String line;
-			while ((line = reader.readLine()) != null) {
-				output.append(line + "\n");
-			}
-			int exitVal = process.waitFor();
-			if (exitVal == 0) {
-				// log.info(output.toString());
-			} else {
-				 log.error("Error in command:"+output.toString());
-			}
+			process = processBuilder.start();
 		} catch (IOException e) {
+			Thread.currentThread().interrupt();
 			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		}
+		if(process != null) {
+			try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+				String line;
+				while ((line = reader.readLine()) != null) {
+					output.append(line + "\n");
+				}
+				int exitVal = process.waitFor();
+				if (exitVal == 0) {
+					log.info("value is 0");
+				} else {
+					log.error("Error in command: " + LogUtil.encode(output.toString()));
+				}
+
+			} catch (InterruptedException | IOException e) {
+				Thread.currentThread().interrupt();
+				e.printStackTrace();
+			}
 		}
 		return output.toString();
 	}

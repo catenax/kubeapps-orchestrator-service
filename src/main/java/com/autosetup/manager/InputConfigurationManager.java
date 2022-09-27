@@ -49,16 +49,16 @@ public class InputConfigurationManager {
 
 	public Map<String, String> prepareInputConfiguration(Customer customerDetails, String uuid) {
 
-		String targetNamespace = buildTargetNamespace(customerDetails.getOrganizationName(), uuid);
+		String targetNamespaceString = buildTargetNamespace(customerDetails.getOrganizationName(), uuid);
 
-		String dnsName = buildDnsName(customerDetails, targetNamespace);
+		String dnsName = buildDnsName(customerDetails, targetNamespaceString);
 
 		Map<String, String> inputConfiguration = new ConcurrentHashMap<>();
 
 		inputConfiguration.put("dnsName", dnsName);
 		inputConfiguration.put("dnsNameURLProtocol", dnsNameURLProtocol);
 		inputConfiguration.put("targetCluster", targetCluster);
-		inputConfiguration.put("targetNamespace", targetNamespace);
+		inputConfiguration.put("targetNamespace", targetNamespaceString);
 
 		if (customerDetails.getProperties() != null) {
 			inputConfiguration.put("bpnNumber", customerDetails.getProperties().getBpnNumber());
@@ -74,14 +74,14 @@ public class InputConfigurationManager {
 
 	public Map<String, String> prepareInputFromDBObject(AutoSetupTriggerEntry triggerEntry) {
 
-		String targetNamespace = triggerEntry.getAutosetupTenantName();
+		String targetNamespaceString = triggerEntry.getAutosetupTenantName();
 
 		Map<String, String> inputConfiguration = new ConcurrentHashMap<>();
 
 		inputConfiguration.put("dnsName", "");
 		inputConfiguration.put("dnsNameURLProtocol", dnsNameURLProtocol);
 		inputConfiguration.put("targetCluster", targetCluster);
-		inputConfiguration.put("targetNamespace", targetNamespace);
+		inputConfiguration.put("targetNamespace", targetNamespaceString);
 
 		return inputConfiguration;
 	}
@@ -107,7 +107,6 @@ public class InputConfigurationManager {
 		int tenantNameLength = 6;
 		String tenantName = orgName.replaceAll("[^a-zA-Z0-9]", "");
 		tenantName = tenantName.length() < tenantNameLength ? tenantName : tenantName.substring(0, tenantNameLength);
-		// uuid = uuid.replaceAll("[^a-zA-Z]", "");
 		return tenantName.concat("-" + uuid).toLowerCase();
 	}
 

@@ -20,7 +20,6 @@
 
 package com.autosetup.utility;
 
-import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.bc.BcX509ExtensionUtils;
@@ -54,7 +53,7 @@ public class Certutil {
 
 	    public static String getAki(X509Certificate cert) {
 	        byte[] extensionValue = cert.getExtensionValue("2.5.29.35");
-	        byte[] octets = DEROctetString.getInstance(extensionValue).getOctets();
+	        byte[] octets =  org.bouncycastle.asn1.ASN1OctetString.getInstance(extensionValue).getOctets();
 	        AuthorityKeyIdentifier authorityKeyIdentifier = AuthorityKeyIdentifier.getInstance(octets);
 	        byte[] keyIdentifier = authorityKeyIdentifier.getKeyIdentifier();
 	        return HexFormat.ofDelimiter(":").withUpperCase().formatHex(keyIdentifier);
@@ -62,7 +61,7 @@ public class Certutil {
 
 	    public static String getSki(X509Certificate cert) {
 	        var extensionValue = cert.getExtensionValue("2.5.29.14");
-	        var octets = DEROctetString.getInstance(extensionValue).getOctets();
+	        var octets =  org.bouncycastle.asn1.ASN1OctetString.getInstance(extensionValue).getOctets();
 	        SubjectKeyIdentifier subjectKeyIdentifier = SubjectKeyIdentifier.getInstance(octets);
 	        var keyIdentifier = subjectKeyIdentifier.getKeyIdentifier();
 	        return HexFormat.ofDelimiter(":").withUpperCase().formatHex(keyIdentifier);
