@@ -38,6 +38,7 @@ import com.autosetup.exception.ServiceException;
 import com.autosetup.model.Customer;
 import com.autosetup.model.SelectedTools;
 import com.autosetup.utility.Certutil;
+import com.autosetup.utility.LogUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -65,16 +66,16 @@ public class CertificateManager {
 			String packageName = tool.getPackageName();
 			String tenantName = customerDetails.getOrganizationName();
 			
-			log.info(tenantName +"-"+ packageName + "-certificate creating");
+			log.info(LogUtil.encode(tenantName) +"-"+ LogUtil.encode(packageName) + "-certificate creating");
 
 			String bpnNumber=inputData.get("bpnNumber");
 			
-			String C = Optional.ofNullable(customerDetails.getCountry()).map(r -> r).orElse("DE");
-			String ST = Optional.ofNullable(customerDetails.getState()).map(r -> r).orElse("BE");
-			String L = Optional.ofNullable(customerDetails.getCity()).map(r -> r).orElse("Berline");
+			String c = Optional.ofNullable(customerDetails.getCountry()).map(r -> r).orElse("DE");
+			String st = Optional.ofNullable(customerDetails.getState()).map(r -> r).orElse("BE");
+			String l = Optional.ofNullable(customerDetails.getCity()).map(r -> r).orElse("Berline");
 
 			String params = String.format("O=%s, OU=%s, C=%s, ST=%s, L=%s, CN=%s", tenantName,
-					bpnNumber, C, ST, L, "www." + tenantName + ".com");
+					bpnNumber, c, st, l, "www." + tenantName + ".com");
 
 			Certutil.CertKeyPair certificateDetails = Certutil.generateSelfSignedCertificateSecret(params, null, null);
 			X509Certificate certificate = certificateDetails.certificate();
@@ -86,7 +87,7 @@ public class CertificateManager {
 					Certutil.getAsString(certificateDetails.keyPair().getPrivate()));
 
 			autoSetupTriggerDetails.setStatus(TriggerStatusEnum.SUCCESS.name());
-			log.info(tenantName +"-"+  packageName + "-certificate created");
+			log.info(LogUtil.encode(tenantName) +"-"+  LogUtil.encode(packageName) + "-certificate created");
 
 		} catch (Exception ex) {
 

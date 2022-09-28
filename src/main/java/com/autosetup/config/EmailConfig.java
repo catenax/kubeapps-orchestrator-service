@@ -50,6 +50,7 @@ public class EmailConfig {
     public MimeMessage mimeMessage() {
         // Get the Session object.// and pass username and password
         Session session = Session.getInstance(properties(), new javax.mail.Authenticator() {
+            @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication("Data_Intelligence_Hub_Login", "P/r8}rf5q)/Wr1gn");
             }
@@ -65,7 +66,6 @@ public class EmailConfig {
         props.put("mail.smtp.port", port);
         props.put("mail.smtp.starttls.enable", startTlsEnable);
         props.put("mail.smtp.auth", auth);
-        //props.put("mail.debug", "true");
         return props;
     }
 }

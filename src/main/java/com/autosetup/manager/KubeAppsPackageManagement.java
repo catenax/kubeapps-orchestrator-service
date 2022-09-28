@@ -70,7 +70,7 @@ public class KubeAppsPackageManagement {
 		CreateInstalledPackageRequest updateControlPlane = createPackageMapper
 				.getUpdatePackageRequest(appWithStandardInfo, app.name(), packageName);
 
-		String appName = app.name().replaceAll("_", "");
+		String appName = app.name().replace("_", "");
 
 		String updatePackage = kubeAppManageProxy.updatePackage(appWithStandardInfo.getPluginName(),
 				appWithStandardInfo.getPluginVersion(), appWithStandardInfo.getTargetCluster(),
@@ -92,7 +92,7 @@ public class KubeAppsPackageManagement {
 			CreateInstalledPackageRequest updateControlPlane = createPackageMapper
 					.getUpdatePackageRequest(appWithStandardInfo, app.name(), packageName);
 
-			String appName = app.name().replaceAll("_", "");
+			String appName = app.name().replace("_", "");
 
 			kubeAppManageProxy.deletePackage(appWithStandardInfo.getPluginName(),
 					appWithStandardInfo.getPluginVersion(), appWithStandardInfo.getTargetCluster(),

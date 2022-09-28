@@ -47,6 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EmailManager {
 
+	public static final String CCEMAIL = "ccemail";
 	@Autowired
 	private MimeMessage mimeMessage;
 
@@ -72,11 +73,11 @@ public class EmailManager {
 			mimeMessage.setFrom(new InternetAddress(fromEmail));
 			if (replyTo != null && !replyTo.isEmpty()) {
 				String[] mailAddressTo = replyTo.split(",");
-				InternetAddress[] mailAddress_TO = new InternetAddress[mailAddressTo.length];
+				InternetAddress[] mailAddressTO = new InternetAddress[mailAddressTo.length];
 				for (int i = 0; i < mailAddressTo.length; i++) {
-					mailAddress_TO[i] = new InternetAddress(mailAddressTo[i]);
+					mailAddressTO[i] = new InternetAddress(mailAddressTo[i]);
 				}
-				mimeMessage.setReplyTo(mailAddress_TO);
+				mimeMessage.setReplyTo(mailAddressTO);
 			}
 			mimeMessage.setSubject(emailRequest.getSubject());
 
@@ -95,9 +96,9 @@ public class EmailManager {
 
 			InternetAddress[] addressCC = new InternetAddress[1];
 			int i = 0;
-			if (emailContent.containsKey("ccemail") && emailContent.get("ccemail") != null
-					&& !emailContent.get("ccemail").toString().isEmpty()) {
-				String[] split = emailContent.get("ccemail").toString().split(",");
+			if (emailContent.containsKey(CCEMAIL) && emailContent.get(CCEMAIL) != null
+					&& !emailContent.get(CCEMAIL).toString().isEmpty()) {
+				String[] split = emailContent.get(CCEMAIL).toString().split(",");
 				addressCC = new InternetAddress[split.length + 1];
 				for (String string : split) {
 					addressCC[i] = new InternetAddress(string);

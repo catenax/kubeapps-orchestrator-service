@@ -27,14 +27,14 @@ import com.autosetup.kubeapp.model.Context;
 import com.autosetup.kubeapp.model.CreateInstalledPackageRequest;
 import com.autosetup.kubeapp.model.Plugin;
 import com.autosetup.kubeapp.model.ReconciliationOptions;
-import com.autosetup.kubeapp.model.Version;
+import com.autosetup.kubeapp.model.VersionNumber;
 import com.autosetup.wrapper.model.CreatePackageRequest;
 
 @Mapper(componentModel = "spring")
-public abstract class CreatePackageMapper {
+public interface CreatePackageMapper {
 
 	
-	public CreateInstalledPackageRequest getCreatePackageRequest(CreatePackageRequest createPackageRequest,
+	public default CreateInstalledPackageRequest getCreatePackageRequest(CreatePackageRequest createPackageRequest,
 			String appName, String packageName) {
 		appName = appName.replace("_", "");
 		
@@ -60,7 +60,7 @@ public abstract class CreatePackageMapper {
 				.plugin(plugin)
 				.build();
 		
-		Version pkgVersionReference = Version.builder().version(createPackageRequest.getAvailablePackageVersion()).build();
+		VersionNumber pkgVersionReference = VersionNumber.builder().version(createPackageRequest.getAvailablePackageVersion()).build();
 		
 		ReconciliationOptions reconciliationOptions=
 				ReconciliationOptions.builder()
@@ -83,7 +83,7 @@ public abstract class CreatePackageMapper {
 	}
 	
 
-	public CreateInstalledPackageRequest getUpdatePackageRequest(CreatePackageRequest createPackageRequest,
+	public default CreateInstalledPackageRequest getUpdatePackageRequest(CreatePackageRequest createPackageRequest,
 			String appName, String packageName) {
 		appName = appName.replace("_", "");
 		
@@ -102,7 +102,7 @@ public abstract class CreatePackageMapper {
 				.plugin(plugin)
 				.build();
 		
-		Version pkgVersionReference = Version.builder()
+		VersionNumber pkgVersionReference = VersionNumber.builder()
 				.version(createPackageRequest.getAvailablePackageVersion())
 				.build();
 		

@@ -22,10 +22,13 @@ package com.autosetup.utility;
 
 public class Validator {
 
-	private static final String specialCharacters = "[" + "-/@#!*$%^&.'_+={}()" + "]+";
+	private Validator() {
+	}
+
+	private static final String SPECIAL_CHARACTERS = "[" + "-/@#!*$%^&.'_+={}()" + "]+";
 
 	public static boolean isOnlySpecialCaharcter(String input)
 	{
-		return input.matches(specialCharacters);
+		return input.matches(SPECIAL_CHARACTERS);
 	}
 }

@@ -29,10 +29,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 
 @Mapper(componentModel = "spring")
-public abstract class AutoSetupRequestMapper {
+public interface AutoSetupRequestMapper {
 
 	@SneakyThrows
-	public String fromCustomer(AutoSetupRequest request) {
+	public default String fromCustomer(AutoSetupRequest request) {
 		ObjectMapper mapper = new ObjectMapper();
 		if (request == null)
 			return "";
@@ -40,7 +40,7 @@ public abstract class AutoSetupRequestMapper {
 	}
 
 	@SneakyThrows
-	public AutoSetupRequest fromStr(String requetsstr) {
+	public default AutoSetupRequest fromStr(String requetsstr) {
 		ObjectMapper mapper = new ObjectMapper();
 
 		if (StringUtils.isBlank(requetsstr))
