@@ -31,6 +31,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -86,7 +87,7 @@ public class EmailManager {
 				InternetAddress[] addressTo = new InternetAddress[split.length];
 				int i = 0;
 				for (String string : split) {
-					addressTo[i] = new InternetAddress(string);
+					addressTo[i] = new InternetAddress(StringEscapeUtils.escapeHtml(StringEscapeUtils.escapeJava(string)));
 					i++;
 				}
 				mimeMessage.setRecipients(Message.RecipientType.TO, addressTo);
@@ -101,7 +102,7 @@ public class EmailManager {
 				String[] split = emailContent.get(CCEMAIL).toString().split(",");
 				addressCC = new InternetAddress[split.length + 1];
 				for (String string : split) {
-					addressCC[i] = new InternetAddress(string);
+					addressCC[i] = new InternetAddress(StringEscapeUtils.escapeHtml(StringEscapeUtils.escapeJava(string)));
 					i++;
 				}
 			}
