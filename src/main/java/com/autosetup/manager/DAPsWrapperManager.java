@@ -158,7 +158,11 @@ public class DAPsWrapperManager {
 		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 		RestTemplate restTemplate = new RestTemplate();
 		var result = restTemplate.postForEntity(tokenURI, requestEntity, DAPsTokenResponse.class);
-		return result.getBody().getAccessToken();
+		var resultBody = result.getBody();
+		if (resultBody != null) {
+			return resultBody.getAccessToken();
+		}
+		return null;
 
 	}
 

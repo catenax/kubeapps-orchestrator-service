@@ -1,14 +1,11 @@
 package com.autosetup.utility;
 
-import org.owasp.esapi.ESAPI;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class LogUtil {
 	
 	public static String encode(String message) {
-	    message = message.replace( '\n' ,  '_' ).replace( '\r' , '_' )
-	      .replace( '\t' , '_' );
-	    message = ESAPI.encoder().encodeForHTML( message );
-	    return message;
+		return StringEscapeUtils.escapeHtml(StringEscapeUtils.escapeJava(message));
 	}
 
 }
