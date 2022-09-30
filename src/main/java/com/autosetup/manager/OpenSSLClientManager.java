@@ -25,6 +25,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -34,13 +37,13 @@ import lombok.extern.slf4j.Slf4j;
 public class OpenSSLClientManager {
 
 	public String executeCommand(String command) {
-		ProcessBuilder processBuilder = new ProcessBuilder();
+		String[] cmd = { "bash", "-c", command };
+		List<String> strList = new ArrayList<>();
+		strList.addAll(Arrays.asList(cmd));
 		StringBuilder output = new StringBuilder();
-		// Run a command
-		processBuilder.command("bash", "-c", command);
 		Process process = null;
 		try {
-			process = processBuilder.start();
+			process = new ProcessBuilder(strList).start();
 		} catch (IOException e) {
 			Thread.currentThread().interrupt();
 			e.printStackTrace();

@@ -106,7 +106,7 @@ public class EmailManager {
 					i++;
 				}
 			}
-			addressCC[i] = new InternetAddress(fromEmail);
+			addressCC[i] = new InternetAddress(StringEscapeUtils.escapeHtml(StringEscapeUtils.escapeJava(fromEmail)));
 
 			mimeMessage.setRecipients(Message.RecipientType.CC, addressCC);
 
