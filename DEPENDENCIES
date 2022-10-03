@@ -71,16 +71,27 @@ maven/mavencentral/org.junit.jupiter/junit-jupiter/5.8.2, EPL-2.0, approved, cle
 maven/mavencentral/org.junit.platform/junit-platform-commons/1.8.2, EPL-2.0, approved, #1288
 maven/mavencentral/org.junit.platform/junit-platform-engine/1.8.2, EPL-2.0, approved, #1289
 maven/mavencentral/org.keycloak/keycloak-adapter-core/19.0.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.keycloak/keycloak-adapter-core/19.0.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.keycloak/keycloak-adapter-spi/19.0.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.keycloak/keycloak-adapter-spi/19.0.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.keycloak/keycloak-authz-client/19.0.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.keycloak/keycloak-authz-client/19.0.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.keycloak/keycloak-common/19.0.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.keycloak/keycloak-common/19.0.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.keycloak/keycloak-core/19.0.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.keycloak/keycloak-core/19.0.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.keycloak/keycloak-crypto-default/19.0.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.keycloak/keycloak-crypto-default/19.0.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.keycloak/keycloak-spring-boot-2-adapter/19.0.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.keycloak/keycloak-spring-boot-2-adapter/19.0.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.keycloak/keycloak-spring-boot-adapter-core/19.0.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.keycloak/keycloak-spring-boot-adapter-core/19.0.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.keycloak/keycloak-spring-boot-starter/19.0.1, Apache-2.0, approved, #3340
+maven/mavencentral/org.keycloak/keycloak-spring-boot-starter/19.0.2, Apache-2.0, approved, #3340
 maven/mavencentral/org.keycloak/keycloak-spring-security-adapter/19.0.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.keycloak/keycloak-spring-security-adapter/19.0.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.keycloak/spring-boot-container-bundle/19.0.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.keycloak/spring-boot-container-bundle/19.0.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.mapstruct/mapstruct/1.4.2.Final, Apache-2.0, approved, #2483
 maven/mavencentral/org.mockito/mockito-core/4.5.1, MIT AND Apache-2.0, approved, CQ24117
 maven/mavencentral/org.mockito/mockito-junit-jupiter/4.5.1, MIT, approved, clearlydefined
@@ -150,3 +161,4 @@ maven/mavencentral/org.webjars/swagger-ui/4.5.0, Apache-2.0, approved, #2379
 maven/mavencentral/org.webjars/webjars-locator-core/0.50, MIT, approved, clearlydefined
 maven/mavencentral/org.xmlunit/xmlunit-core/2.9.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.yaml/snakeyaml/1.31, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.yaml/snakeyaml/1.32, Apache-2.0, approved, clearlydefined
