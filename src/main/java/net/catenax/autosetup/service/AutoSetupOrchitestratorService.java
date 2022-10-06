@@ -318,6 +318,9 @@ public class AutoSetupOrchitestratorService {
 	private void executeEDC(AutoSetupRequest autoSetupRequest, AppActions action, AutoSetupTriggerEntry trigger,
 			Map<String, String> inputConfiguration, SelectedTools selectedTool) {
 
+		String label = selectedTool.getLabel();
+		selectedTool.setLabel("edc-" + label);
+		
 		Map<String, String> edcOutput = edcConnectorWorkFlow.getWorkFlow(autoSetupRequest.getCustomer(), selectedTool,
 				action, inputConfiguration, trigger);
 		inputConfiguration.putAll(edcOutput);
@@ -326,7 +329,18 @@ public class AutoSetupOrchitestratorService {
 
 		trigger.setAutosetupResult(json);
 
-		trigger.setStatus(TriggerStatusEnum.MANUAL_UPDATE_PENDING.name());
+		trigger.setStatus(TriggerStatusEnum.SUCCESS.name());
+		
+		Customer customer =autoSetupRequest.getCustomer();
+		// Send an email
+		Map<String, Object> emailContent = new HashMap<>();
+		emailContent.put("orgname", customer.getOrganizationName());
+		emailContent.putAll(edcOutput);
+		emailContent.put("toemail", customer.getEmail());
+		emailContent.put("ccemail", portalEmail);
+
+		emailManager.sendEmail(emailContent, "EDC Application Activited Successfully", "edc_success_activate.html");
+		log.info("Email sent successfully");
 	}
 
 	private void executeDFTWithEDC(AutoSetupRequest autoSetupRequest, AppActions action, AutoSetupTriggerEntry trigger,
