@@ -19,7 +19,7 @@
 #********************************************************************************/
 
 #FROM openjdk:19-jdk-alpine3.16
-#FROM maven:3.8.5-openjdk-18-slim as build
+FROM maven:3.8.5-openjdk-18-slim as build
 #FROM maven:3.8.6-eclipse-temurin-19-focal
 
 #RUN apk update && apk add maven && apk add --upgrade maven
