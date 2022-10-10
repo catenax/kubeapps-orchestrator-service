@@ -144,27 +144,27 @@ spec:
                 secretKeyRef:
                   name: portal-secrets
                   key: portalclientsecret
-            - name: PORTAL.DFT.KEYCLOAK.REALM
+            - name: PORTAL_DFT_KEYCLOAK_REALM
               valueFrom:
                 secretKeyRef:
                   name: portal-secrets
                   key: portaldftkeycloakrealm
-            - name: PORTAL.DFT.KEYCLOAK.CLIENTID
+            - name: PORTAL_DFT_KEYCLOAK_CLIENTID
               valueFrom:
                 secretKeyRef:
                   name: portal-secrets
                   key: portaldftkeycloakclient
-            - name: PORTAL.DFT.KEYCLOAK.URL
+            - name: PORTAL_DFT_KEYCLOAK_URL
               valueFrom:
                 secretKeyRef:
                   name: portal-secrets
                   key: portaldftkeyclockurl
-            - name: PORTAL.DFT.DIGITALTWINURL
+            - name: PORTAL_DFT_DIGITALTWINURL
               valueFrom:
                 secretKeyRef:
                   name: portal-secrets
                   key: portaldftdigitaltwinurl
-            - name: portal.dft.digitalTwinAuthUrl
+            - name: PORTAL_DFT_DIGITALTWINAUTHURL
               valueFrom:
                 secretKeyRef:
                   name: portal-secrets
