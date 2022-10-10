@@ -47,7 +47,7 @@ class CertificateManagerTest {
         Map<String, String> mockInputMap = new HashMap<>();
         mockInputMap.put("bpnNumber","BPN1234567");
         Map<String, String> resultMap = certificateManager.createCertificate(customer, selectedTools, mockInputMap, null);
-        assertNotEquals(resultMap,Exception.class);
+        assertEquals(3, resultMap.size());
 
     }
 
@@ -60,7 +60,7 @@ class CertificateManagerTest {
             var selfsigncertificate = Certutil.getAsString(cert);
             //var selfsigncertificateprivatekey = Certutil.getAsString(cert.);
 
-            assertEquals(clientId,"A0:BE:B6:A7:BD:E1:AD:06:51:9B:D1:30:11:BD:B0:27:DB:1F:08:44:keyid:A0:BE:B6:A7:BD:E1:AD:06:51:9B:D1:30:11:BD:B0:27:DB:1F:08:44");
+            assertEquals("A0:BE:B6:A7:BD:E1:AD:06:51:9B:D1:30:11:BD:B0:27:DB:1F:08:44:keyid:A0:BE:B6:A7:BD:E1:AD:06:51:9B:D1:30:11:BD:B0:27:DB:1F:08:44", clientId);
             assertEquals(selfsigncertificate,"-----BEGIN CERTIFICATE-----\n" +
                     "MIIDxzCCAq+gAwIBAgIJANwo4Suo25ecMA0GCSqGSIb3DQEBCwUAMF0xCzAJBgNV\n" +
                     "BAYTAkRFMQ8wDQYDVQQHDAZCZXJsaW4xDDAKBgNVBAoMA0JNVzEvMC0GA1UEAwwm\n" +

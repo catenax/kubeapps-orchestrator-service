@@ -38,6 +38,6 @@ class DFTFrontendManagerTest {
         mockInputMap.put("targetCluster","TestCluster");
         mockInputMap.put("targetNamespace","TestNamespace");
         Map<String, String> resultMap = dftFrontendManager.managePackage(null, AppActions.CREATE,selectedTools,mockInputMap,null);
-        assertNotEquals(resultMap,Exception.class);
+        assertEquals(2, resultMap.size());
     }
 }

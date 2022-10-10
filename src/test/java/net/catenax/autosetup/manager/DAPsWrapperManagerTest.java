@@ -85,7 +85,7 @@ class DAPsWrapperManagerTest {
         String s = "Test";
         mockInputMap.put("selfsigncertificate", Certutil.getAsString(cert));
         mockInputMap = daPsWrapperManager.createClient(customer, selectedTools, mockInputMap, null);
-        assertNotEquals(mockInputMap, Exception.class);
+        assertEquals(5, mockInputMap.size());
     } catch (CertificateException e) {
             throw new RuntimeException(e);
         }

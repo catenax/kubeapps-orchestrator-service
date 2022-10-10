@@ -69,6 +69,6 @@ class AppDeleteManagerTest {
 
         mockInputMap = appDeleteManager.deletePackage(AppNameConstant.POSTGRES_DB, selectedTools, mockInputMap, null);
 
-        assertNotEquals(mockInputMap, Exception.class);
+        assertEquals(1, mockInputMap.size());
     }
 }

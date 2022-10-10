@@ -45,7 +45,7 @@ class InputConfigurationManagerTest {
         try {
             AutoSetupRequest autoSetupRequest = new ObjectMapper().readValue(json,AutoSetupRequest.class);
             Map<String, String>resultMap =  inputConfigurationManager.prepareInputConfiguration(autoSetupRequest, uuID);
-            assertNotEquals(resultMap,Exception.class);
+            assertEquals(8, resultMap.size());
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -57,6 +57,6 @@ class InputConfigurationManagerTest {
 
         AutoSetupTriggerEntry autoSetupTriggerEntry = AutoSetupTriggerEntry.builder().autosetupTenantName("test").build();
         Map<String, String>resultMap =  inputConfigurationManager.prepareInputFromDBObject(autoSetupTriggerEntry);
-        assertNotEquals(resultMap,Exception.class);
+        assertEquals(4, resultMap.size());
     }
 }

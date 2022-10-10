@@ -67,7 +67,7 @@ class PostgresDBManagerTest {
                 .build();
 
         mockInputMap = postgresDBManager.managePackage(null, AppActions.CREATE,selectedTools,mockInputMap, null);
-        assertNotEquals(mockInputMap, Exception.class);
+        assertEquals(5, mockInputMap.size());
 
     }
 }

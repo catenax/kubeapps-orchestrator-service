@@ -40,6 +40,6 @@ class DFTBackendManagerTest {
         mockInputMap.put("dnsName","test");
         mockInputMap.put("dnsNameURLProtocol","https");
         Map<String, String> resultMap = dftBackendManager.managePackage(null,AppActions.CREATE,selectedTools,mockInputMap,null);
-        assertNotEquals(resultMap,Exception.class);
+        assertEquals(8, resultMap.size());
     }
 }
