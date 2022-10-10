@@ -59,9 +59,9 @@ public class WebSecurityKeycloakConfig extends KeycloakWebSecurityConfigurerAdap
 						"/api-docs/*",
 						"/swagger-ui/*")
 				.permitAll()
-				.antMatchers(
-						"/internal",
-						"/internal/*").hasAnyRole("admin")
+//				.antMatchers(
+//						"/internal",
+//						"/internal/*").hasAnyRole("admin")
 				.anyRequest().authenticated();
 
 	}
