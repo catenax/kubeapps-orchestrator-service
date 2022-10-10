@@ -172,17 +172,17 @@ spec:
             - name: KEYCLOAK_REALM
               valueFrom: 
                 secretKeyRef:
-                  name: keycloakrealm
+                  name: keycloacksecret
                   key: keycloakRealm
             - name: KEYCLOAK_AUTH-SERVER-URL
               valueFrom: 
                 secretKeyRef:
-                  name: keycloakauthserverurl
+                  name: keycloacksecret
                   key: keycloakAuthserverUrl
             - name: KEYCLOAK_RESOURCES
               valueFrom: 
                 secretKeyRef:
-                  name: keycloakresources
+                  name: keycloacksecret
                   key: keycloakResource                           
             - name: KEYCLOAK_SSL-REQUIRED
               value: "external"
