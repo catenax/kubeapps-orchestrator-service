@@ -170,13 +170,20 @@ spec:
                   name: portal-secrets
                   key: portaldftdigitaltwinauth               
             - name: KEYCLOAK_REALM
-              value: "autosetup"
+              valueFrom: 
+                secretKeyRef:
+                  name: keycloakrealm
+                  key: keycloakRealm
             - name: KEYCLOAK_AUTH-SERVER-URL
-              value: "https://keycloak.cx.dih-cloud.com"
-            - name: KEYCLOAK_SSL-REQUIRED
-              value: "external"              
+              valueFrom: 
+                secretKeyRef:
+                  name: keycloakauthserverurl
+                  key: keycloakAuthserverUrl
             - name: KEYCLOAK_RESOURCES
-              value: "autosetup-service"
+              valueFrom: 
+                secretKeyRef:
+                  name: keycloakresources
+                  key: keycloakResource                           
             - name: KEYCLOAK_SSL-REQUIRED
               value: "external"
             - name: KEYCLOAK_USE-RESOURCE-ROLE-MAPPINGS
