@@ -3,7 +3,7 @@ entries:
   dftbackend:
   - apiVersion: v2
     appVersion: 1.3.7
-    created: "2022-10-10T16:06:55.298294+05:30"
+    created: "2022-10-11T13:21:04.427148+05:30"
     description: A Helm chart for Kubernetes
     digest: 3f89e0f92810776b5cd1964d2c256b75b3d1c3c3bfec911814bdeb68a18d2899
     name: dftbackend
@@ -13,7 +13,7 @@ entries:
     version: 1.3.7
   - apiVersion: v2
     appVersion: 1.3.6
-    created: "2022-10-10T16:06:55.289836+05:30"
+    created: "2022-10-11T13:21:04.423743+05:30"
     description: A Helm chart for Kubernetes
     digest: b14b771c85f0f7ccc33e858d3d896d4c032c978c4bcfd93148fff33e66f2656c
     name: dftbackend
@@ -24,7 +24,7 @@ entries:
   dftfrontend:
   - apiVersion: v2
     appVersion: 1.2.9
-    created: "2022-10-10T16:06:55.305743+05:30"
+    created: "2022-10-11T13:21:04.433924+05:30"
     description: A Helm chart for Kubernetes
     digest: bb05c5af4d7439fdcc87623ffbdcdf132dee96848e9c877c98219a7c336b1584
     name: dftfrontend
@@ -34,8 +34,18 @@ entries:
     version: 1.2.9
   orchestrator:
   - apiVersion: v2
+    appVersion: 1.2.2
+    created: "2022-10-11T13:21:04.492851+05:30"
+    description: A Helm chart for Kubernetes
+    digest: 33bbe948e5dcb7e1484023332099831df50e6c528213739d349d6ed666a92bbd
+    name: orchestrator
+    type: application
+    urls:
+    - https://catenax.github.io/kubeapps-orchestrator-service/orchestrator-1.2.2.tgz
+    version: 1.2.2
+  - apiVersion: v2
     appVersion: 1.2.1
-    created: "2022-10-10T16:06:55.366725+05:30"
+    created: "2022-10-11T13:21:04.492305+05:30"
     description: A Helm chart for Kubernetes
     digest: 6b2d661e4ebeea4a3d732c5c9bcf083e3647f15c0121da26a042dea7c33bbccd
     name: orchestrator
@@ -45,7 +55,7 @@ entries:
     version: 1.2.1
   - apiVersion: v2
     appVersion: 1.2.0
-    created: "2022-10-10T16:06:55.36615+05:30"
+    created: "2022-10-11T13:21:04.486579+05:30"
     description: A Helm chart for Kubernetes
     digest: 7ac91fd70f325492e7fde4301f30087d3b0759f9ff69289c189c7e89e314973f
     name: orchestrator
@@ -55,7 +65,7 @@ entries:
     version: 1.2.0
   - apiVersion: v2
     appVersion: 1.0.11
-    created: "2022-10-10T16:06:55.324865+05:30"
+    created: "2022-10-11T13:21:04.447022+05:30"
     description: A Helm chart for Kubernetes
     digest: 702946bc1966f1b92431575d5782979b3cf1132e7067655ad0972a9b02a14f43
     name: orchestrator
@@ -65,7 +75,7 @@ entries:
     version: 1.0.11
   - apiVersion: v2
     appVersion: 1.0.9
-    created: "2022-10-10T16:06:55.363323+05:30"
+    created: "2022-10-11T13:21:04.482399+05:30"
     description: A Helm chart for Kubernetes
     digest: 187ce2b4eb44e12664684bb563090198fff0390aaa0c9f1a2caae69666a338cb
     name: orchestrator
@@ -75,7 +85,7 @@ entries:
     version: 1.0.9
   - apiVersion: v2
     appVersion: 1.0.8
-    created: "2022-10-10T16:06:55.357364+05:30"
+    created: "2022-10-11T13:21:04.477426+05:30"
     description: A Helm chart for Kubernetes
     digest: 3feac08b4c1d5d0dff11c0f9fb39ace5bcd1f7f5771775c90c723eb2bc48cd0a
     name: orchestrator
@@ -85,7 +95,7 @@ entries:
     version: 1.0.8
   - apiVersion: v2
     appVersion: 1.0.7
-    created: "2022-10-10T16:06:55.353994+05:30"
+    created: "2022-10-11T13:21:04.473483+05:30"
     description: A Helm chart for Kubernetes
     digest: 0673649bebc85d91d3f8c6a55e147caa8e5c6092160c36f810ba33039a7d16c7
     name: orchestrator
@@ -95,7 +105,7 @@ entries:
     version: 1.0.7
   - apiVersion: v2
     appVersion: 1.0.6
-    created: "2022-10-10T16:06:55.346639+05:30"
+    created: "2022-10-11T13:21:04.468927+05:30"
     description: A Helm chart for Kubernetes
     digest: 568e99453d337341f15d450d0ae0501ba18adcb646a067f01654337bb0f367f3
     name: orchestrator
@@ -105,7 +115,7 @@ entries:
     version: 1.0.6
   - apiVersion: v2
     appVersion: 1.0.5
-    created: "2022-10-10T16:06:55.340652+05:30"
+    created: "2022-10-11T13:21:04.464717+05:30"
     description: A Helm chart for Kubernetes
     digest: 5f034fb8224994d5f70232dd7d1b2275d11cbe15f7eb8bc7e1fba59e3d25c078
     name: orchestrator
@@ -115,7 +125,7 @@ entries:
     version: 1.0.5
   - apiVersion: v2
     appVersion: 1.0.4
-    created: "2022-10-10T16:06:55.338076+05:30"
+    created: "2022-10-11T13:21:04.459939+05:30"
     description: A Helm chart for Kubernetes
     digest: 05ba6b46a1820d0168ad89ffbbcd083cfb3c6203360b125a11b65024b754b6bb
     name: orchestrator
@@ -125,7 +135,7 @@ entries:
     version: 1.0.4
   - apiVersion: v2
     appVersion: 1.0.3
-    created: "2022-10-10T16:06:55.333269+05:30"
+    created: "2022-10-11T13:21:04.455021+05:30"
     description: A Helm chart for Kubernetes
     digest: 7561847840624926945b256c9d4d6c4b56e7d786f50fba7f3b74050855191fca
     name: orchestrator
@@ -135,7 +145,7 @@ entries:
     version: 1.0.3
   - apiVersion: v2
     appVersion: 1.0.2
-    created: "2022-10-10T16:06:55.330186+05:30"
+    created: "2022-10-11T13:21:04.450816+05:30"
     description: A Helm chart for Kubernetes
     digest: 7842daeb3535b1b265e2a49b0a44f8a4305a4a6ee334108f3ca00db3f2be2dde
     name: orchestrator
@@ -145,7 +155,7 @@ entries:
     version: 1.0.2
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2022-10-10T16:06:55.319683+05:30"
+    created: "2022-10-11T13:21:04.443143+05:30"
     description: A Helm chart for Kubernetes
     digest: 87ec596688a0e42c67e320d6ae61a7ed968b3e8989cd2dc221f3a1904a12e59e
     name: orchestrator
@@ -155,7 +165,7 @@ entries:
     version: 1.0.1
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2022-10-10T16:06:55.309247+05:30"
+    created: "2022-10-11T13:21:04.438936+05:30"
     description: A Helm chart for Kubernetes
     digest: 1fde2321d12321830c05fcbc413fe74784a6317a13733a8c783c294d0b9c664f
     name: orchestrator
@@ -163,4 +173,4 @@ entries:
     urls:
     - https://catenax.github.io/kubeapps-orchestrator-service/orchestrator-1.0.0.tgz
     version: 1.0.0
-generated: "2022-10-10T16:06:55.282177+05:30"
+generated: "2022-10-11T13:21:04.417866+05:30"
