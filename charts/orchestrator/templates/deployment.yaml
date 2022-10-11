@@ -78,23 +78,23 @@ spec:
             - name: DAPSWRAPPER_KEYCLOAK_TOKENURI
               valueFrom:
                 secretKeyRef:
-                  name: daps-secrets
-                  key: dapskeytoken   
+                  name: dapssecret
+                  key: dapswrapperkeycloaktokenURI  
             - name: DAPSWRAPPER_KEYCLOAK_CLIENTID
               valueFrom:
                 secretKeyRef:
-                  name: daps-secrets
-                  key: dapskeyclient
+                  name: dapssecret
+                  key: dapswrapperkeycloakclientId
             - name: DAPSWRAPPER_KEYCLOAK_CLIENTSECRET
               valueFrom:
                 secretKeyRef:
-                  name: daps-secrets
-                  key: dapskeysecret  
+                  name: dapssecret
+                  key: dapswrapperkeycloakclientSecret 
             - name: DAPSWRAPPER_URL
               valueFrom:
                 secretKeyRef:
-                  name: daps-secrets
-                  key: dapsUrlwrapper  
+                  name: dapssecret
+                  key: dapswrapperUrl 
             - name: KUBEAPP_URL
               valueFrom:
                 secretKeyRef:
