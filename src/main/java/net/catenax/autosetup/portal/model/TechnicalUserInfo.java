@@ -34,4 +34,6 @@ public class TechnicalUserInfo {
 	private String technicalUserId;
 	
 	private String technicalUserSecret;
+	
+	private String technicalClientId;
 }

@@ -94,7 +94,7 @@ public class PortalIntegrationManager {
 
 			TechnicalUserInfo technicalUserInfo = serviceInstanceResultResponse.getTechnicalUserInfo();
 			if (technicalUserInfo != null) {
-				inputData.put("digital-twins.authentication.clientId", technicalUserInfo.getTechnicalUserId());
+				inputData.put("digital-twins.authentication.clientId", technicalUserInfo.getTechnicalClientId());
 				inputData.put("digital-twins.authentication.clientSecret", technicalUserInfo.getTechnicalUserSecret());
 			}
 
