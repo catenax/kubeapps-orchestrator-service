@@ -32,10 +32,14 @@ import org.springframework.util.MultiValueMap;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import net.catenax.autosetup.portal.model.ClientInfo;
 import net.catenax.autosetup.portal.model.ServiceInstanceResultRequest;
 import net.catenax.autosetup.portal.model.ServiceInstanceResultResponse;
+import net.catenax.autosetup.portal.model.TechnicalUserInfo;
 import net.catenax.autosetup.portal.proxy.PortalIntegrationProxy;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PortalIntegrationManager {
@@ -47,29 +51,27 @@ public class PortalIntegrationManager {
 
 	@Value("${portal.keycloak.clientId}")
 	private String clientId;
-	
+
 	@Value("${portal.keycloak.clientSecret}")
 	private String clientSecret;
-	
+
 	@Value("${portal.keycloak.tokenURI}")
 	private URI tokenURI;
-	
-	
+
 	@Value("${portal.dft.keycloak.realm}")
 	private String keycloakRealm;
-	
+
 	@Value("${portal.dft.keycloak.clientId}")
 	private String keycloakClientId;
-	
+
 	@Value("${portal.dft.keycloak.url}")
 	private String keycloakUrl;
-	
+
 	@Value("${portal.dft.digitalTwinUrl}")
 	private String digitalTwinUrl;
-	
+
 	@Value("${portal.dft.digitalTwinAuthUrl}")
 	private String digitalTwinAuthUrl;
-	
 
 	@SneakyThrows
 	public Map<String, String> postServiceInstanceResultAndGetTenantSpecs(Map<String, String> inputData) {
@@ -85,24 +87,36 @@ public class PortalIntegrationManager {
 
 		ServiceInstanceResultResponse serviceInstanceResultResponse = portalIntegrationProxy
 				.postServiceInstanceResultAndGetTenantSpecs(portalUrl, header, serviceInstanceResultRequest);
-		
-		inputData.put("digital-twins.hostname", digitalTwinUrl);
-		inputData.put("digital-twins.authentication.url", digitalTwinAuthUrl);
-		inputData.put("digital-twins.authentication.clientId", serviceInstanceResultResponse.getTechnicalUserInfo().getTechnicalUserId());
-		inputData.put("digital-twins.authentication.clientSecret",
-				serviceInstanceResultResponse.getTechnicalUserInfo().getTechnicalUserSecret());
 
-		inputData.put("dftkeycloakurl", keycloakUrl);
-		inputData.put("dftcloakrealm", keycloakRealm);
-		inputData.put("dftbackendkeycloakclientid", keycloakClientId);
-		inputData.put("dftfrontendkeycloakclientid", keycloakClientId);
-		
+		if (serviceInstanceResultResponse != null) {
+			inputData.put("digital-twins.hostname", digitalTwinUrl);
+			inputData.put("digital-twins.authentication.url", digitalTwinAuthUrl);
+
+			TechnicalUserInfo technicalUserInfo = serviceInstanceResultResponse.getTechnicalUserInfo();
+			if (technicalUserInfo != null) {
+				inputData.put("digital-twins.authentication.clientId", technicalUserInfo.getTechnicalClientId());
+				inputData.put("digital-twins.authentication.clientSecret", technicalUserInfo.getTechnicalUserSecret());
+			}
+
+			inputData.put("dftkeycloakurl", keycloakUrl);
+			inputData.put("dftcloakrealm", keycloakRealm);
+
+			ClientInfo clientInfo = serviceInstanceResultResponse.getClientInfo();
+
+			if (clientInfo != null) {
+				inputData.put("dftbackendkeycloakclientid", clientInfo.getClientId());
+				inputData.put("dftfrontendkeycloakclientid", clientInfo.getClientId());
+			}
+		} else {
+			log.error("Error in request process with portal");
+		}
+
 		return inputData;
 	}
 
 	@SneakyThrows
 	private String getKeycloakToken() {
-		
+
 		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 		body.add(OAuth2Constants.GRANT_TYPE, OAuth2Constants.CLIENT_CREDENTIALS);
 		body.add(OAuth2Constants.CLIENT_ID, clientId);
