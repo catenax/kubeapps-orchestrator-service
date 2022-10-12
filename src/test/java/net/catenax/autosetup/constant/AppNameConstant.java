@@ -18,15 +18,22 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package com.poc.kubeappswrapper.kubeappswrapper;
+package net.catenax.autosetup.constant;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import lombok.Getter;
 
-@SpringBootTest
-class KubeappsWrapperApplicationTests {
+@Getter
+public enum AppNameConstant {
 
-//	@Test
-//	void contextLoads() {
-//	}
+	EDC_CONTROLPLANE,
+
+	EDC_DATAPLANE,
+
+	POSTGRES_DB,
+	
+	DFT_FRONTEND,
+	
+	DFT_BACKEND
+
 
 }

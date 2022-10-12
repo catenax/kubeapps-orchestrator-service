@@ -18,37 +18,8 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package net.catenax.autosetup.entity;
+package net.catenax.autosetup.constant;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
-@Table(name = "app_service_catalog_tbl")
-public class AppServiceCatalog {
-
-	@Id
-	@Column(name = "canonical_service_id")
-	private String canonicalServiceId;
-	
-	@Column(name = "ct_name")
-	private String name;
-	
-	@Column(name = "workflow")
-	private String workflow;
-	
-	@Column(name = "service_tools")
-	private String serviceTools;
-	
+public enum AppActions {
+	UPDATE, CREATE, DELETE
 }
