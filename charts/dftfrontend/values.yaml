@@ -4,7 +4,7 @@ image:
   repository: ghcr.io/catenax/gds-product-dft/product-dft-frontend
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.0.0"
+  tag: "1.2.0"
   
 serviceAccount:
   # Specifies whether a service account should be created

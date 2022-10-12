@@ -8,7 +8,7 @@ image:
   repository: ghcr.io/catenax/gds-product-dft/product-dft-backend
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.1.6"
+  tag: "1.2.0"
 
 imagePullSecrets: []
 nameOverride: ""
