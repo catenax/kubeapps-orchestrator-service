@@ -70,6 +70,6 @@ class PostgresDBManagerTest {
 
         mockInputMap = postgresDBManager.managePackage(null, AppActions.CREATE,selectedTools,mockInputMap, null);
         assertEquals(5, mockInputMap.size());
-
+        assertEquals("test", mockInputMap.get("targetCluster"));
     }
 }

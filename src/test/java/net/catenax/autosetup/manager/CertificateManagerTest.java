@@ -69,7 +69,7 @@ class CertificateManagerTest {
         mockInputMap.put("bpnNumber","BPN1234567");
         Map<String, String> resultMap = certificateManager.createCertificate(customer, selectedTools, mockInputMap, null);
         assertEquals(3, resultMap.size());
-
+        assertEquals("BPN1234567", mockInputMap.get("bpnNumber"));
     }
 
     @Test

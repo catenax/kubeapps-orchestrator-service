@@ -67,6 +67,8 @@ class InputConfigurationManagerTest {
             AutoSetupRequest autoSetupRequest = new ObjectMapper().readValue(json,AutoSetupRequest.class);
             Map<String, String>resultMap =  inputConfigurationManager.prepareInputConfiguration(autoSetupRequest, uuID);
             assertEquals(8, resultMap.size());
+            assertEquals("BPN12345611", resultMap.get("bpnNumber"));
+
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

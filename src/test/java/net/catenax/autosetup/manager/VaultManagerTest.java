@@ -22,7 +22,6 @@ package net.catenax.autosetup.manager;
 
 import java.util.HashMap;
 import java.util.Map;
-import net.catenax.autosetup.constant.AppActions;
 import net.catenax.autosetup.constant.ToolType;
 import net.catenax.autosetup.entity.AutoSetupTriggerEntry;
 import net.catenax.autosetup.model.Customer;
@@ -98,5 +97,6 @@ class VaultManagerTest {
 
         mockInputMap = vaultManager.uploadKeyandValues(customer, selectedTools,mockInputMap, autoSetupTriggerEntry);
         assertEquals(14, mockInputMap.size());
+        assertEquals("test", mockInputMap.get("targetCluster"));
     }
 }

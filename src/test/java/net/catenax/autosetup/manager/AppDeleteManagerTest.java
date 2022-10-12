@@ -24,18 +24,14 @@ import java.util.HashMap;
 import java.util.Map;
 import net.catenax.autosetup.constant.AppNameConstant;
 import net.catenax.autosetup.constant.ToolType;
-import net.catenax.autosetup.entity.AutoSetupTriggerEntry;
 import net.catenax.autosetup.model.SelectedTools;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -72,5 +68,6 @@ class AppDeleteManagerTest {
         mockInputMap = appDeleteManager.deletePackage(AppNameConstant.POSTGRES_DB, selectedTools, mockInputMap, null);
 
         assertEquals(1, mockInputMap.size());
+        assertEquals("test", mockInputMap.get("targetCluster"));
     }
 }

@@ -67,5 +67,6 @@ class EDCControlplaneManagerTest {
                 .build();
         mockInputMap = edcControlplaneManager.managePackage(null, AppActions.CREATE,selectedTools,mockInputMap, null);
         assertEquals(6, mockInputMap.size());
+        assertNotNull(mockInputMap.get("controlPlaneEndpoint"));
     }
 }

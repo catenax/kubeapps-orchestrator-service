@@ -21,26 +21,23 @@ package net.catenax.autosetup.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.catenax.autosetup.kubeapps.proxy.KubeAppManageProxy;
 import net.catenax.autosetup.manager.AutoSetupTriggerManager;
+import net.catenax.autosetup.mapper.AutoSetupRequestMapper;
 import net.catenax.autosetup.model.AutoSetupRequest;
+import net.catenax.autosetup.repository.AutoSetupTriggerEntryRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -49,11 +46,21 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 class AutoSetupOrchitestratorServiceTest {
 
+    //@Spy
     @Autowired
     private AutoSetupOrchitestratorService autoSetupOrchitestratorService;
 
-    @MockBean
+    @Autowired
     private AutoSetupTriggerManager autoSetupTriggerManager;
+
+    @Autowired
+    private AutoSetupTriggerEntryRepository autoSetupTriggerEntryRepository;
+
+    @MockBean
+    private AutoSetupRequestMapper customerDetailsMapper;
+
+    @MockBean
+    private KubeAppManageProxy kubeAppManageProxy;
 
     @Test
     void createPackage() {
@@ -76,7 +83,8 @@ class AutoSetupOrchitestratorServiceTest {
 
         try {
             AutoSetupRequest autoSetupRequest = new ObjectMapper().readValue(json,AutoSetupRequest.class);
-            Mockito.when(autoSetupTriggerManager.isAutoSetupAvailableforOrgnizationName(Mockito.anyString())).thenReturn(null);
+            Mockito.when(customerDetailsMapper.fromCustomer(Mockito.any(AutoSetupRequest.class))).thenReturn(json);
+            Mockito.when(kubeAppManageProxy.checkNamespace(Mockito.anyString(),Mockito.anyString())).thenReturn("true");
             String uuid = autoSetupOrchitestratorService.createPackage(autoSetupRequest);
             assertThat(uuid).isNotEmpty();
 
