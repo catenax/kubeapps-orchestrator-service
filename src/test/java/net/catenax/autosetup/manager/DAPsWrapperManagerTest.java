@@ -20,16 +20,13 @@
 
 package net.catenax.autosetup.manager;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
-import java.net.URI;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
-import net.catenax.autosetup.constant.ToolType;
-import net.catenax.autosetup.daps.proxy.DAPsWrapperProxy;
-import net.catenax.autosetup.model.Customer;
-import net.catenax.autosetup.model.SelectedTools;
-import net.catenax.autosetup.utility.Certutil;
+
 import org.apache.commons.codec.Resources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -41,7 +38,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.jupiter.api.Assertions.*;
+import net.catenax.autosetup.constant.ToolType;
+import net.catenax.autosetup.daps.proxy.DAPsWrapperProxy;
+import net.catenax.autosetup.model.Customer;
+import net.catenax.autosetup.model.SelectedTools;
+import net.catenax.autosetup.utility.Certutil;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
