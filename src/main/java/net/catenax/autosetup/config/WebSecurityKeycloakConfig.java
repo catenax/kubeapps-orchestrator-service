@@ -51,9 +51,9 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 public class WebSecurityKeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 
 	private static final String[] PUBLIC_URL = {"/v3/api-docs/*",
-			"/api-docs",
-			"/api-docs/*",
-			"/swagger-ui/*"};
+												"/api-docs",
+												"/api-docs/*",
+												"/swagger-ui/*"};
 	
 
 	@Override
@@ -64,9 +64,9 @@ public class WebSecurityKeycloakConfig extends KeycloakWebSecurityConfigurerAdap
 		http.csrf().disable().cors()
 		.and().headers().frameOptions().sameOrigin()
 		.and().authorizeRequests().antMatchers(PUBLIC_URL).permitAll()
-		//.antMatchers(
-		//		"/internal",
-		//		"/internal/*").hasAnyRole("admin")
+//		.antMatchers(
+//				"/internal",
+//				"/internal/*").hasAnyRole("admin")
 		.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		.and().authorizeRequests().anyRequest().authenticated();
 
