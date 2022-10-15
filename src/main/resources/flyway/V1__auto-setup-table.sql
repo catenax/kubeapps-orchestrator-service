@@ -246,7 +246,7 @@ INSERT INTO app_tbl
 VALUES('POSTGRES_DB', 'default', 'kubeapps', '{"postgresPassword":"$\{postgresPassword\}",
 "username":"$\{username\}",
 "password":"$\{password\}",
-"database":"$\{database\}"}', NULL, 'bitnami/postgresql', '11.8.1', 'helm.packages', 'v1alpha1', '{"persistence":{"size" :"1Gi"}, "global": {"postgresql" : {"auth" :$\{yamlValues\}}}}', 'JSON');
+"database":"$\{database\}"}', NULL, 'bitnami/postgresql', '11.8.1', 'helm.packages', 'v1alpha1', '{"primary":{"persistence":{"size" :"1Gi"}},"persistence":{"size" :"1Gi"}, "global": {"postgresql" : {"auth" :$\{yamlValues\}}}}', 'JSON');
 
 
 update app_tbl set expected_input_data= replace(replace(expected_input_data,'\{','{'),'\}','}'), required_yaml_configuration=replace(replace(required_yaml_configuration,'\{','{'),'\}','}');
