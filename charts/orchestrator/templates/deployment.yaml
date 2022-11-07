@@ -183,7 +183,12 @@ spec:
               valueFrom: 
                 secretKeyRef:
                   name: keycloacksecret
-                  key: keycloakResource                           
+                  key: keycloakResource 
+            - name: MANUAL_UPDATE
+              valueFrom: 
+                secretKeyRef:
+                  name: keycloacksecret
+                  key: manualupdate                           
             - name: KEYCLOAK_SSL-REQUIRED
               value: "external"
             - name: KEYCLOAK_USE-RESOURCE-ROLE-MAPPINGS
