@@ -106,7 +106,7 @@ spec:
                   name: kubeapps-secrets
                   key: kubeappsToken
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://orch-postgresdb-postgresql:5432/orchdb"
+              value: "jdbc:postgresql://autosetup-beta-postgresql:5432/autobetadb"
             - name: TARGET_NAMESPACE
               value: "kubeapps"
             - name: TARGET_CLUSTER
@@ -114,7 +114,11 @@ spec:
             - name: DNS_NAME_PROTOCOL
               value: "https"
             - name: DNS_NAME
-              value: "tenantname.cx.dih-cloud.com"
+              valueFrom:
+                secretKeyRef:
+                  name: portal-secrets
+                  key: dnsname
+              value: "tenantname.beta.cx.dih-cloud.com"
             - name: RETRY_MAXATTEMPTS
               value: "3"
             - name: RETRY_BACKOFFDELAY
