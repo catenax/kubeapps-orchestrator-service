@@ -28,7 +28,7 @@ jobs:
           images: |
             ghcr.io/catenax/kubeapps-orchestrator-service/orchestrator
           tags: |
-           type=semver,pattern={{version}},value=v1.0.3
+           type=semver,pattern={{version}},value=v1.0.4
           flavor: |
               latest=true
            
