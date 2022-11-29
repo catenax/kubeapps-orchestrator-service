@@ -106,7 +106,7 @@ spec:
                   name: kubeapps-secrets
                   key: kubeappsToken
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://autosetup-beta-postgresql:5432/autobetadb"
+              value: "jdbc:postgresql://autosetup-betadb-postgresql:5432/orchdb"
             - name: TARGET_NAMESPACE
               value: "kubeapps"
             - name: TARGET_CLUSTER
