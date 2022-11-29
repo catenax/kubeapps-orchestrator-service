@@ -118,7 +118,6 @@ spec:
                 secretKeyRef:
                   name: portal-secrets
                   key: dnsname
-              value: "tenantname.beta.cx.dih-cloud.com"
             - name: RETRY_MAXATTEMPTS
               value: "3"
             - name: RETRY_BACKOFFDELAY
