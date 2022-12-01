@@ -18,7 +18,7 @@ serviceAccount:
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
-portContainer: 80
+portContainer: 8080
 podAnnotations: {}
 
 podSecurityContext: {}
@@ -36,7 +36,7 @@ securityContext: {}
 service:
   type: ClusterIP
   port: 80
-  targetPort: 80
+  targetPort: 8080
    
 dft:
   endpoints:
